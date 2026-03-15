@@ -1,84 +1,137 @@
 {% extends 'layoutModulos.html' %}
 {% block container %}
-  <div class="w-full">
-    <h1 class="text-2xl font-semibold text-center text-[#341915]">Gestión de Empleados</h1>
+<div class="w-full">
 
-    <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-8"></div>
+  <h1 class="text-2xl font-semibold text-center text-[#341915]">
+    Gestión de Proveedores
+  </h1>
 
-    <!-- FILTRO -->
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center gap-2 text-[#341915] font-medium">
-        <img src="{{ url_for('static', filename='img/iconosModulos/filtrar.png') }}" class="h-6 w-6" />
+  <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-8"></div>
 
-        <span>Filtrar</span>
-      </div>
+  <!-- FILTRO -->
+  <div class="flex items-center justify-between mb-4">
 
-      <!-- BUSCADOR -->
-      <div class="flex">
-        <input type="text" placeholder="Buscar empleado" class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0] placeholder-[#7a5a4d]" />
-
-        <button class="bg-[#341915] px-4 rounded-r flex items-center justify-center"><img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}" class="h-5 w-5" /></button>
-      </div>
+    <div class="flex items-center gap-2 text-[#341915] font-medium">
+      <img src="{{ url_for('static', filename='img/iconosModulos/filtrar.png') }}" class="h-6 w-6"/>
+      <span>Filtrar</span>
     </div>
 
-    <!-- TABLA -->
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm text-left">
-        <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
-          <tr>
-            <th class="px-4 py-2">Nombre</th>
-            <th class="px-4 py-2">Teléfono</th>
-            <th class="px-4 py-2">Dirección</th>
-            <th class="px-4 py-2">Email</th>
-            <th class="px-4 py-2">Rol</th>
-            <th class="px-4 py-2">Sueldo</th>
-            <th class="px-4 py-2">Estatus</th>
-            <th class="px-4 py-2">Acciones</th>
-          </tr>
-        </thead>
+    <!-- BUSCADOR -->
+    <div class="flex">
+      <input type="text"
+             placeholder="Buscar proveedor"
+             class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0] placeholder-[#7a5a4d]" />
 
-        <tbody class="bg-white">
-          <tr class="border-b">
-            <td class="px-4 py-2">Nombre empleado</td>
-            <td class="px-4 py-2">000-000-0000</td>
-            <td class="px-4 py-2">Dirección</td>
-            <td class="px-4 py-2">correo@email.com</td>
-            <td class="px-4 py-2">Administrador</td>
-            <td class="px-4 py-2">$0.00</td>
-            <td class="px-4 py-2 text-green-600">Activo</td>
-
-            <td class="px-4 py-2 flex gap-2 bg-[#561C24]">
-              <div class="flex items-center gap-2">
-                <button class="p-1 hover:bg-gray-200 rounded"><img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}" class="h-5 w-5" /></button>
-
-                <button class="p-1 hover:bg-gray-200 rounded"><img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}" class="h-5 w-5" /></button>
-
-                <button class="p-1 hover:bg-gray-200 rounded"><img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}" class="h-5 w-5" /></button>
-              </div>
-            </td>
-          </tr>
-
-          <tr class="border-b">
-            <td class="px-4 py-2">Nombre empleado</td>
-            <td class="px-4 py-2">000-000-0000</td>
-            <td class="px-4 py-2">Dirección</td>
-            <td class="px-4 py-2">correo@email.com</td>
-            <td class="px-4 py-2">Empleado</td>
-            <td class="px-4 py-2">$0.00</td>
-            <td class="px-4 py-2 text-green-600">Activo</td>
-
-            <td class="px-4 py-2 flex gap-2 bg-[#561C24]">
-              <div class="flex items-center gap-2">
-                <button class="p-1 hover:bg-gray-200 rounded"><img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}" class="h-5 w-5" /></button>
-
-                <button class="p-1 hover:bg-gray-200 rounded"><img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}" class="h-5 w-5" /></button>
-
-                <button class="p-1 hover:bg-gray-200 rounded"><img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}" class="h-5 w-5" /></button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <button class="bg-[#341915] px-4 rounded-r flex items-center justify-center">
+        <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}" class="h-5 w-5"/>
+      </button>
     </div>
+
   </div>
+
+  <!-- TABLA -->
+  <div class="overflow-x-auto">
+
+    <table class="w-full text-sm text-left">
+
+      <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
+        <tr>
+          <th class="px-4 py-2">Nombre</th>
+          <th class="px-4 py-2">Teléfono</th>
+          <th class="px-4 py-2">Email</th>
+          <th class="px-4 py-2">Dirección</th>
+          <th class="px-4 py-2">Contacto</th>
+          <th class="px-4 py-2">Notas</th>
+          <th class="px-4 py-2">Estatus</th>
+          <th class="px-4 py-2">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody class="bg-white">
+
+        {% for proveedor in proveedores %}
+
+        <tr class="border-b">
+
+          <td class="px-4 py-2">
+            {{ proveedor.nombre }}
+          </td>
+
+          <td class="px-4 py-2">
+            {{ proveedor.telefono }}
+          </td>
+
+          <td class="px-4 py-2">
+            {{ proveedor.email }}
+          </td>
+
+          <td class="px-4 py-2">
+            {{ proveedor.direccion }}
+          </td>
+
+          <td class="px-4 py-2">
+            {{ proveedor.contacto }}
+          </td>
+
+          <td class="px-4 py-2">
+            {{ proveedor.notas }}
+          </td>
+
+          <td class="px-4 py-2">
+            {% if proveedor.estatus == 'activo' %}
+              <span class="text-green-600 font-medium">Activo</span>
+            {% else %}
+              <span class="text-red-600 font-medium">Inactivo</span>
+            {% endif %}
+          </td>
+
+          <!-- ACCIONES -->
+          <td class="px-4 py-2 flex gap-2 bg-[#561C24]">
+
+            <div class="flex items-center gap-2">
+
+              <!-- VER -->
+              <a href="#">
+                <button class="p-1 hover:bg-gray-200 rounded">
+                  <img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}" class="h-5 w-5"/>
+                </button>
+              </a>
+
+              <!-- EDITAR -->
+              <a href="#">
+                <button class="p-1 hover:bg-gray-200 rounded">
+                  <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}" class="h-5 w-5"/>
+                </button>
+              </a>
+
+              <!-- ELIMINAR -->
+              <a href="#">
+                <button class="p-1 hover:bg-gray-200 rounded">
+                  <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}" class="h-5 w-5"/>
+                </button>
+              </a>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+        {% else %}
+
+        <tr>
+          <td colspan="8" class="text-center py-6 text-gray-500">
+            No hay proveedores registrados
+          </td>
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
 {% endblock %}

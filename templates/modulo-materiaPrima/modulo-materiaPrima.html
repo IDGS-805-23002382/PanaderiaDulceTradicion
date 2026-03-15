@@ -1,0 +1,266 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+
+<div class="w-full">
+
+    <!-- TITULO -->
+    <h1 class="text-2xl font-semibold text-center text-[#341915]">
+        Gestión de Materia Prima
+    </h1>
+
+    <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-4"></div>
+
+
+    <!-- BOTON AGREGAR -->
+    <div class="flex justify-end mb-4">
+        <a href="{{ url_for('materiaPrima.agregarMateriaPrima') }}"
+           class="flex items-center gap-2 bg-[#E8D8C4] px-4 py-2 rounded hover:bg-[#d6c3a7]">
+
+            <img src="{{ url_for('static', filename='img/iconosModulos/nuevo.png') }}"
+                 class="h-6 w-6">
+
+            <span class="text-[#341915] font-medium">
+                Agregar
+            </span>
+
+        </a>
+    </div>
+
+
+
+    <!-- FILTRO Y BUSCAR -->
+    <div class="flex items-center justify-between mb-4">
+
+        <!-- FILTRO -->
+        <details class="relative">
+
+            <summary class="flex items-center gap-2 text-[#341915] font-medium cursor-pointer">
+                <img src="{{ url_for('static', filename='img/iconosModulos/filtrar.png') }}"
+                     class="h-6 w-6">
+                <span>Filtrar</span>
+            </summary>
+
+
+            <!-- PANEL FILTRO -->
+            <div class="absolute mt-3 bg-white shadow-lg rounded-lg p-4 w-64 border z-50">
+
+                <form method="GET"
+                      action="{{ url_for('materiaPrima.materiaPrima') }}"
+                      class="flex flex-col gap-3">
+
+                    <!-- ESTATUS -->
+                    <label class="text-sm text-[#341915] font-semibold">
+                        Estatus
+                    </label>
+
+                    <select name="estatus"
+                            class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
+
+                        <option value="">Todos</option>
+
+                        <option value="activo"
+                        {% if request.args.get('estatus') == 'activo' %} selected {% endif %}>
+                            Activos
+                        </option>
+
+                        <option value="inactivo"
+                        {% if request.args.get('estatus') == 'inactivo' %} selected {% endif %}>
+                            Inactivos
+                        </option>
+
+                    </select>
+
+
+
+                    <!-- ORDEN -->
+                    <label class="text-sm text-[#341915] font-semibold">
+                        Ordenar
+                    </label>
+
+                    <select name="orden"
+                            class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
+
+                        <option value="">Sin ordenar</option>
+
+                        <option value="az"
+                        {% if request.args.get('orden') == 'az' %} selected {% endif %}>
+                            Nombre A-Z
+                        </option>
+
+                        <option value="za"
+                        {% if request.args.get('orden') == 'za' %} selected {% endif %}>
+                            Nombre Z-A
+                        </option>
+
+                    </select>
+
+
+
+                    <!-- BOTONES -->
+                    <div class="flex gap-2 mt-2">
+
+                        <button type="submit"
+                                class="bg-[#341915] text-white px-3 py-2 rounded hover:bg-[#4a241d] text-sm">
+                            Aplicar
+                        </button>
+
+                        <a href="{{ url_for('materiaPrima.materiaPrima') }}"
+                           class="bg-gray-200 px-3 py-2 rounded text-sm hover:bg-gray-300">
+                            Limpiar
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </details>
+
+
+
+        <!-- BUSCAR -->
+        <form method="GET"
+              action="{{ url_for('materiaPrima.materiaPrima') }}"
+              class="flex">
+
+            <input type="text"
+                   name="buscar"
+                   placeholder="Buscar materia prima"
+                   value="{{ request.args.get('buscar','') }}"
+                   class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0] placeholder-[#7a5a4d]" />
+
+            <button type="submit"
+                    class="bg-[#341915] px-4 rounded-r flex items-center justify-center">
+
+                <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}"
+                     class="h-5 w-5">
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+
+    <!-- TABLA -->
+    <div class="overflow-x-auto">
+
+        <table class="w-full text-sm text-left table-fixed">
+
+            <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
+
+                <tr>
+                    <th class="px-4 py-2">Nombre</th>
+                    <th class="px-4 py-2">Unidad</th>
+                    <th class="px-4 py-2">Stock</th>
+                    <th class="px-4 py-2">Stock Min</th>
+                    <th class="px-4 py-2">Precio</th>
+                    <th class="px-4 py-2">Proveedor</th>
+                    <th class="px-4 py-2">Última compra</th>
+
+                    <th class="px-4 py-2 w-32">
+                        Estatus
+                    </th>
+
+                    <th class="px-4 py-2 w-40">
+                        Acciones
+                    </th>
+                </tr>
+
+            </thead>
+
+
+
+            <tbody class="bg-white">
+
+            {% for materia in materias %}
+
+                <tr class="border-b hover:bg-gray-50">
+
+                    <td class="px-6 py-4">{{ materia.nombre }}</td>
+                    <td class="px-6 py-4">{{ materia.unidad_medida }}</td>
+                    <td class="px-6 py-4">{{ materia.stock_actual }}</td>
+                    <td class="px-6 py-4">{{ materia.stock_minimo }}</td>
+                    <td class="px-6 py-4">$ {{ materia.precio_unitario }}</td>
+
+                    <td class="px-6 py-4">
+                        {{ materia.proveedor.nombre if materia.proveedor else 'Sin proveedor' }}
+                    </td>
+
+                    <td class="px-6 py-4">{{ materia.fecha_ultima_compra }}</td>
+
+
+
+                    <!-- ESTATUS -->
+                    <td class="px-6 py-4 text-center">
+
+                        {% if materia.estatus == "activo" %}
+
+                        <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">
+                            Activo
+                        </span>
+
+                        {% else %}
+
+                        <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">
+                            Inactivo
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+
+                    <!-- ACCIONES -->
+                    <td class="px-4 py-2 bg-[#561C24] w-40">
+
+                        <div class="flex justify-center items-center gap-3">
+
+                            <!-- DETALLE -->
+                            <a href="{{ url_for('materiaPrima_bp.detalleMateriaPrima', id=materia.id_materia) }}">
+                                <button class="w-9 h-9 flex items-center justify-center hover:bg-gray-300 rounded-lg transition">
+                                    <img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}"
+                                         class="w-5 h-5">
+                                </button>
+                            </a>
+
+
+
+                            <!-- EDITAR -->
+                            <a href="{{ url_for('materiaPrima_bp.modificarMateriaPrima', id=materia.id_materia) }}">
+                                <button class="w-9 h-9 flex items-center justify-center hover:bg-gray-200 rounded-lg transition">
+                                    <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}"
+                                         class="w-5 h-5">
+                                </button>
+                            </a>
+
+
+
+                            <!-- ELIMINAR -->
+                            <a href="{{ url_for('materiaPrima_bp.eliminarMateriaPrima', id=materia.id_materia) }}">
+                                <button class="w-9 h-9 flex items-center justify-center hover:bg-gray-200 rounded-lg transition">
+                                    <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}"
+                                         class="w-5 h-5">
+                                </button>
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

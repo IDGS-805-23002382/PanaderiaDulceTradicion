@@ -1,0 +1,39 @@
+{%macro datos(name,placeholder,type='text')%}
+ 
+<p><input name="{{name}}" type="{{type}}" placeholder="{{placeholder}}" > </p>
+ 
+{%endmacro%}
+ 
+{%macro camposNuevos(field) %}
+<h2 class="font-bold text-gray-800">{{field.label}}</h2>
+<dd>{{field(**kwargs) | safe}}</dd>
+{%if field.errors%}
+<ul>
+    {%for error in field.errors%}
+        <li style="color: red;">{{error}}</li>
+    {%endfor%}
+</ul>
+ 
+{%endif%}
+{%endmacro%}
+
+
+{%macro campoSelect(field, className="maestros") %}
+<div class="mb-5">
+    
+    <label class="block mb-2 text-sm font-bold text-gray-800">
+        {{ field.label.text }}
+    </label>
+
+    {{ field(class=className) }}
+
+    {% if field.errors %}
+        <ul class="mt-1 text-sm text-red-500">
+            {% for error in field.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+</div>
+{%endmacro%}

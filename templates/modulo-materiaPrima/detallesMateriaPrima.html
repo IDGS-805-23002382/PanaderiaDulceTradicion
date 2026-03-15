@@ -1,0 +1,165 @@
+{% extends "layoutModulos.html" %}
+{% block container %}
+
+<div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 py-12 px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-4xl mx-auto">
+        
+        
+        <div class="mb-6">
+            <a href="{{ url_for('materiaPrima.materiaPrima') }}" 
+               class="inline-flex items-center text-[#341915] hover:text-[#4a241d] transition-colors duration-200 group">
+                <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform duration-200" 
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                <span class="font-medium">Volver a materias primas</span>
+            </a>
+        </div>
+
+      
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 backdrop-blur-sm">
+            
+           
+            <div class="bg-gradient-to-r from-[#341915] to-[#4a241d] px-8 py-6">
+                
+                <div class="flex items-center space-x-4">
+                    <div class="bg-[#E8D8C4] p-3 rounded-2xl backdrop-blur-sm">
+                        <img class="w-16 h-16 rounded-xl object-cover"
+                             src="{{ url_for('static', filename='img/iconosModulos/materiaPrima.png') }}"
+                             alt="Materia Prima"/>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-white">Información de Materia Prima</h1>
+                        <p class="text-amber-100/80 mt-1">Detalles del ingrediente en inventario</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido -->
+            <div class="p-8">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <!-- Columna izquierda -->
+                    <div class="space-y-6">
+
+                        <!-- Nombre -->
+                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
+                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
+                                Nombre
+                            </label>
+                            <p class="text-xl font-bold text-gray-800 mt-1">
+                                {{ materia.nombre }}
+                            </p>
+                        </div>
+
+                        <!-- Unidad -->
+                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
+                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
+                                Unidad de Medida
+                            </label>
+                            <p class="text-lg text-gray-800 mt-1">
+                                {{ materia.unidad_medida }}
+                            </p>
+                        </div>
+
+                        <!-- Proveedor -->
+                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
+                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
+                                Proveedor
+                            </label>
+                            <p class="text-lg text-gray-800 mt-1">
+                                {{ materia.proveedor.nombre if materia.proveedor else "Sin proveedor" }}
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <!-- Columna derecha -->
+                    <div class="space-y-6">
+
+                        <!-- Stock -->
+                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
+                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
+                                Stock Actual
+                            </label>
+                            <p class="text-lg font-semibold text-gray-800 mt-1">
+                                {{ materia.stock_actual }}
+                            </p>
+                        </div>
+
+                        <!-- Stock minimo -->
+                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
+                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
+                                Stock Mínimo
+                            </label>
+                            <p class="text-lg text-gray-800 mt-1">
+                                {{ materia.stock_minimo }}
+                            </p>
+                        </div>
+
+                        <!-- Precio -->
+                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
+                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
+                                Precio Unitario
+                            </label>
+                            <p class="text-lg text-gray-800 mt-1">
+                                $ {{ materia.precio_unitario }}
+                            </p>
+                        </div>
+
+                        <!-- Fecha compra -->
+                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
+                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
+                                Última Compra
+                            </label>
+                            <p class="text-lg text-gray-800 mt-1">
+                                {{ materia.fecha_ultima_compra }}
+                            </p>
+                        </div>
+
+                        <!-- Estatus -->
+                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
+                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
+                                Estatus
+                            </label>
+
+                            <div class="flex items-center space-x-3 mt-2">
+
+                                {% if materia.estatus == 'activo' %}
+                                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                    <span class="text-green-700 font-semibold bg-green-100 px-4 py-2 rounded-lg">
+                                        Activo
+                                    </span>
+                                {% else %}
+                                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                    <span class="text-red-700 font-semibold bg-red-100 px-4 py-2 rounded-lg">
+                                        Inactivo
+                                    </span>
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Botón volver -->
+                <div class="mt-10 pt-6 border-t border-amber-200 flex justify-center">
+
+                    <a href="{{ url_for('materiaPrima.materiaPrima') }}" 
+                       class="inline-flex items-center px-6 py-3 bg-[#341915] text-white rounded-xl hover:bg-[#4a241d] transition-all duration-200 transform hover:scale-105 shadow-lg">
+                        Ver todas las materias primas
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

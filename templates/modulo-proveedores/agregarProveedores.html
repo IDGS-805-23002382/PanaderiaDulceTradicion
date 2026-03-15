@@ -1,0 +1,100 @@
+{% extends "layoutModulos.html" %}
+{% block container %}
+{% import "_macros.html" as macros %}
+
+<div class="max-w-md mx-auto mt-10">
+
+    <h2 class="text-2xl font-bold mb-6 text-[#341915] text-center">
+        Registrar Nuevo Proveedor
+    </h2>
+
+    <form method="POST" action="{{ url_for('proveedores.agregarProveedores') }}">
+
+        {{ form.hidden_tag() }}
+
+        <!-- NOMBRE -->
+        <div class="mb-4">
+            {{ form.nombre.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.nombre(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.nombre.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- TELEFONO -->
+        <div class="mb-4">
+            {{ form.telefono.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.telefono(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.telefono.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- EMAIL -->
+        <div class="mb-4">
+            {{ form.email.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.email(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.email.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- DIRECCION -->
+        <div class="mb-4">
+            {{ form.direccion.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.direccion(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.direccion.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- CONTACTO -->
+        <div class="mb-4">
+            {{ form.contacto.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.contacto(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.contacto.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- NOTAS -->
+        <div class="mb-4">
+            {{ form.notas.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.notas(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.notas.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- ESTATUS -->
+        <div class="mb-6">
+            {{ form.estatus.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.estatus(class="w-full border rounded px-3 py-2") }}
+        </div>
+
+        <!-- BOTONES -->
+        <div class="flex gap-4">
+
+            <button type="submit"
+                class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d]">
+                Guardar
+            </button>
+
+            <a href="{{ url_for('proveedores.proveedores') }}"
+               class="text-gray-600 hover:text-gray-800">
+                Cancelar
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

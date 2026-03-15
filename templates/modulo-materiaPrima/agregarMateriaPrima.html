@@ -1,0 +1,110 @@
+{% extends "layoutModulos.html" %}
+{% block container %}
+{% import "_macros.html" as macros %}
+
+<div class="max-w-md mx-auto mt-10">
+
+    <h2 class="text-2xl font-bold mb-6 text-[#341915] text-center">
+        Registrar Materia Prima
+    </h2>
+
+    <form method="POST" action="{{ url_for('materiaPrima.agregarMateriaPrima') }}">
+
+        {{ form.hidden_tag() }}
+
+        <!-- NOMBRE -->
+        <div class="mb-4">
+            {{ form.nombre.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.nombre(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.nombre.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- UNIDAD DE MEDIDA -->
+        <div class="mb-4">
+            {{ form.unidad_medida.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.unidad_medida(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.unidad_medida.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- STOCK ACTUAL -->
+        <div class="mb-4">
+            {{ form.stock_actual.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.stock_actual(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.stock_actual.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- STOCK MINIMO -->
+        <div class="mb-4">
+            {{ form.stock_minimo.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.stock_minimo(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.stock_minimo.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- PRECIO UNITARIO -->
+        <div class="mb-4">
+            {{ form.precio_unitario.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.precio_unitario(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.precio_unitario.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- PROVEEDOR -->
+        <div class="mb-4">
+            {{ form.id_proveedor.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.id_proveedor(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.id_proveedor.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- FECHA ULTIMA COMPRA -->
+        <div class="mb-4">
+            {{ form.fecha_ultima_compra.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.fecha_ultima_compra(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.fecha_ultima_compra.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- ESTATUS -->
+        <div class="mb-6">
+            {{ form.estatus.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.estatus(class="w-full border rounded px-3 py-2") }}
+        </div>
+
+        <!-- BOTONES -->
+        <div class="flex gap-4">
+
+            <button type="submit"
+                class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d]">
+                Guardar
+            </button>
+
+            <a href="{{ url_for('materiaPrima.materiaPrima') }}"
+               class="text-gray-600 hover:text-gray-800">
+                Cancelar
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

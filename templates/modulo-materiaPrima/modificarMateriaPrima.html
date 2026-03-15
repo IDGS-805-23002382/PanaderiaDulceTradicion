@@ -1,0 +1,179 @@
+{% extends "layoutModulos.html" %}
+{% block container %}
+
+<div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 py-12 px-4 sm:px-6 lg:px-8">
+    
+    <div class="max-w-3xl mx-auto">
+        
+        <!-- Botón regresar -->
+        <div class="mb-6">
+            <a href="{{ url_for('materiaPrima_bp.materiaPrima') }}" 
+               class="inline-flex items-center text-[#341915] hover:text-[#4a241d] transition group">
+
+                <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+
+                </svg>
+
+                <span class="font-medium">Volver a materias primas</span>
+            </a>
+        </div>
+
+
+        <!-- CARD -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+
+            <!-- HEADER -->
+            <div class="bg-gradient-to-r from-[#341915] to-[#4a241d] px-8 py-6">
+
+                <div class="flex items-center space-x-4">
+
+                    <div class="p-3 rounded-2xl">
+                        <img class="w-16 h-16"
+                             src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}">
+                    </div>
+
+                    <div>
+                        <h1 class="text-3xl font-bold text-white">
+                            Modificar Materia Prima
+                        </h1>
+
+                        <p class="text-amber-100/80 mt-1">
+                            Actualiza la información de {{ materiaPrima.nombre }}
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FORM -->
+            <div class="p-8">
+
+                <form action="{{ url_for('materiaPrima_bp.modificarMateriaPrima', id=materiaPrima.id_materia) }}"
+                      method="POST"
+                      class="space-y-6">
+
+                    {{ form.hidden_tag() }}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        <!-- Nombre -->
+                        <div>
+                            {{ form.nombre.label(class="block text-sm font-semibold text-[#341915]") }}
+                            {{ form.nombre(class="w-full border rounded-xl px-3 py-3") }}
+
+                            {% for error in form.nombre.errors %}
+                                <p class="text-red-500 text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Unidad -->
+                        <div>
+                            {{ form.unidad_medida.label(class="block text-sm font-semibold text-[#341915]") }}
+                            {{ form.unidad_medida(class="w-full border rounded-xl px-3 py-3") }}
+
+                            {% for error in form.unidad_medida.errors %}
+                                <p class="text-red-500 text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Stock actual -->
+                        <div>
+                            {{ form.stock_actual.label(class="block text-sm font-semibold text-[#341915]") }}
+                            {{ form.stock_actual(class="w-full border rounded-xl px-3 py-3") }}
+
+                            {% for error in form.stock_actual.errors %}
+                                <p class="text-red-500 text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Stock mínimo -->
+                        <div>
+                            {{ form.stock_minimo.label(class="block text-sm font-semibold text-[#341915]") }}
+                            {{ form.stock_minimo(class="w-full border rounded-xl px-3 py-3") }}
+
+                            {% for error in form.stock_minimo.errors %}
+                                <p class="text-red-500 text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Precio -->
+                        <div>
+                            {{ form.precio_unitario.label(class="block text-sm font-semibold text-[#341915]") }}
+                            {{ form.precio_unitario(class="w-full border rounded-xl px-3 py-3") }}
+
+                            {% for error in form.precio_unitario.errors %}
+                                <p class="text-red-500 text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Proveedor -->
+                        <div>
+                            {{ form.id_proveedor.label(class="block text-sm font-semibold text-[#341915]") }}
+                            {{ form.id_proveedor(class="w-full border rounded-xl px-3 py-3") }}
+
+                            {% for error in form.id_proveedor.errors %}
+                                <p class="text-red-500 text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Fecha compra -->
+                        <div>
+                            {{ form.fecha_ultima_compra.label(class="block text-sm font-semibold text-[#341915]") }}
+                            {{ form.fecha_ultima_compra(class="w-full border rounded-xl px-3 py-3") }}
+
+                            {% for error in form.fecha_ultima_compra.errors %}
+                                <p class="text-red-500 text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Estatus -->
+                        <div>
+                            {{ form.estatus.label(class="block text-sm font-semibold text-[#341915]") }}
+                            {{ form.estatus(class="w-full border rounded-xl px-3 py-3") }}
+
+                            {% for error in form.estatus.errors %}
+                                <p class="text-red-500 text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+
+                    <!-- BOTONES -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6 mt-6 border-t">
+
+                        <button type="submit"
+                                class="flex-1 bg-[#341915] text-white px-6 py-4 rounded-xl hover:bg-[#4a241d] transition font-semibold">
+
+                            Guardar cambios
+
+                        </button>
+
+                        <a href="{{ url_for('materiaPrima_bp.materiaPrima') }}"
+                           class="flex-1 bg-gray-200 text-gray-700 px-6 py-4 rounded-xl hover:bg-gray-300 transition font-semibold text-center">
+
+                            Cancelar
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
