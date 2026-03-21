@@ -1,3 +1,5 @@
+
+# empleado/__init__.py
 from flask import Blueprint
 
 empleados_bp=Blueprint(
@@ -5,4 +7,5 @@ empleados_bp=Blueprint(
     __name__,
     template_folder="templates"
 )
-from . import routesEmpleaados
+
+from . import routesEmpleados

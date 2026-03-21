@@ -1,0 +1,104 @@
+{% extends "layoutModulos.html" %}
+{% block container %}
+
+<div class="max-w-md mx-auto mt-10">
+
+    <h2 class="text-2xl font-bold mb-6 text-[#341915] text-center">
+        Registrar Receta
+    </h2>
+
+    <form method="POST"
+          action="{{ url_for('recetas.agregarReceta') }}">
+
+        {{ form.hidden_tag() }}
+
+        <!-- PRODUCTO -->
+        <div class="mb-4">
+
+            {{ form.id_producto.label(class="block text-sm font-medium text-gray-700") }}
+
+            {{ form.id_producto(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.id_producto.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+
+        </div>
+
+
+        <!-- NOMBRE RECETA -->
+        <div class="mb-4">
+
+            {{ form.nombre.label(class="block text-sm font-medium text-gray-700") }}
+
+            {{ form.nombre(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.nombre.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+
+        </div>
+
+
+        <!-- DESCRIPCION -->
+        <div class="mb-4">
+
+            {{ form.descripcion.label(class="block text-sm font-medium text-gray-700") }}
+
+            {{ form.descripcion(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.descripcion.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+
+        </div>
+
+
+        <!-- RENDIMIENTO -->
+        <div class="mb-4">
+
+            {{ form.rendimiento_piezas.label(class="block text-sm font-medium text-gray-700") }}
+
+            {{ form.rendimiento_piezas(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.rendimiento_piezas.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+
+        </div>
+
+
+        <!-- ESTATUS -->
+        <div class="mb-6">
+
+            {{ form.estatus.label(class="block text-sm font-medium text-gray-700") }}
+
+            {{ form.estatus(class="w-full border rounded px-3 py-2") }}
+
+        </div>
+
+
+        <!-- BOTONES -->
+        <div class="flex gap-4">
+
+            <button type="submit"
+                class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d]">
+
+                Guardar
+
+            </button>
+
+            <a href="{{ url_for('recetas.recetas') }}"
+               class="text-gray-600 hover:text-gray-800">
+
+                Cancelar
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

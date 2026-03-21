@@ -1,0 +1,72 @@
+<!-- template/modulo-clientes/form-clientes.html -->
+ {% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="w-full max-w-2xl mx-auto">
+
+  <h1 class="text-2xl font-semibold text-center text-[#341915]">
+    {{ accion }} Cliente
+  </h1>
+  <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-8"></div>
+
+  <div class="bg-white rounded-2xl shadow p-8">
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <!-- NOMBRE -->
+        <div class="md:col-span-2">
+          <label class="flex items-center gap-2 text-sm font-medium text-[#341915] mb-1">
+            <img src="{{ url_for('static', filename='img/iconosModulos/clientes.png') }}" class="h-4 w-4">
+            {{ form.nombre.label.text }}
+          </label>
+          {{ form.nombre(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
+          {% for e in form.nombre.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+        </div>
+
+        <!-- TELÉFONO -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.telefono.label.text }}</label>
+          {{ form.telefono(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
+          {% for e in form.telefono.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+        </div>
+
+        <!-- EMAIL -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.email.label.text }}</label>
+          {{ form.email(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
+          {% for e in form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+        </div>
+
+        <!-- DIRECCIÓN -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.direccion.label.text }}</label>
+          {{ form.direccion(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
+          {% for e in form.direccion.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+        </div>
+
+        <!-- ESTATUS -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.estatus.label.text }}</label>
+          {{ form.estatus(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
+        </div>
+
+      </div>
+
+      <!-- BOTONES -->
+      <div class="flex gap-3 mt-8">
+        <button type="submit"
+                class="flex-1 bg-[#341915] hover:bg-[#561C24] text-[#E8D8C4] font-medium py-2 rounded-lg transition">
+          {{ accion }}
+        </button>
+        <a href="{{ url_for('clientes.index') }}"
+           class="flex-1 text-center border border-[#341915] text-[#341915] hover:bg-[#e8d8c4] font-medium py-2 rounded-lg transition">
+          Cancelar
+        </a>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+{% endblock %}

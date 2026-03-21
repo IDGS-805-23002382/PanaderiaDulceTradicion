@@ -1,60 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flowbite Flask</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}" />
-  </head>
-  <body>
-    <nav class="bg-[#341915] px-8 py-4 shadow-md">
-  <div class="container flex items-center justify-between mx-auto">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flowbite Flask</title>
 
-    <!-- LOGO -->
-    <a href="/" class="flex items-center space-x-3">
-      <img src="{{ url_for('static', filename='img/logos/logo.png') }}" 
-           class="h-14 w-14 rounded-full bg-white p-1" 
-           alt="Logo" />
-    </a>
+<link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
+<style>
+@font-face{
+    font-family: "WhiteStar";
+    src: url("{{ url_for('static', filename='fonts/WhiteStar.ttf') }}") format("truetype");
+}
 
-    <!-- MENÚ CENTRAL -->
-    <ul class="hidden md:flex items-center space-x-10 text-[#E8D8C4] font-medium font-white-star">
-      <li><a href="/" class="hover:underline underline-offset-4">Inicio</a></li>
-      <li><a href="/nosotros" class="hover:underline underline-offset-4">Nosotros</a></li>
-      <li><a href="/catalogo" class="hover:underline underline-offset-4">Catálogo</a></li>
-      <li><a href="/promociones" class="hover:underline underline-offset-4">Promociones</a></li>
-      <li><a href="/sucursales" class="hover:underline underline-offset-4">Sucursales</a></li>
-    </ul>
+.font-whiteStar{
+    font-family: "WhiteStar", serif;
+}
+</style>
+</head>
 
-    <!-- ICONO USUARIO -->
-    <div class="flex items-center">
-      <div class="w-12 h-12 bg-[#e6d3c3] rounded-full flex items-center justify-center">
-        <svg class="w-6 h-6 text-[#7a5a4d]" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 10a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"/>
-        </svg>
-      </div>
-    </div>
+<body>
 
-  </div>
+<!-- NAVBAR -->
+<nav class="bg-[#341915] px-8 py-4 shadow-md">
+<div class="container flex items-center justify-between mx-auto">
+
+<!-- LOGO -->
+<a href="/" class="flex items-center space-x-3">
+<img src="{{ url_for('static', filename='img/logos/logo.png') }}"
+class="h-14 w-14 rounded-full bg-white p-1">
+</a>
+
+<!-- MENU -->
+<ul class="hidden md:flex items-center space-x-10 text-[#E8D8C4] font-medium font-white-star">
+<li><a href="/" class="hover:underline underline-offset-4">Inicio</a></li>
+<li><a href="{{ url_for('nosotros') }}" class="hover:underline underline-offset-4">Nosotros</a></li>
+<li><a href="{{ url_for('catalogo') }}" class="hover:underline underline-offset-4">Catálogo</a></li>
+<li><a href="/promociones" class="hover:underline underline-offset-4">Promociones</a></li>
+<li><a href="/sucursales" class="hover:underline underline-offset-4">Sucursales</a></li>
+</ul>
+
+<!-- ICONO -->
+<div class="flex items-center">
+
+<a href="{{ url_for('login') }}" 
+   class="w-12 h-12 bg-[#e6d3c3] rounded-full flex items-center justify-center">
+
+<svg class="w-6 h-6 text-[#7a5a4d]" fill="currentColor" viewBox="0 0 20 20">
+<path d="M10 10a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5Z"/>
+</svg>
+
+</a>
+
+</div>
+
+</div>
 </nav>
 
-    <div class="flex items-center justify-center min-h-screen">
-      {% with messages=get_flashed_messages() %}
-        {% if messages %}
-          {% for message in messages %}
-            <div class="alert alert-success">{{ message }}</div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
 
-      {% block container %}
+<!-- CONTENIDO -->
+<div class="w-full">
 
-      {% endblock %}
-    </div>
+{% with messages=get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-success">{{ message }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 
-    
+{% block container %}
+{% endblock %}
 
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-  </body>
+</div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
+</body>
 </html>

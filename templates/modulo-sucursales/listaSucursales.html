@@ -1,0 +1,64 @@
+{% extends "layoutModulos.html" %}
+
+{% block container %}
+
+<div class="max-w-6xl mx-auto">
+
+<div class="flex justify-between items-center mb-6">
+
+<h2 class="text-2xl font-bold text-[#341915]">Sucursales</h2>
+
+<a href="/registrarSucursal"
+class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4b231c]">
+
+Nueva sucursal
+
+</a>
+
+</div>
+
+
+<table class="w-full bg-white rounded shadow">
+
+<thead class="bg-[#341915] text-white">
+
+<tr>
+<th class="p-3 text-left">Nombre</th>
+<th class="p-3 text-left">Dirección</th>
+<th class="p-3 text-left">Teléfono</th>
+<th class="p-3 text-left">Ciudad</th>
+<th class="p-3 text-left">Acciones</th> 
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for s in sucursales %}
+
+<tr class="border-b hover:bg-gray-100">
+
+<td class="p-3">{{ s.nombre }}</td>
+<td class="p-3">{{ s.direccion }}</td>
+<td class="p-3">{{ s.telefono }}</td>
+<td class="p-3">{{ s.ciudad }}</td>
+<td class="p-3">
+<a href="{{ url_for('sucursales.editarSucursal', id=s.id_sucursal) }}">
+Editar
+</a>
+  <a href="{{ url_for('sucursales.desactivarSucursal', id=s.id_sucursal) }}" class="btn btn-danger">
+    Desactivar
+  </a>
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

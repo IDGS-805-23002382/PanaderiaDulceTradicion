@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from models import Proveedor, db
+from models import Proveedor, db, MateriaPrima, Compra, DetalleCompra
+from werkzeug.utils import secure_filename
 from sqlalchemy import or_
 from . import proveedores_bp
-
+from datetime import datetime
 import forms
 
 @proveedores_bp.route('/proveedores')
@@ -131,4 +132,64 @@ def eliminarProveedor(id):
         proveedor=proveedor
     )
     
-  
+@proveedores_bp.route("/compras", methods=["GET", "POST"])
+def compraProveedores():
+
+    proveedores = Proveedor.query.filter_by(estatus="activo").all()
+    materias = MateriaPrima.query.filter_by(estatus="activo").all()
+
+    # 👉 número de filas dinámicas (por defecto 1)
+    filas = int(request.args.get("filas", 1))
+
+    if request.method == "POST":
+
+        id_proveedor = request.form.get("proveedor")
+
+        compra = Compra(id_proveedor=id_proveedor)
+        db.session.add(compra)
+        db.session.flush()
+
+        total = 0
+
+        for i in range(filas):
+
+            materia_id = request.form.get(f"materia_id_{i}")
+            cantidad = request.form.get(f"cantidad_{i}")
+            precio = request.form.get(f"precio_{i}")
+
+            # validar vacío
+            if not materia_id or not cantidad or not precio:
+                continue
+
+            materia = MateriaPrima.query.get(materia_id)
+
+            cantidad = int(cantidad)
+            precio = float(precio)
+
+            subtotal = cantidad * precio
+            total += subtotal
+
+            detalle = DetalleCompra(
+                id_compra=compra.id_compra,
+                id_materia=materia.id_materia,
+                cantidad=cantidad,
+                precio_unitario=precio,
+                subtotal=subtotal
+            )
+
+            materia.stock_actual += cantidad
+            materia.fecha_ultima_compra = datetime.utcnow()
+
+            db.session.add(detalle)
+
+        compra.total = total
+        db.session.commit()
+
+        return redirect(url_for("proveedores.compraProveedores"))
+
+    return render_template(
+        "modulo-proveedores/compraProveedores.html",
+        proveedores=proveedores,
+        materias=materias,
+        filas=filas 
+    )

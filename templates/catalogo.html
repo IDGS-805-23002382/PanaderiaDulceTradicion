@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% block container %}
+  <!-- HERO -->
+  <section class="relative w-full h-[350px]">
+    <div class="relative h-[400px] flex items-center justify-center text-center text-white">
+      <img src="{{ url_for('static', filename='img/contenido/pan2.jpg') }}" class="absolute inset-0 w-full h-full object-cover" />
+
+      <div class="absolute inset-0 bg-black/40"></div>
+
+      <div class="absolute inset-0 flex items-center justify-center">
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-[#f3e5d8] tracking-widest">CATÁLOGO</h1>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-[#d8c9b4] py-16">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-center gap-8">
+      <a href="/catalogo"
+        class="cursor-pointer px-10 py-3 rounded-xl font-semibold
+        {% if not request.args.get('categoria') %} bg-[#6b1f26] text-white {% else %} border-4 border-[#6b1f26] text-[#2c1b16] {% endif %}">
+        TODOS
+      </a>
+
+      {% for categoria in categorias %}
+        <a href="/catalogo?categoria={{ categoria.id_categoria }}"
+          class="cursor-pointer px-10 py-3 rounded-xl font-semibold {% if request.args.get('categoria') == categoria.id_categoria|string %} bg-[#6b1f26] text-white 
+          {% else %} border-4 border-[#6b1f26] text-[#2c1b16] {% endif %} ">
+          {{ categoria.nombre }}
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+  <section class="bg-[#d8c9b4] py-16">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid md:grid-cols-3 gap-10">
+        {% for producto in productos %}
+          <div class="bg-[#d8c9b4] border-4 border-[#6b1f26] rounded-2xl p-6 flex flex-col items-center relative hover:shadow-xl transition">
+           
+            {% if producto.imagen_url %}
+              <img src="data:image/jpeg;base64,{{ producto.imagen_url|b64encode }}" class="w-28 mb-4 object-cover rounded-lg" />
+            {% else %}
+              <img src="{{ url_for('static', filename='img/productos/default.png') }}" class="w-28 mb-4" />
+            {% endif %}
+
+           
+            <h3 class="font-semibold text-lg text-center">{{ producto.nombre }}</h3>
+
+       
+            <p class="text-sm text-[#341915] font-semibold">$ {{ producto.precio_venta }}</p>
+
+           
+            <button class="absolute bottom-4 right-4 bg-[#6b1f26] p-2 rounded-full hover:bg-[#4a1a20] transition"><img src="{{ url_for('static', filename='img/contenido/carritoCatalogo.png') }}"
+            class="w-6 h-6 object-contain" />
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-[#d8c9b4] py-16">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="fixed z-50 w-full max-w-lg -translate-x-1/2 bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg rounded-full bottom-4 left-1/2 px-4 py-2">
+        <div class="flex items-center justify-between gap-2">
+          <button class="flex items-center justify-center w-10 h-10 text-[#4b1e1e] hover:bg-[#4b1e1e]/10 rounded-full transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <div class="flex gap-1">
+            <button class="w-10 h-10 text-sm font-medium text-white bg-[#4b1e1e] rounded-full">1</button>
+
+            <button class="w-10 h-10 text-sm font-medium text-[#4b1e1e] hover:bg-[#4b1e1e]/10 rounded-full">2</button>
+
+            <button class="w-10 h-10 text-sm font-medium text-[#4b1e1e] hover:bg-[#4b1e1e]/10 rounded-full">3</button>
+          </div>
+
+          <button class="flex items-center justify-center w-10 h-10 text-[#4b1e1e] hover:bg-[#4b1e1e]/10 rounded-full transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <button class="flex items-center justify-center w-10 h-10 text-white bg-[#4b1e1e] rounded-full hover:bg-[#6b2e2e]"><img src="{{ url_for('static', filename='img/contenido/lupa.png') }}" class="w-5 h-5 filter brightness-0 invert" /></button>
+
+          <button class="flex items-center justify-center w-10 h-10 text-white bg-[#4b1e1e] rounded-full hover:bg-[#6b2e2e]"><img src="{{ url_for('static', filename='img/contenido/agregarCarrito.png') }}" class="w-5 h-5 filter brightness-0 invert" /></button>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

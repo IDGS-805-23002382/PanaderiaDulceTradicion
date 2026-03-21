@@ -1,0 +1,79 @@
+{% extends "layoutModulos.html" %}
+{% block container %}
+{% import "_macros.html" as macros %}
+
+<div class="max-w-md mx-auto mt-10">
+
+    <h2 class="text-2xl font-bold mb-6 text-[#341915] text-center">
+        Registrar Nueva Categoría
+    </h2>
+
+    <!-- ⚠️ IMPORTANTE -->
+    <form method="POST"
+          action="{{ url_for('categorias.agregarCategoria') }}"
+          enctype="multipart/form-data">
+
+        {{ form.hidden_tag() }}
+
+        <!-- NOMBRE -->
+        <div class="mb-4">
+            {{ form.nombre.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.nombre(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.nombre.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- DESCRIPCION -->
+        <div class="mb-4">
+            {{ form.descripcion.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.descripcion(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.descripcion.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- 🔥 IMAGEN -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">
+                Imagen
+            </label>
+
+            <input type="file"
+                   name="imagen"
+                   accept="image/*"
+                   class="w-full border rounded px-3 py-2 bg-white">
+
+            <p class="text-xs text-gray-500 mt-1">
+                Formatos permitidos: JPG, PNG
+            </p>
+        </div>
+
+        <!-- ESTATUS -->
+        <div class="mb-6">
+            {{ form.estatus.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.estatus(class="w-full border rounded px-3 py-2") }}
+        </div>
+
+        <!-- BOTONES -->
+        <div class="flex gap-4">
+
+            <button type="submit"
+                class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d]">
+                Guardar
+            </button>
+
+            <a href="{{ url_for('categorias.categorias') }}"
+               class="text-gray-600 hover:text-gray-800">
+                Cancelar
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

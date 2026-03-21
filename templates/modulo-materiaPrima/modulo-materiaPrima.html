@@ -40,8 +40,6 @@
                 <span>Filtrar</span>
             </summary>
 
-
-            <!-- PANEL FILTRO -->
             <div class="absolute mt-3 bg-white shadow-lg rounded-lg p-4 w-64 border z-50">
 
                 <form method="GET"
@@ -70,8 +68,6 @@
 
                     </select>
 
-
-
                     <!-- ORDEN -->
                     <label class="text-sm text-[#341915] font-semibold">
                         Ordenar
@@ -93,8 +89,6 @@
                         </option>
 
                     </select>
-
-
 
                     <!-- BOTONES -->
                     <div class="flex gap-2 mt-2">
@@ -153,20 +147,13 @@
 
                 <tr>
                     <th class="px-4 py-2">Nombre</th>
-                    <th class="px-4 py-2">Unidad</th>
                     <th class="px-4 py-2">Stock</th>
                     <th class="px-4 py-2">Stock Min</th>
                     <th class="px-4 py-2">Precio</th>
                     <th class="px-4 py-2">Proveedor</th>
                     <th class="px-4 py-2">Última compra</th>
-
-                    <th class="px-4 py-2 w-32">
-                        Estatus
-                    </th>
-
-                    <th class="px-4 py-2 w-40">
-                        Acciones
-                    </th>
+                    <th class="px-4 py-2 w-32">Estatus</th>
+                    <th class="px-4 py-2 w-40">Acciones</th>
                 </tr>
 
             </thead>
@@ -175,14 +162,14 @@
 
             <tbody class="bg-white">
 
-            {% for materia in materias %}
+            {% for materia in materiaPrima %}
 
                 <tr class="border-b hover:bg-gray-50">
 
                     <td class="px-6 py-4">{{ materia.nombre }}</td>
-                    <td class="px-6 py-4">{{ materia.unidad_medida }}</td>
-                    <td class="px-6 py-4">{{ materia.stock_actual }}</td>
-                    <td class="px-6 py-4">{{ materia.stock_minimo }}</td>
+                    
+                    <td class="px-6 py-4">{{ "%.0f"|format(materia.stock_actual) }}{{ materia.unidad_medida }}</td>
+                    <td class="px-6 py-4">{{ "%.0f"|format(materia.stock_minimo) }}{{ materia.unidad_medida }}</td>
                     <td class="px-6 py-4">$ {{ materia.precio_unitario }}</td>
 
                     <td class="px-6 py-4">
@@ -190,7 +177,6 @@
                     </td>
 
                     <td class="px-6 py-4">{{ materia.fecha_ultima_compra }}</td>
-
 
 
                     <!-- ESTATUS -->
@@ -220,31 +206,21 @@
                         <div class="flex justify-center items-center gap-3">
 
                             <!-- DETALLE -->
-                            <a href="{{ url_for('materiaPrima_bp.detalleMateriaPrima', id=materia.id_materia) }}">
-                                <button class="w-9 h-9 flex items-center justify-center hover:bg-gray-300 rounded-lg transition">
-                                    <img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}"
-                                         class="w-5 h-5">
-                                </button>
+                            <a href="{{ url_for('materiaPrima.detalleMateriaPrima', id=materia.id_materia) }}">
+                                <img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}"
+                                     class="w-5 h-5">
                             </a>
-
-
 
                             <!-- EDITAR -->
-                            <a href="{{ url_for('materiaPrima_bp.modificarMateriaPrima', id=materia.id_materia) }}">
-                                <button class="w-9 h-9 flex items-center justify-center hover:bg-gray-200 rounded-lg transition">
-                                    <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}"
-                                         class="w-5 h-5">
-                                </button>
+                            <a href="{{ url_for('materiaPrima.modificarMateriaPrima', id=materia.id_materia) }}">
+                                <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}"
+                                     class="w-5 h-5">
                             </a>
 
-
-
                             <!-- ELIMINAR -->
-                            <a href="{{ url_for('materiaPrima_bp.eliminarMateriaPrima', id=materia.id_materia) }}">
-                                <button class="w-9 h-9 flex items-center justify-center hover:bg-gray-200 rounded-lg transition">
-                                    <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}"
-                                         class="w-5 h-5">
-                                </button>
+                            <a href="{{ url_for('materiaPrima.eliminarMateriaPrima', id=materia.id_materia) }}">
+                                <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}"
+                                     class="w-5 h-5">
                             </a>
 
                         </div>

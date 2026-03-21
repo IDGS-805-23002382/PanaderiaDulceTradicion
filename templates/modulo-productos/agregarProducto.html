@@ -1,0 +1,144 @@
+{% extends "layoutModulos.html" %}
+{% block container %}
+
+
+
+<div class="max-w-md mx-auto mt-10">
+
+    <h2 class="text-2xl font-bold mb-6 text-[#341915] text-center">
+        Registrar Producto
+    </h2>
+
+    <form method="POST"
+          action="{{ url_for('productos.agregarProducto') }}"
+          enctype="multipart/form-data">
+
+        {{ form.hidden_tag() }}
+
+        <!-- CODIGO -->
+    
+
+        <!-- NOMBRE -->
+        <div class="mb-4">
+            {{ form.nombre.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.nombre(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.nombre.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- DESCRIPCION -->
+        <div class="mb-4">
+            {{ form.descripcion.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.descripcion(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.descripcion.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- CATEGORIA -->
+        <div class="mb-4">
+            {{ form.id_categoria.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.id_categoria(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.id_categoria.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- PRECIO -->
+        <div class="mb-4">
+            {{ form.precio_venta.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.precio_venta(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.precio_venta.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- COSTO -->
+        <div class="mb-4">
+            {{ form.costo_unitario_estimado.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.costo_unitario_estimado(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.costo_unitario_estimado.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- IMAGEN -->
+        <div class="mb-4">
+
+            <label class="block text-sm font-medium text-gray-700">
+                Imagen del producto
+            </label>
+
+            <input type="file"
+                   name="imagen"
+                   accept="image/*"
+                   onchange="previewImagen(event)"
+                   class="w-full border rounded px-3 py-2 bg-white">
+
+            <!-- PREVIEW -->
+            <img id="preview"
+                 class="mt-3 w-32 h-32 object-cover rounded-lg border hidden">
+
+        </div>
+
+        <!-- CADUCIDAD -->
+        <div class="mb-4">
+            {{ form.dias_caducidad.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.dias_caducidad(class="w-full border rounded px-3 py-2") }}
+
+            {% for error in form.dias_caducidad.errors %}
+                <p class="text-red-500 text-xs">{{ error }}</p>
+            {% endfor %}
+        </div>
+
+        <!-- ESTATUS -->
+        <div class="mb-6">
+            {{ form.estatus.label(class="block text-sm font-medium text-gray-700") }}
+            {{ form.estatus(class="w-full border rounded px-3 py-2") }}
+        </div>
+
+        <!-- BOTONES -->
+        <div class="flex gap-4">
+
+            <button type="submit"
+                class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d]">
+                Guardar
+            </button>
+
+            <a href="{{ url_for('productos.productos') }}"
+               class="text-gray-600 hover:text-gray-800">
+                Cancelar
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+function previewImagen(event){
+
+    const input = event.target;
+    const preview = document.getElementById("preview");
+
+    if(input.files && input.files[0]){
+
+        preview.src = URL.createObjectURL(input.files[0]);
+        preview.classList.remove("hidden");
+
+    }
+
+}
+
+</script>
+
+{% endblock %}

@@ -6,7 +6,6 @@ from . import materiaPrima_bp
 import forms
 
 
-# LISTAR MATERIA PRIMA
 @materiaPrima_bp.route('/materiaPrima')
 def materiaPrima():
 
@@ -36,13 +35,13 @@ def materiaPrima():
     elif orden == "za":
         query = query.order_by(MateriaPrima.nombre.desc())
 
+    # OBTENER DATOS
     materiaPrima = query.all()
 
     return render_template(
         "modulo-materiaPrima/modulo-materiaPrima.html",
         materiaPrima=materiaPrima
     )
-
 
 # AGREGAR MATERIA PRIMA
 @materiaPrima_bp.route('/agregarMateriaPrima', methods=['GET','POST'])
@@ -82,11 +81,11 @@ def agregarMateriaPrima():
 @materiaPrima_bp.route('/detalleMateriaPrima/<int:id>')
 def detalleMateriaPrima(id):
 
-    materiaPrima = MateriaPrima.query.get_or_404(id)
+    materia = MateriaPrima.query.get_or_404(id)
 
     return render_template(
         'modulo-materiaPrima/detallesMateriaPrima.html',
-        materiaPrima=materiaPrima
+        materia=materia
     )
 
 

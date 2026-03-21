@@ -7,7 +7,7 @@
 
         <!-- Botón regresar -->
         <div class="mb-6">
-            <a href="{{ url_for('materiaPrima_bp.materiaPrima') }}"
+            <a href="{{ url_for('materiaPrima.materiaPrima') }}"
                class="inline-flex items-center text-[#341915] hover:text-[#4a241d] transition group">
 
                 <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition"
@@ -87,7 +87,7 @@
 
 
                 <!-- FORM -->
-                <form action="{{ url_for('materiaPrima_bp.eliminarMateriaPrima', id=materiaPrima.id_materia) }}"
+                <form action="{{ url_for('materiaPrima.eliminarMateriaPrima', id=materiaPrima.id_materia) }}"
                       method="POST">
 
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -101,7 +101,7 @@
 
                         </button>
 
-                        <a href="{{ url_for('materiaPrima_bp.materiaPrima') }}"
+                        <a href="{{ url_for('materiaPrima.materiaPrima') }}"
                         class="bg-gray-200 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-300 transition transform hover:scale-105 font-semibold">
 
                             Cancelar

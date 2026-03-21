@@ -1,0 +1,97 @@
+<!-- template/modulo-clientes/modulo-clientes.html -->
+ {% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="w-full">
+
+  <h1 class="text-2xl font-semibold text-center text-[#341915]">
+    Gestión de Clientes
+  </h1>
+  <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-8"></div>
+
+  <!-- BARRA SUPERIOR -->
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-2 text-[#341915] font-medium">
+      <img src="{{ url_for('static', filename='img/iconosModulos/filtrar.png') }}" class="h-6 w-6"/>
+      <span>Filtrar</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="flex">
+        <input type="text" id="buscador" placeholder="Buscar cliente"
+               class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0] placeholder-[#7a5a4d]" />
+        <button class="bg-[#341915] px-4 rounded-r flex items-center justify-center">
+          <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}" class="h-5 w-5"/>
+        </button>
+      </div>
+      <a href="{{ url_for('clientes.agregar') }}">
+        <button class="bg-[#341915] p-2 rounded-full hover:bg-[#561C24] transition" title="Agregar cliente">
+          <img src="{{ url_for('static', filename='img/iconosModulos/clientes.png') }}" class="h-5 w-5"/>
+        </button>
+      </a>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
+        <tr>
+          <th class="px-4 py-2">Nombre</th>
+          <th class="px-4 py-2">Teléfono</th>
+          <th class="px-4 py-2">Email</th>
+          <th class="px-4 py-2">Dirección</th>
+          <th class="px-4 py-2">Fecha Registro</th>
+          <th class="px-4 py-2">Estatus</th>
+          <th class="px-4 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white" id="tablaClientes">
+        {% for cliente in clientes %}
+        <tr class="border-b text-center fila-cliente">
+          <td class="px-4 py-2 text-left">{{ cliente.nombre }}</td>
+          <td class="px-4 py-2">{{ cliente.telefono }}</td>
+          <td class="px-4 py-2">{{ cliente.email }}</td>
+          <td class="px-4 py-2">{{ cliente.direccion }}</td>
+          <td class="px-4 py-2">{{ cliente.fecha_registro.strftime('%d/%m/%Y') if cliente.fecha_registro else '—' }}</td>
+          <td class="px-4 py-2">
+            {% if cliente.estatus == 'activo' %}
+              <span class="text-green-600 font-semibold">Activo</span>
+            {% else %}
+              <span class="text-red-600 font-semibold">Inactivo</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-2 bg-[#561C24]">
+            <div class="flex items-center justify-center gap-2">
+              <a href="{{ url_for('clientes.editar', id=cliente.id_cliente) }}">
+                <button class="p-1 hover:bg-[#7a3a30] rounded" title="Editar">
+                  <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}" class="h-5 w-5"/>
+                </button>
+              </a>
+              <a href="{{ url_for('clientes.eliminar', id=cliente.id_cliente) }}"
+                 onclick="return confirm('¿Eliminar este cliente?')">
+                <button class="p-1 hover:bg-[#7a3a30] rounded" title="Eliminar">
+                  <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}" class="h-5 w-5"/>
+                </button>
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center py-6 text-gray-500">No hay clientes registrados</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  document.getElementById('buscador').addEventListener('keyup', function () {
+    const f = this.value.toLowerCase();
+    document.querySelectorAll('.fila-cliente').forEach(r => {
+      r.style.display = r.innerText.toLowerCase().includes(f) ? '' : 'none';
+    });
+  });
+</script>
+{% endblock %}
