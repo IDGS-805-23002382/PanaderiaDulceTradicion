@@ -1,11 +1,10 @@
 {% extends 'layout.html' %}
 {% block container %}
   
- <!-- HERO SECTION - Mejorada con SVG originales -->
 <section class="relative bg-gradient-to-br from-[#341915] to-[#4a251f] text-white min-h-screen flex items-center overflow-hidden">
-    <!-- Contenido principal (siempre por encima de los SVG) -->
+   
     <div class="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 md:px-16 gap-12 relative z-10">
-        <!-- Texto -->
+     
         <div class="max-w-xl text-center md:text-left">
             <h1 class="text-5xl md:text-7xl font-bold mb-4 tracking-tight">
                 Dulce <span class="text-[#e3b394]">Tradición</span>
@@ -15,7 +14,6 @@
             </p>
         </div>
 
-        <!-- Imagen con efecto sutil de sombra -->
         <div class="hidden md:block flex-shrink-0">
             <img src="{{ url_for('static', filename='img/contenido/corazon.png') }}"
                  class="w-[420px] drop-shadow-2xl hover:scale-105 transition-transform duration-500"
@@ -26,25 +24,23 @@
    
 </section>
 
-<!-- CATEGORÍAS - Diseño de tarjetas mejorado -->
 <section class="relative bg-[#E8D8C4] pt-24 pb-32">
-   <!-- SVG con efecto chocolate (debajo del hero) -->
+   
     <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-0">
-        <!-- SVG Izquierdo -->
+       
         <div class="absolute bottom-0 left-0 w-64 md:w-auto opacity-30">
             <svg width="410" height="303" viewBox="0 0 386 303" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 0C155 0 310.012 0 465 0C465 53.2855 465 106.572 465 159.857C465 165.463 459.97 170.021 453.811 170.021C447.676 170.021 442.645 165.463 442.645 159.857V86.8588C442.645 82.9574 439.127 79.7544 434.842 79.7544C430.533 79.7544 427.037 82.9574 427.037 86.8588V128.379C427.037 135.669 420.473 141.623 412.488 141.623C404.481 141.623 397.94 135.669 397.94 128.379V74.6515C397.94 63.4609 387.856 54.293 375.585 54.293C363.293 54.293 353.209 63.4609 353.209 74.6515V174.191C353.209 190.268 338.773 203.411 321.111 203.411C303.449 203.411 288.99 190.268 288.99 174.191V55.2264C288.99 39.1481 274.554 25.9955 256.892 25.9955H256.879C239.23 25.9955 224.769 39.1481 224.769 55.2264V273.759C224.769 289.817 210.321 303 192.671 303C175.009 303 160.561 289.816 160.561 273.759V107.219C160.561 91.1404 146.102 77.9885 128.451 77.9885C110.789 77.9885 96.3301 91.1404 96.3301 107.219V184.396C96.3301 194.868 86.9348 203.411 75.4423 203.411C63.9499 203.411 54.5429 194.868 54.5429 184.396V124.766C54.5429 119.149 49.4891 114.56 43.3318 114.56C37.1628 114.56 32.1105 119.149 32.1105 124.766V229.611C32.1105 237.641 24.893 244.232 16.0611 244.232C7.22998 244.232 0 237.641 0 229.611C0 153.061 0 76.531 0 0Z" fill="currentColor" class="text-[#e3b394]"/>
             </svg>
         </div>
 
-        <!-- SVG Central (más grande, como punto focal) -->
         <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-96 md:w-auto opacity-40">
             <svg width="550" height="303" viewBox="0 0 465 303" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M465 0C310 0 154.988 0 0 0C0 53.2855 0 106.572 0 159.857C0 165.463 5.02975 170.021 11.1887 170.021C17.3244 170.021 22.3549 165.463 22.3549 159.857V86.8588C22.3549 82.9574 25.8734 79.7544 30.1584 79.7544C34.4674 79.7544 37.9627 82.9574 37.9627 86.8588V128.379C37.9627 135.669 44.5269 141.623 52.5117 141.623C60.519 141.623 67.06 135.669 67.06 128.379V74.6515C67.06 63.4609 77.1436 54.293 89.4149 54.293C101.707 54.293 111.791 63.4609 111.791 74.6515V174.191C111.791 190.268 126.227 203.411 143.889 203.411C161.551 203.411 176.01 190.268 176.01 174.191V55.2264C176.01 39.1481 190.446 25.9955 208.108 25.9955H208.121C225.77 25.9955 240.231 39.1481 240.231 55.2264V273.759C240.231 289.817 254.679 303 272.329 303C289.991 303 304.439 289.816 304.439 273.759V107.219C304.439 91.1404 318.898 77.9885 336.549 77.9885C354.211 77.9885 368.67 91.1404 368.67 107.219V184.396C368.67 194.868 378.065 203.411 389.558 203.411C401.05 203.411 410.457 194.868 410.457 184.396V124.766C410.457 119.149 415.511 114.56 421.668 114.56C427.837 114.56 432.889 119.149 432.889 124.766V229.611C432.889 237.641 440.107 244.232 448.939 244.232C457.77 244.232 465 237.641 465 229.611C465 153.061 465 76.531 465 0Z" fill="currentColor" class="text-[#b55a3a]"/>
             </svg>
         </div>
 
-        <!-- SVG Derecho -->
+    
         <div class="absolute bottom-0 right-0 w-64 md:w-auto opacity-30">
             <svg width="460" height="303" viewBox="0 0 386 303" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 0C155 0 310.012 0 465 0C465 53.2855 465 106.572 465 159.857C465 165.463 459.97 170.021 453.811 170.021C447.676 170.021 442.645 165.463 442.645 159.857V86.8588C442.645 82.9574 439.127 79.7544 434.842 79.7544C430.533 79.7544 427.037 82.9574 427.037 86.8588V128.379C427.037 135.669 420.473 141.623 412.488 141.623C404.481 141.623 397.94 135.669 397.94 128.379V74.6515C397.94 63.4609 387.856 54.293 375.585 54.293C363.293 54.293 353.209 63.4609 353.209 74.6515V174.191C353.209 190.268 338.773 203.411 321.111 203.411C303.449 203.411 288.99 190.268 288.99 174.191V55.2264C288.99 39.1481 274.554 25.9955 256.892 25.9955H256.879C239.23 25.9955 224.769 39.1481 224.769 55.2264V273.759C224.769 289.817 210.321 303 192.671 303C175.009 303 160.561 289.816 160.561 273.759V107.219C160.561 91.1404 146.102 77.9885 128.451 77.9885C110.789 77.9885 96.3301 91.1404 96.3301 107.219V184.396C96.3301 194.868 86.9348 203.411 75.4423 203.411C63.9499 203.411 54.5429 194.868 54.5429 184.396V124.766C54.5429 119.149 49.4891 114.56 43.3318 114.56C37.1628 114.56 32.1105 119.149 32.1105 124.766V229.611C32.1105 237.641 24.893 244.232 16.0611 244.232C7.22998 244.232 0 237.641 0 229.611C0 153.061 0 76.531 0 0Z" fill="currentColor" class="text-[#e3b394]"/>
@@ -59,7 +55,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
             {% for categoria in categorias %}
             <div class="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 w-72 overflow-hidden border border-[#d4b6a0]">
-                <!-- Contenedor de imagen con fondo sutil -->
+                
                 <div class="bg-[#f8ede4] p-6 flex justify-center">
                     {% if categoria.imagen %}
                     <img src="{{ url_for('categorias.categoria_imagen', id=categoria.id_categoria) }}"
@@ -72,7 +68,6 @@
                     {% endif %}
                 </div>
 
-                <!-- Contenido de la tarjeta -->
                 <div class="p-6 text-center">
                     <h3 class="font-bold text-2xl text-[#341915] mb-3 group-hover:text-[#b55a3a] transition-colors">
                         {{ categoria.nombre }}
@@ -85,7 +80,7 @@
             {% endfor %}
         </div>
 
-        <!-- Botón Ver Catálogo más elegante -->
+        
         <div class="flex justify-center mt-20">
             <a href="{{ url_for('catalogo') }}"
                class="group relative inline-flex items-center justify-center px-8 py-4 bg-[#341915] text-[#E8D8C4] font-semibold text-lg rounded-full overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
@@ -95,7 +90,7 @@
         </div>
     </div>
 
-    <!-- Ola Decorativa (abajo de categorías, arriba de cómo comprar) -->
+   
     <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
         <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#341915"/>
@@ -104,8 +99,6 @@
 </section>
 
 
-
-  <!-- CÓMO COMPRAR - Más visual y moderno -->
   <section class="bg-[#341915] py-24">
     <div class="container mx-auto px-4">
       <h2 class="text-4xl md:text-5xl font-bold text-center text-[#E8D8C4] mb-16">
@@ -113,7 +106,7 @@
       </h2>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-        <!-- Paso 1 -->
+        
         <div class="group relative bg-[#4a2c24] rounded-2xl p-8 text-center hover:bg-[#5a3a30] transition-all duration-300">
           <div class="absolute -top-4 -left-4 bg-[#e3b394] text-[#341915] w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg">1</div>
           <img src="{{ url_for('static', filename='img/contenido/escoger.png') }}"
@@ -122,7 +115,6 @@
           <p class="text-sm text-[#cbb5a8]">tus productos favoritos</p>
         </div>
 
-        <!-- Paso 2 -->
         <div class="group relative bg-[#4a2c24] rounded-2xl p-8 text-center hover:bg-[#5a3a30] transition-all duration-300">
           <div class="absolute -top-4 -left-4 bg-[#e3b394] text-[#341915] w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg">2</div>
           <img src="{{ url_for('static', filename='img/contenido/carritoHome.png') }}"
@@ -131,7 +123,7 @@
           <p class="text-sm text-[#cbb5a8]">y revisa tu pedido</p>
         </div>
 
-        <!-- Paso 3 -->
+      
         <div class="group relative bg-[#4a2c24] rounded-2xl p-8 text-center hover:bg-[#5a3a30] transition-all duration-300">
           <div class="absolute -top-4 -left-4 bg-[#e3b394] text-[#341915] w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg">3</div>
           <img src="{{ url_for('static', filename='img/contenido/efectivo.png') }}"
@@ -152,15 +144,15 @@
     </div>
   </section>
 
-  <!-- FRASE DE PANADERÍA - Más integrada -->
+ 
   <section class="relative">
-    <!-- Imagen de fondo con overlay más suave -->
+    
     <div class="relative h-[500px] flex items-center justify-center text-center text-white overflow-hidden">
       <img src="{{ url_for('static', filename='img/contenido/panFondo.jpg') }}"
            class="absolute inset-0 w-full h-full object-cover transform hover:scale-105 transition-transform duration-10000" />
       <div class="absolute inset-0 bg-gradient-to-r from-[#341915]/80 to-[#341915]/60"></div>
 
-      <!-- Contenido -->
+     
       <div class="relative max-w-3xl px-6 z-10">
         <img src="{{ url_for('static', filename='img/logos/logoLetrasBlancas.png') }}"
              class="mx-auto w-40 mb-8 drop-shadow-lg" />
@@ -170,7 +162,7 @@
       </div>
     </div>
 
-    <!-- Iconos de servicios -->
+    
     <div class="bg-[#E8D8C4] py-16">
       <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl">
         <div class="flex flex-col items-center text-[#341915] group">
@@ -200,7 +192,7 @@
     </div>
   </section>
 
-  <!-- REDES SOCIALES - Mejor distribución -->
+  
   <section class="bg-[#341915] py-20">
     <div class="container mx-auto text-center">
       <h2 class="text-3xl md:text-4xl font-bold text-[#E8D8C4] mb-4">Síguenos en:</h2>
@@ -250,11 +242,11 @@
     </div>
   </section>
 
-  <!-- FOOTER - Más limpio -->
+ 
   <section class="bg-[#1f0f0b] text-[#E8D8C4]">
     <div class="container mx-auto py-8 px-4 flex flex-col md:flex-row justify-between items-center border-t border-[#5a3e32]">
-      <p class="text-sm md:text-base font-medium">© 2026 Panadería Dulce Tradición. Todos los derechos reservados.</p>
-      <p class="text-sm md:text-base mt-2 md:mt-0">Desarrollado con ❤️ por <span class="font-semibold text-[#e3b394]">Equipo</span></p>
+      <p class="text-sm md:text-base font-medium">© 2026 Panadería Dulce Tradición. </p>
+     
     </div>
   </section>
 

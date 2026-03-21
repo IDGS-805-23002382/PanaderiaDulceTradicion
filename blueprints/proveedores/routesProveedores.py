@@ -3,10 +3,9 @@ from models import Proveedor, db, MateriaPrima, Compra, DetalleCompra
 from werkzeug.utils import secure_filename
 from sqlalchemy import or_
 from . import proveedores_bp
-<<<<<<< HEAD
+
 from datetime import datetime
-=======
->>>>>>> d9c95103a59bb805666d341ce56430d8b2ad02cd
+
 import forms
 
 

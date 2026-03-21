@@ -2,17 +2,16 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf.csrf import CSRFProtect
 from config import DevelopmentConfig
 from models import db, Producto, Categoria
-from proveedores.routesProveedores import proveedores_bp
-from categorias.routesCategorias import categorias_bp
-from materiaPrima.routesMateriaPrima import materiaPrima_bp
-from productos.routesProductos import productos_bp
-from recetas.routesRecetas import recetas_bp
-from ordenProduccion.routesOrdenProduccion import ordenProduccion_bp
-from empleado.routesEmpleados import empleados_bp
-from sucursales.routesSucursales import sucursales_bp
-from clientes.routesClientes import clientes_bp
-from usuarios.routesUsuarios import usuarios_bp
-from roles.routesRoles import roles_bp
+from blueprints.proveedores.routesProveedores import proveedores_bp
+from blueprints.categorias.routesCategorias import categorias_bp
+from blueprints.materiaPrima.routesMateriaPrima import materiaPrima_bp
+from blueprints.productos.routesProductos import productos_bp
+from blueprints.recetas.routesRecetas import recetas_bp
+from blueprints.ordenProduccion.routesOrdenProduccion import ordenProduccion_bp
+from blueprints.sucursales.routesSucursales import sucursales_bp
+from blueprints.clientes.routesClientes import clientes_bp
+from blueprints.usuarios.routesUsuarios import usuarios_bp
+from blueprints.roles.routesRoles import roles_bp
 from flask_migrate import Migrate
 import base64
 
@@ -27,7 +26,6 @@ app.register_blueprint(categorias_bp)
 app.register_blueprint(productos_bp)
 app.register_blueprint(recetas_bp)
 app.register_blueprint(ordenProduccion_bp)
-app.register_blueprint(empleados_bp)
 app.register_blueprint(sucursales_bp)
 app.register_blueprint(clientes_bp)
 app.register_blueprint(usuarios_bp)
