@@ -54,7 +54,7 @@ class Categoria(db.Model):
 
     descripcion = db.Column(db.String(200))
 
-    imagen = db.Column(db.LargeBinary)  # 👈 NUEVO
+    imagen = db.Column(db.LargeBinary)  
 
     estatus = db.Column(
         db.Enum('activo', 'inactivo'),

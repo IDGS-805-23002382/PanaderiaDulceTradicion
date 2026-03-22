@@ -1,77 +1,92 @@
 <!-- templates/auth/login.html -->
-{% extends 'layoutModulos.html' %}
+{% extends 'layout.html' %}
+
 {% block container %}
+  <section class="bg-[#E8D8C4] py-20 px-10 flex items-center justify-center">
+    <div class="relative w-[320px] pb-20">
+      <div class="bg-[#341915] rounded-[40px] pt-10 pb-10 px-8 shadow-2xl">
+        <div class="flex justify-center -mt-2 mb-8">
+          <img src="{{ url_for('static', filename='img/contenido/usuarioLogin.png') }}" class="w-16" />
+        </div>
 
-<div class="flex items-center justify-center min-h-[80vh]">
-  <div class="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+        <form method="POST" class="space-y-4">
+          {{ form.hidden_tag() }}
 
-    <!-- ENCABEZADO -->
-    <div class="bg-[#561C24] px-8 py-6 text-center">
-      <img src="{{ url_for('static', filename='img/logos/logo.png') }}"
-           class="h-16 w-16 rounded-full bg-white p-1 mx-auto mb-3">
-      <h1 class="text-2xl font-semibold text-[#E8D8C4]">Iniciar Sesión</h1>
-      <p class="text-[#c9a99f] text-sm mt-1">Dulce Tradición · Panel Administrativo</p>
+          <div class="relative">
+            {{ form.email(
+                class="w-full bg-[#C7B7A3] px-4 py-2.5 text-sm rounded-xl outline-none focus:ring-2 bg-[#C7B7A3] placeholder-stone-600",
+                placeholder="Correo electrónico"
+            ) }}
+            <span class="absolute right-3 top-2.5 text-lg">👤</span>
+            {% for error in form.email.errors %}
+              <p class="text-red-300 text-xs mt-1">{{ error }}</p>
+            {% endfor %}
+          </div>
+
+          <div class="relative">
+            {{ form.password(
+                class="w-full bg-[#C7B7A3] px-4 py-2.5 text-sm rounded-xl outline-none focus:ring-2 bg-[#C7B7A3] placeholder-stone-600",
+                placeholder="Contraseña"
+            ) }}
+            <span class="absolute right-3 top-2.5 text-lg">🔒</span>
+            {% for error in form.password.errors %}
+              <p class="text-red-300 text-xs mt-1">{{ error }}</p>
+            {% endfor %}
+          </div>
+
+          <div class="flex justify-center pt-2">
+            <button type="submit"
+                    class="bg-[#E8D8C4] px-10 py-2 rounded-full font-semibold text-sm text-stone-800 hover:bg-[#d7c7b3] transition shadow-lg tracking-wider">
+              INICIAR
+            </button>
+          </div>
+
+          <div class="text-center space-y-1 mt-2 text-white">
+            <a href="{{ url_for('auth.register') }}" class="block text-sm font-semibold hover:underline transition">Registrar</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="absolute bottom-[-20px] -left-6 scale-75">
+        <svg width="159" height="146" viewBox="0 0 159 146" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M141.916 32.0199C152.739 17.3047 158.796 5.88856 142.301 4.5111C125.806 3.13364 112.356 14.5901 95.079 12.3055C88.4701 11.4296 82.0548 9.59073 75.8329 6.78895C65.0015 2.06191 53.4949 -0.0546684 42.008 0.970026C31.4748 1.91073 10.8107 9.85631 12.9236 17.3483C15.7847 27.4911 23.7943 27.8069 14.8423 53.1085C0.0355883 94.9731 44.3825 97.933 48.6278 75.1142C51.6972 58.6082 50.9319 48.9828 60.9109 54.9563C74.1337 62.8414 59.7602 84.2962 55.9228 94.3819C52.0854 104.468 49.5281 136.492 74.6569 140.671C107.748 146.191 106.98 102.62 98.9193 79.6968C92.367 61.0742 98.1259 51.0121 107.331 51.7579C111.467 52.0939 115.225 54.7144 117.741 58.6452C120.256 62.576 119.896 72.8364 118.109 79.2399C115.037 90.2428 116.449 111.493 133.85 106.749C152.106 101.78 141.142 75.5711 136.537 53.1085C134.857 44.8975 138.289 36.9486 141.916 32.0199Z" fill="#341915" />
+          <path d="M57.2339 53.3201H57.2057C46.591 48.9526 42.9955 57.6877 37.878 73.5956C32.7605 89.5036 14.907 80.7954 14.907 80.7954C23.2092 94.4087 45.6654 91.0389 48.6278 75.1243C51.2555 60.9835 51.0782 51.9057 57.2339 53.3201Z" fill="#561C24" />
+          <path d="M107.331 51.7579C107.331 51.7579 89.5762 43.6343 89.3258 67.4744C89.0951 89.0265 104.341 142.307 62.6215 135.155C65.6543 137.842 69.5958 139.831 74.6626 140.671C107.748 146.191 106.98 102.62 98.9193 79.6968C92.367 61.0742 98.126 51.0121 107.331 51.7579Z" fill="#561C24" />
+          <path d="M140.2 34.6505C140.2 34.6505 130.271 45.4686 133.597 63.2076C136.635 79.3675 137.96 110.545 121.269 104.044C123.941 106.977 127.99 108.345 133.867 106.749C152.123 101.78 141.159 75.5711 136.553 53.1084C135.13 46.2212 137.319 39.5287 140.2 34.6505Z" fill="#561C24" />
+          <path d="M59.6336 100.789C59.6336 100.789 55.1323 130.434 73.3797 130.129C91.6271 129.823 63.7271 127.377 59.6336 100.789Z" fill="#E8D8C4" />
+          <path d="M18.6179 56.7671C18.6179 56.7671 12.0346 81.2657 25.2658 77.9329C37.7571 74.8084 18.0186 82.2601 18.6179 56.7671Z" fill="#E8D8C4" />
+          <path d="M121.567 82.959C121.567 82.959 116.106 103.288 127.084 100.53C137.445 97.9296 121.066 104.111 121.567 82.959Z" fill="#E8D8C4" />
+        </svg>
+      </div>
+
+      <div class="absolute bottom-[-20px] left-1/2 -translate-x-1/2 scale-75">
+        <svg width="175" height="141" viewBox="0 0 175 141" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M156.469 30.8703C168.402 16.7203 175.08 5.7427 156.894 4.41815C138.708 3.09361 123.878 14.11 104.829 11.9131C97.5424 11.0709 90.4691 9.30266 83.6092 6.6085C71.6669 2.06305 58.9803 0.0277682 46.3153 1.0131C34.7019 1.91767 11.9186 9.55804 14.2481 16.7623C17.4027 26.5155 26.2338 26.8191 16.3636 51.1488C0.0384188 91.4053 48.9333 94.2514 53.614 72.3092C56.9982 56.4373 56.1545 47.1816 67.1568 52.9256C81.7356 60.5078 65.8881 81.1385 61.6572 90.8367C57.4262 100.535 54.6066 131.329 82.3126 135.348C118.797 140.656 117.95 98.7581 109.063 76.7158C101.839 58.8085 108.188 49.1329 118.338 49.8501C122.898 50.1731 127.042 52.693 129.815 56.4728C132.588 60.2526 132.191 70.1189 130.221 76.2764C126.834 86.8566 128.391 107.29 147.576 102.729C167.704 97.9505 155.616 72.7486 150.538 51.1488C148.687 43.2532 152.471 35.6096 156.469 30.8703Z" fill="#341915" />
+          <path d="M63.1028 51.3523H63.0718C51.3684 47.1525 47.4042 55.552 41.7619 70.8489C36.1196 86.1458 16.4351 77.7721 16.4351 77.7721C25.5887 90.8625 50.3479 87.6222 53.6141 72.3188C56.5113 58.7213 56.3159 49.9922 63.1028 51.3523Z" fill="#561C24" />
+          <path d="M118.338 49.8501C118.338 49.8501 98.7618 42.0385 98.4857 64.9628C98.2314 85.6871 115.04 136.921 69.0427 130.043C72.3865 132.628 76.7323 134.54 82.3188 135.348C118.797 140.656 117.95 98.7581 109.063 76.7157C101.839 58.8085 108.188 49.1329 118.338 49.8501Z" fill="#561C24" />
+          <path d="M154.577 33.3998C154.577 33.3998 143.631 43.8023 147.297 60.8599C150.647 76.3991 152.108 106.379 133.705 100.128C136.651 102.948 141.115 104.263 147.595 102.728C167.723 97.9504 155.635 72.7485 150.557 51.1487C148.988 44.526 151.401 38.0906 154.577 33.3998Z" fill="#561C24" />
+          <path d="M65.7485 96.9974C65.7485 96.9974 60.7855 125.504 80.9042 125.21C101.023 124.916 70.2617 122.564 65.7485 96.9974Z" fill="#E8D8C4" />
+          <path d="M20.5264 54.6669C20.5264 54.6669 13.268 78.2244 27.8561 75.0197C41.6285 72.0152 19.8657 79.1807 20.5264 54.6669Z" fill="#E8D8C4" />
+          <path d="M134.033 79.8527C134.033 79.8527 128.013 99.401 140.116 96.7487C151.54 94.2482 133.481 100.193 134.033 79.8527Z" fill="#E8D8C4" />
+        </svg>
+      </div>
+
+      <div class="absolute bottom-[-20px] -right-6 scale-75">
+        <svg width="187" height="130" viewBox="0 0 187 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <mask id="mask0_6_462" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="7" y="0" width="167" height="126">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M7.03906 0.0314941H173.874V125.588H7.03906V0.0314941Z" fill="white" />
+          </mask>
+          <g mask="url(#mask0_6_462)">
+            <path d="M19.9521 28.462C7.20096 15.4159 0.0646667 5.29468 19.498 4.07347C38.9314 2.85226 54.7784 13.0092 75.1332 10.9837C82.9196 10.2072 90.4779 8.57691 97.8082 6.09294C110.569 1.90209 124.126 0.0255967 137.659 0.93406C150.069 1.76806 174.415 8.81237 171.925 15.4546C168.555 24.4469 159.118 24.7269 169.665 47.1585C187.11 84.2744 134.862 86.8985 129.86 66.6681C126.244 52.0344 127.146 43.5008 115.389 48.7967C99.8102 55.7874 116.744 74.8085 121.265 83.7502C125.787 92.6918 128.8 121.084 99.1937 124.789C60.2077 129.683 61.1125 91.0536 70.6088 70.7308C78.3285 54.2206 71.5435 45.2998 60.6982 45.9611C55.8258 46.2589 51.3975 48.5822 48.4343 52.0671C45.4711 55.5521 45.8953 64.6486 48.0001 70.3258C51.6196 80.0806 49.9557 98.92 29.455 94.7143C7.94675 90.309 20.8636 67.0732 26.2896 47.1585C28.2684 39.8788 24.2246 32.8315 19.9521 28.462Z" fill="#341915" />
+            <path d="M119.721 47.346H119.754C132.26 43.4739 136.496 51.2182 142.525 65.3217C148.554 79.4252 169.589 71.7048 169.589 71.7048C159.807 83.7739 133.35 80.7864 129.86 66.6769C126.764 54.1401 126.973 46.0921 119.721 47.346Z" fill="#561C24" />
+            <path d="M60.6983 45.961C60.6983 45.961 81.6166 38.7588 81.9116 59.8948C82.1834 79.0023 64.2217 126.239 113.374 119.898C109.8 122.281 105.157 124.044 99.1871 124.789C60.2077 129.683 61.1126 91.0536 70.6089 70.7308C78.3285 54.2206 71.5436 45.2998 60.6983 45.961Z" fill="#561C24" />
+            <path d="M21.974 30.7942C21.974 30.7942 33.6712 40.3852 29.7534 56.112C26.1736 70.4389 24.6125 98.08 44.2778 92.3165C41.129 94.9168 36.3593 96.1291 29.4352 94.7142C7.92688 90.3089 20.8438 67.0731 26.2697 47.1584C27.9469 41.0524 25.3682 35.1191 21.974 30.7942Z" fill="#561C24" />
+            <path d="M116.894 89.4303C116.894 89.4303 122.197 115.713 100.699 115.442C79.2002 115.171 112.071 113.003 116.894 89.4303Z" fill="#E8D8C4" />
+            <path d="M165.217 50.4021C165.217 50.4021 172.973 72.1218 157.384 69.1671C142.668 66.397 165.923 73.0035 165.217 50.4021Z" fill="#E8D8C4" />
+            <path d="M43.9265 73.623C43.9265 73.623 50.3601 91.6464 37.4266 89.201C25.219 86.8955 44.5165 92.3761 43.9265 73.623Z" fill="#E8D8C4" />
+          </g>
+        </svg>
+      </div>
     </div>
-
-    <!-- FORMULARIO -->
-    <div class="px-8 py-8">
-      <form method="POST">
-        {{ form.hidden_tag() }}
-
-        <!-- EMAIL -->
-        <div class="mb-5">
-          <label class="flex items-center gap-2 text-sm font-medium text-[#341915] mb-1">
-            <img src="{{ url_for('static', filename='img/iconosModulos/usuarios.png') }}" class="h-4 w-4">
-            {{ form.email.label.text }}
-          </label>
-          {{ form.email(
-              class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] placeholder-[#7a5a4d] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]",
-              placeholder="correo@ejemplo.com"
-          ) }}
-          {% for error in form.email.errors %}
-            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-          {% endfor %}
-        </div>
-
-        <!-- CONTRASEÑA -->
-        <div class="mb-5">
-          <label class="flex items-center gap-2 text-sm font-medium text-[#341915] mb-1">
-            <img src="{{ url_for('static', filename='img/iconosModulos/roles.png') }}" class="h-4 w-4">
-            {{ form.password.label.text }}
-          </label>
-          {{ form.password(
-              class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] placeholder-[#7a5a4d] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]",
-              placeholder="••••••••"
-          ) }}
-          {% for error in form.password.errors %}
-            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-          {% endfor %}
-        </div>
-
-        <!-- RECUÉRDAME -->
-        <div class="mb-6">
-          <label class="flex items-center gap-2 text-sm text-[#341915] cursor-pointer">
-            {{ form.remember(class="accent-[#561C24] w-4 h-4") }}
-            <span>{{ form.remember.label.text }}</span>
-          </label>
-        </div>
-
-        <!-- BOTÓN -->
-        <button type="submit"
-                class="w-full bg-[#341915] hover:bg-[#561C24] text-[#E8D8C4] font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
-          <img src="{{ url_for('static', filename='img/iconosModulos/dashboard.png') }}" class="h-5 w-5">
-          Iniciar Sesión
-        </button>
-
-      </form>
-
-      <p class="text-center text-[#7a5a4d] text-sm mt-6">
-        ¿No tienes cuenta?
-        <a href="{{ url_for('auth.register') }}" class="text-[#561C24] font-medium hover:underline">Regístrate aquí</a>
-      </p>
-    </div>
-
-  </div>
-</div>
-
+  </section>
 {% endblock %}

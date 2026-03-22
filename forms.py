@@ -284,3 +284,13 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Recordarme')
 
 
+class RegisterForm(FlaskForm):
+    nombre    = StringField('Nombre Completo', [DataRequired(), Length(min=2, max=100)])
+    email     = EmailField('Correo Electrónico', [DataRequired(), Email()])
+    password  = PasswordField('Contraseña', [DataRequired(), Length(min=6)])
+    password2 = PasswordField('Repite la Contraseña', [DataRequired(), EqualTo('password', message='Las contraseñas deben coincidir')])
+
+    def validate_email(self, email):
+        from models import Usuario
+        if Usuario.query.filter_by(email=email.data).first():
+            raise ValidationError('Este correo ya está registrado.')
