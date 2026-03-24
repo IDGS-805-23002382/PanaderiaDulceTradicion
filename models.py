@@ -315,6 +315,12 @@ class Sucursal(db.Model):
     direccion = db.Column(db.String(200))
     telefono = db.Column(db.String(20))
     ciudad = db.Column(db.String(100))
+    estado = db.Column(db.String(50))
+    codigo_postal = db.Column(db.String(10))
+    email = db.Column(db.String(100))
+    imagen_url = db.Column(db.String(255))
+    latitud = db.Column(db.Float, nullable=True)
+    longitud = db.Column(db.Float, nullable=True)
     estatus = db.Column(db.Enum('activo','inactivo'), default='activo')
 
 class Rol(db.Model):

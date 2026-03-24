@@ -8,7 +8,6 @@
 Nueva sucursal
 </h2>
 
-
 <form method="POST" class="space-y-4">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -35,8 +34,35 @@ class="w-full border rounded p-2">
 <input type="text" name="ciudad"
 class="w-full border rounded p-2">
 </div>
-
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+        <label class="block font-medium">Email de Sucursal</label>
+        <input type="email" name="email" class="w-full border rounded p-2" required>
+    </div>
+    <div>
+        <label class="block font-medium">Código Postal</label>
+        <input type="text" name="codigo_postal" class="w-full border rounded p-2">
+    </div>
+    <div>
+        <label class="block font-medium">Estado/Provincia</label>
+        <input type="text" name="estado" class="w-full border rounded p-2">
+    </div>
+    <div>
+        <label class="block font-medium">URL de Imagen</label>
+        <input type="url" name="imagen_url" class="w-full border rounded p-2" placeholder="https://ejemplo.com/imagen.jpg">
+    </div>
+    </div>
 <div class="flex gap-3">
+    <div class="grid grid-cols-2 gap-4 mt-4">
+    <div>
+        <label class="block font-medium text-xs text-gray-500 uppercase">Latitud</label>
+        <input type="text" name="latitud" class="w-full border rounded p-2" placeholder="Ej: 21.1227">
+    </div>
+    <div>
+        <label class="block font-medium text-xs text-gray-500 uppercase">Longitud</label>
+        <input type="text" name="longitud" class="w-full border rounded p-2" placeholder="Ej: -101.6822">
+    </div>
+</div>
 
 <button type="submit"
 class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4b231c]">
@@ -45,7 +71,7 @@ Guardar
 
 </button>
 
-<a href="/sucursales"
+<a href="/gestion-sucursales"
 class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4b231c]">
 
 Cancelar

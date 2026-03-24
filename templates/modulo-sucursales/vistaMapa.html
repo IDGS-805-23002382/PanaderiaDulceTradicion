@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block container %}
+<section class="relative w-full h-[350px]">
+    <div class="relative h-full flex items-center justify-center text-center text-white">
+        <img src="{{ url_for('static', filename='img/contenido/pan2.jpg') }}" class="absolute inset-0 w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-[#f3e5d8] tracking-widest uppercase font-serif">
+                Nuestras Sucursales
+            </h1>
+        </div>
+    </div>
+</section>
+
+<div class="max-w-7xl mx-auto p-6 -mt-10 relative z-10">
+    
+    <div class="flex flex-col md:flex-row justify-between items-end mb-8 bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
+        <div>
+            <h2 class="text-2xl font-black text-[#341915]">Mapa de Cobertura</h2>
+            <p class="text-gray-400 text-sm">Encuentra tu sucursal más cercana de Dulce Tradición</p>
+        </div>
+    </div>
+
+    <div class="mb-10 bg-white p-2 rounded-[2.5rem] shadow-2xl border-4 border-white overflow-hidden">
+        <div class="h-[550px] w-full rounded-[2.2rem] overflow-hidden shadow-inner">
+            {% if mapa_html %}
+                {{ mapa_html | safe }}
+            {% else %}
+                <div class="flex items-center justify-center h-full bg-gray-100 text-gray-400 font-bold">
+                    <i class="fas fa-spinner fa-spin mr-2"></i> Cargando Mapa Satelital...
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-90">
+        <table class="w-full text-left">
+            <thead class="bg-[#341915] text-white">
+                <tr>
+                    <th class="p-5 text-[10px] font-bold uppercase tracking-widest">Imagen</th>
+                    <th class="p-5 text-[10px] font-bold uppercase tracking-widest">Información</th>
+                    <th class="p-5 text-[10px] font-bold uppercase tracking-widest">Ubicación</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for s in sucursales %}
+                <tr class="hover:bg-amber-50/30 transition-all">
+                    <td class="p-4">
+                        <div class="w-16 h-16 rounded-xl overflow-hidden shadow-sm border-2 border-white mx-auto">
+                            <img src="{{ s.imagen_url if s.imagen_url else url_for('static', filename='img/default-store.png') }}" 
+                                 class="w-full h-full object-cover">
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-[#341915]">{{ s.nombre }}</div>
+                        <div class="text-xs text-gray-400">{{ s.telefono }}</div>
+                    </td>
+                    <td class="p-4">
+                        <div class="text-xs text-gray-600 line-clamp-1">{{ s.direccion }}</div>
+                        <div class="text-[10px] text-amber-700 font-bold uppercase">{{ s.ciudad }}, {{ s.estado }}</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .folium-map { border-radius: 2rem !important; }
+    /* Estilo para que el popup de Folium se vea como Dulce Tradición */
+    .leaflet-popup-content-wrapper { border-radius: 12px; padding: 5px; }
+</style>
+{% endblock %}
