@@ -4,6 +4,7 @@ from flask_login import login_required
 from models import db, Cliente
 from forms import ClienteForm
 from . import clientes_bp
+from utils.decorators import empleado_required, gerente_or_admin_required
 
 
 @clientes_bp.route('/clientes')
@@ -33,7 +34,9 @@ def agregar():
 
 
 @clientes_bp.route('/clientes/editar/<int:id>', methods=['GET', 'POST'])
-# @login_required
+@login_required
+@gerente_or_admin_required
+@empleado_required
 def editar(id):
     cliente = Cliente.query.get_or_404(id)
     form = ClienteForm(obj=cliente)
@@ -50,7 +53,9 @@ def editar(id):
 
 
 @clientes_bp.route('/clientes/eliminar/<int:id>')
-# @login_required
+@login_required
+@gerente_or_admin_required
+@empleado_required
 def eliminar(id):
     cliente = Cliente.query.get_or_404(id)
     db.session.delete(cliente)
