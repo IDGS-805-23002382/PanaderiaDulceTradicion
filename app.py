@@ -1,7 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from config import DevelopmentConfig
-from models import db, Producto, Categoria
+from models import Usuario, db, Producto, Categoria
+
+from blueprints.auth.routesAuth import auth_bp
+from blueprints.empleados.routesEmpleados import empleados_bp
 from blueprints.proveedores.routesProveedores import proveedores_bp
 from blueprints.categorias.routesCategorias import categorias_bp
 from blueprints.materiaPrima.routesMateriaPrima import materiaPrima_bp
@@ -19,7 +23,9 @@ import base64
 
 
 app = Flask(__name__)
+app.register_blueprint(auth_bp)
 app.config.from_object(DevelopmentConfig)
+app.register_blueprint(empleados_bp)
 app.register_blueprint(proveedores_bp)
 app.register_blueprint(materiaPrima_bp)
 app.register_blueprint(categorias_bp)
@@ -34,6 +40,14 @@ app.register_blueprint(roles_bp)
 db.init_app(app)
 migrate = Migrate(app, db)
 csrf = CSRFProtect(app)
+
+login_manager = LoginManager(app)                            
+login_manager.login_view = 'auth.login'                     
+login_manager.login_message_category = 'warning'            
+
+@login_manager.user_loader                                  
+def load_user(user_id):                                     
+    return Usuario.query.get(int(user_id))
 
 @app.template_filter('b64encode')
 def b64encode_filter(s):
