@@ -29,19 +29,33 @@ def sucursales():
 
 @sucursales_bp.route('/gestion-sucursales/')
 def gestion_sucursales():
-    # Vista para el ADMIN (Tabla de gestión)
-    search = request.args.get('search') 
+    search = request.args.get('search')
+    # Capturamos si el usuario quiere ver todas o solo activas
+    ver_todos = request.args.get('ver_todos', '0') # '0' por defecto (solo activas)
+    
     query = Sucursal.query
+    
+    # Lógica de filtro por estatus
+    if ver_todos == '0':
+        query = query.filter_by(estatus='activo')
+    
+    # Lógica de búsqueda
     if search:
-        query = query.filter((Sucursal.nombre.like(f'%{search}%')) | (Sucursal.ciudad.like(f'%{search}%')))
+        query = query.filter(
+            (Sucursal.nombre.like(f'%{search}%')) | 
+            (Sucursal.ciudad.like(f'%{search}%'))
+        )
     
     sucursales_list = query.all()
+    
+    # Mapa decorativo para la gestión
     mapa = folium.Map(location=[21.1219, -101.6825], zoom_start=12, 
                       tiles='https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', attr='Google')
     
     return render_template("modulo-sucursales/listaSucursales.html", 
                            sucursales=sucursales_list, 
-                           mapa_html=mapa._repr_html_())
+                           mapa_html=mapa._repr_html_(),
+                           ver_todos=ver_todos)
 
 @sucursales_bp.route('/registrarSucursal', methods=['GET','POST'])
 def registrarSucursal():
@@ -71,14 +85,25 @@ def editarSucursal(id):
     form = SucursalForm(obj=sucursal)
     if form.validate_on_submit():
         form.populate_obj(sucursal)
+        
+        nuevo_estatus = request.form.get('estatus')
+        if nuevo_estatus:
+            sucursal.estatus = nuevo_estatus
         db.session.commit()
         return redirect(url_for('sucursales.gestion_sucursales'))
-    return render_template('modulo-sucursales/editarSucursal.html', form=form, sucursal=sucursal)
+    return render_template('modulo-sucursales/editarSucursales.html', form=form, sucursal=sucursal)
 
 @sucursales_bp.route('/desactivarSucursal/<int:id>')
 def desactivarSucursal(id):
     sucursal = Sucursal.query.get_or_404(id)
-    sucursal.estatus = 'inactivo' if sucursal.estatus == 'activo' else 'activo'
+    # Convertimos a minúsculas para comparar y evitar errores de dedo
+    estado_actual = sucursal.estatus.lower() if sucursal.estatus else 'inactivo'
+    
+    if estado_actual == 'activo':
+        sucursal.estatus = 'inactivo'
+    else:
+        sucursal.estatus = 'activo'
+        
     db.session.commit()
     return redirect(url_for('sucursales.gestion_sucursales'))
 
