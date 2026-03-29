@@ -3,6 +3,9 @@
 venv/
 env/
 
+#sonar
+.sonar/
+
 # Python
 __pycache__/
 *.pyc
