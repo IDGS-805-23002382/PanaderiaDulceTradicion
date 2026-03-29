@@ -1,0 +1,101 @@
+<!-- templates/modulo-nomina/form-individual.html -->
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="w-full max-w-2xl mx-auto">
+
+  <h1 class="text-2xl font-semibold text-center text-[#341915]">Nueva Nómina Individual</h1>
+  <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-8"></div>
+
+  <div class="bg-white rounded-2xl shadow p-8">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <!-- EMPLEADO -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-[#341915] mb-1">Empleado</label>
+          <select name="id_empleado" required id="sel-empleado"
+                  class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]">
+            <option value="">Seleccionar empleado...</option>
+            {% for emp in empleados %}
+            <option value="{{ emp.id_empleado }}"
+                    data-salario="{{ emp.salario or 0 }}"
+                    data-puesto="{{ emp.puesto or '' }}">
+              {{ emp.nombre }} — {{ emp.puesto or 'Sin puesto' }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- PERIODO -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Tipo de periodo</label>
+          <select name="periodo" id="sel-periodo" required
+                  class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]">
+            <option value="">Seleccionar...</option>
+            <option value="quincenal">Quincenal</option>
+            <option value="mensual">Mensual</option>
+          </select>
+        </div>
+
+        <!-- MONTO (autocompletado) -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Monto a pagar</label>
+          <input type="number" name="monto_pagado" id="inp-monto" step="0.01" min="0"
+                 placeholder="Se calcula automático"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+          <p class="text-xs text-gray-400 mt-1">Edita si necesitas un monto diferente al calculado.</p>
+        </div>
+
+        <!-- FECHA INICIO -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Fecha inicio</label>
+          <input type="date" name="fecha_inicio" required
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <!-- FECHA FIN -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Fecha fin</label>
+          <input type="date" name="fecha_fin" required
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+      </div>
+
+      <div class="flex gap-3 mt-8">
+        <button type="submit"
+                class="flex-1 bg-[#341915] hover:bg-[#561C24] text-[#E8D8C4] font-medium py-2 rounded-lg transition">
+          Crear Nómina
+        </button>
+        <a href="{{ url_for('nomina.index') }}"
+           class="flex-1 text-center border border-[#341915] text-[#341915] hover:bg-[#e8d8c4] font-medium py-2 rounded-lg transition">
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script>
+  const selEmpleado = document.getElementById('sel-empleado');
+  const selPeriodo  = document.getElementById('sel-periodo');
+  const inpMonto    = document.getElementById('inp-monto');
+
+  function calcularMonto() {
+    const opt     = selEmpleado.options[selEmpleado.selectedIndex];
+    const salario = parseFloat(opt?.dataset?.salario || 0);
+    const periodo = selPeriodo.value;
+    if (salario && periodo) {
+      inpMonto.value = periodo === 'quincenal'
+        ? (salario / 2).toFixed(2)
+        : salario.toFixed(2);
+    }
+  }
+
+  selEmpleado.addEventListener('change', calcularMonto);
+  selPeriodo.addEventListener('change', calcularMonto);
+</script>
+{% endblock %}

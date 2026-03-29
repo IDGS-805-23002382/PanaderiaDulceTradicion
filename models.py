@@ -354,7 +354,6 @@ class Empleado(db.Model):
     id_rol             = db.Column(db.Integer, db.ForeignKey('roles.id_rol'))
     estatus            = db.Column(db.Enum('activo','inactivo'), default='activo')
  
- 
 class Cliente(db.Model):
     __tablename__ = 'clientes'
     id_cliente     = db.Column(db.Integer, primary_key=True)
@@ -364,3 +363,70 @@ class Cliente(db.Model):
     direccion      = db.Column(db.String(200))
     fecha_registro = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     estatus        = db.Column(db.Enum('activo','inactivo'), default='activo')
+
+# ── Reemplazar los modelos de nómina en models.py ────────────────────────────
+# Elimina las clases Nomina y DetalleNomina anteriores y pega estas 3
+
+class NominaIndividual(db.Model):
+    """Un registro de pago por empleado por periodo."""
+    __tablename__ = 'nominas_individuales'
+
+    id_nomina_ind      = db.Column(db.Integer, primary_key=True)
+    id_empleado        = db.Column(db.Integer, db.ForeignKey('empleados.id_empleado'), nullable=False)
+    id_nomina_grupal   = db.Column(db.Integer, db.ForeignKey('nominas_grupales.id_nomina_grupal'), nullable=True)  # null = creada suelta
+
+    periodo            = db.Column(db.Enum('quincenal', 'mensual'), nullable=False)
+    fecha_inicio       = db.Column(db.Date, nullable=False)
+    fecha_fin          = db.Column(db.Date, nullable=False)
+    fecha_pago         = db.Column(db.Date, nullable=True)          # fecha real en que se pagó
+
+    puesto             = db.Column(db.String(80))                   # snapshot del puesto al momento
+    salario_base       = db.Column(db.Numeric(10, 2), nullable=False)
+    monto_pagado       = db.Column(db.Numeric(10, 2), nullable=False)
+
+    estatus            = db.Column(
+                            db.Enum('pendiente', 'pagado', 'incidencia'),
+                            default='pendiente'
+                         )
+    notas              = db.Column(db.Text)                         # para describir incidencias o correcciones
+    fecha_registro     = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    empleado           = db.relationship('Empleado')
+
+    def __repr__(self):
+        return f'<NominaIndividual emp={self.id_empleado} periodo={self.periodo}>'
+
+
+class NominaGrupal(db.Model):
+    """Agrupa varias NominaIndividual generadas juntas."""
+    __tablename__ = 'nominas_grupales'
+
+    id_nomina_grupal   = db.Column(db.Integer, primary_key=True)
+    nombre             = db.Column(db.String(120), nullable=False)   # ej: "Quincena 1 Marzo - Producción"
+    periodo            = db.Column(db.Enum('quincenal', 'mensual'), nullable=False)
+    fecha_inicio       = db.Column(db.Date, nullable=False)
+    fecha_fin          = db.Column(db.Date, nullable=False)
+    total_pagado       = db.Column(db.Numeric(10, 2), default=0)
+    fecha_registro     = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    individuales       = db.relationship(
+                            'NominaIndividual',
+                            backref='grupal',
+                            lazy=True,
+                            foreign_keys='NominaIndividual.id_nomina_grupal'
+                         )
+
+    @property
+    def estatus(self):
+        """Calculado: pagada si todos pagados, incidencia si alguno tiene incidencia, sino pendiente."""
+        estados = [n.estatus for n in self.individuales]
+        if not estados:
+            return 'pendiente'
+        if 'incidencia' in estados:
+            return 'incidencia'
+        if all(e == 'pagado' for e in estados):
+            return 'pagada'
+        return 'pendiente'
+
+    def __repr__(self):
+        return f'<NominaGrupal {self.nombre}>'

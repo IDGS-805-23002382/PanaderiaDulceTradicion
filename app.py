@@ -6,6 +6,7 @@ from blueprints.proveedores.routesProveedores import proveedores_bp
 from blueprints.categorias.routesCategorias import categorias_bp
 from blueprints.materiaPrima.routesMateriaPrima import materiaPrima_bp
 from blueprints.empleados     import empleados_bp
+from blueprints.nomina import nomina_bp
 from blueprints.productos.routesProductos import productos_bp
 from blueprints.recetas.routesRecetas import recetas_bp
 from blueprints.ordenProduccion.routesOrdenProduccion import ordenProduccion_bp
@@ -26,6 +27,7 @@ app.config.from_object(DevelopmentConfig)
 app.register_blueprint(proveedores_bp)
 app.register_blueprint(materiaPrima_bp)
 app.register_blueprint(empleados_bp)
+app.register_blueprint(nomina_bp)
 app.register_blueprint(categorias_bp)
 app.register_blueprint(productos_bp)
 app.register_blueprint(recetas_bp)

@@ -1,0 +1,145 @@
+<!-- templates/modulo-nomina/form-grupal.html -->
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="w-full max-w-4xl mx-auto">
+
+  <h1 class="text-2xl font-semibold text-center text-[#341915]">Nueva Nómina Grupal</h1>
+  <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-8"></div>
+
+  <div class="bg-white rounded-2xl shadow p-8">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <!-- DATOS DEL PERIODO -->
+      <h2 class="text-sm font-semibold text-[#341915] uppercase tracking-wide mb-4">Datos del periodo</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-[#341915] mb-1">Nombre de la nómina</label>
+          <input type="text" name="nombre" required placeholder="Ej: Quincena 1 Abril — Producción"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Tipo de periodo</label>
+          <select name="periodo" id="sel-periodo" required
+                  class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]">
+            <option value="">Seleccionar...</option>
+            <option value="quincenal">Quincenal</option>
+            <option value="mensual">Mensual</option>
+          </select>
+        </div>
+
+        <div></div>
+
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Fecha inicio</label>
+          <input type="date" name="fecha_inicio" required
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Fecha fin</label>
+          <input type="date" name="fecha_fin" required
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+      </div>
+
+      <!-- SELECCIÓN DE EMPLEADOS -->
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm font-semibold text-[#341915] uppercase tracking-wide">Empleados a incluir</h2>
+        <div class="flex gap-3 text-xs">
+          <button type="button" onclick="toggleAll(true)"
+                  class="text-[#341915] hover:underline font-medium">Seleccionar todos</button>
+          <span class="text-gray-300">|</span>
+          <button type="button" onclick="toggleAll(false)"
+                  class="text-gray-400 hover:underline">Limpiar</button>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-[#c9a99f] overflow-hidden mb-8">
+        <table class="w-full text-sm">
+          <thead class="bg-[#561C24] text-[#E8D8C4]">
+            <tr>
+              <th class="px-4 py-2 w-10"></th>
+              <th class="px-4 py-2 text-left">Empleado</th>
+              <th class="px-4 py-2 text-left">Puesto</th>
+              <th class="px-4 py-2 text-right">Salario mensual</th>
+              <th class="px-4 py-2 text-right" id="th-monto">Monto estimado</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#e8d8c4]">
+            {% for emp in empleados %}
+            <tr class="hover:bg-[#fdf6ee]">
+              <td class="px-4 py-2 text-center">
+                <input type="checkbox" name="empleados" value="{{ emp.id_empleado }}"
+                       class="emp-check accent-[#341915] w-4 h-4"
+                       data-salario="{{ emp.salario or 0 }}" checked/>
+              </td>
+              <td class="px-4 py-2 font-medium text-[#341915]">{{ emp.nombre }}</td>
+              <td class="px-4 py-2 text-gray-500">{{ emp.puesto or '—' }}</td>
+              <td class="px-4 py-2 text-right">${{ "%.2f"|format(emp.salario or 0) }}</td>
+              <td class="px-4 py-2 text-right font-semibold text-[#341915] monto-cell">
+                ${{ "%.2f"|format((emp.salario or 0) / 2) }}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="text-center py-6 text-gray-400">No hay empleados activos.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot class="bg-[#F3E9DB]">
+            <tr>
+              <td colspan="4" class="px-4 py-3 text-right font-bold text-[#341915]">Total estimado</td>
+              <td class="px-4 py-3 text-right font-bold text-[#341915]" id="total-estimado">
+                ${{ "%.2f"|format(empleados|sum(attribute='salario') / 2 if empleados else 0) }}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="flex gap-3">
+        <button type="submit"
+                class="flex-1 bg-[#341915] hover:bg-[#561C24] text-[#E8D8C4] font-medium py-2 rounded-lg transition">
+          Generar Nómina Grupal
+        </button>
+        <a href="{{ url_for('nomina.index') }}"
+           class="flex-1 text-center border border-[#341915] text-[#341915] hover:bg-[#e8d8c4] font-medium py-2 rounded-lg transition">
+          Cancelar
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  const selPeriodo = document.getElementById('sel-periodo');
+
+  function recalcular() {
+    const periodo = selPeriodo.value;
+    let total = 0;
+    document.querySelectorAll('.emp-check').forEach(cb => {
+      const salario = parseFloat(cb.dataset.salario || 0);
+      const monto   = periodo === 'mensual' ? salario : salario / 2;
+      const cell    = cb.closest('tr').querySelector('.monto-cell');
+      if (cell) cell.textContent = '$' + monto.toFixed(2);
+      if (cb.checked) total += monto;
+    });
+    document.getElementById('total-estimado').textContent = '$' + total.toFixed(2);
+  }
+
+  function toggleAll(val) {
+    document.querySelectorAll('.emp-check').forEach(cb => cb.checked = val);
+    recalcular();
+  }
+
+  selPeriodo.addEventListener('change', recalcular);
+  document.querySelectorAll('.emp-check').forEach(cb =>
+    cb.addEventListener('change', recalcular)
+  );
+</script>
+{% endblock %}

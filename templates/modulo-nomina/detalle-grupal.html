@@ -1,0 +1,130 @@
+<!-- templates/modulo-nomina/detalle-grupal.html -->
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="w-full max-w-5xl mx-auto">
+
+  <div class="flex items-center justify-between mb-2">
+    <h1 class="text-2xl font-semibold text-[#341915]">{{ grupal.nombre }}</h1>
+    <a href="{{ url_for('nomina.index') }}" class="text-sm text-[#341915] hover:underline">← Volver</a>
+  </div>
+  <div class="w-1/2 h-1 bg-[#341915] mt-2 mb-6"></div>
+
+  <!-- RESUMEN GRUPAL -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl shadow p-4 border-t-4 border-[#341915]">
+      <p class="text-xs text-gray-400 uppercase">Periodo</p>
+      <p class="text-lg font-bold text-[#341915] capitalize mt-1">{{ grupal.periodo }}</p>
+    </div>
+    <div class="bg-white rounded-xl shadow p-4 border-t-4 border-[#561C24]">
+      <p class="text-xs text-gray-400 uppercase">Empleados</p>
+      <p class="text-lg font-bold text-[#341915] mt-1">{{ grupal.individuales|length }}</p>
+    </div>
+    <div class="bg-white rounded-xl shadow p-4 border-t-4 border-[#c9a99f]">
+      <p class="text-xs text-gray-400 uppercase">Total</p>
+      <p class="text-lg font-bold text-[#341915] mt-1">${{ "%.2f"|format(grupal.total_pagado) }}</p>
+    </div>
+    <div class="bg-white rounded-xl shadow p-4 border-t-4
+      {% if grupal.estatus == 'pagada' %}border-green-400
+      {% elif grupal.estatus == 'incidencia' %}border-red-400
+      {% else %}border-yellow-400{% endif %}">
+      <p class="text-xs text-gray-400 uppercase">Estatus</p>
+      <p class="text-lg font-bold capitalize mt-1
+        {% if grupal.estatus == 'pagada' %}text-green-700
+        {% elif grupal.estatus == 'incidencia' %}text-red-600
+        {% else %}text-yellow-600{% endif %}">
+        {{ grupal.estatus }}
+      </p>
+    </div>
+  </div>
+
+  <!-- RANGO -->
+  <div class="bg-[#F3E9DB] rounded-xl px-6 py-3 mb-6 flex items-center gap-6 text-sm text-[#341915]">
+    <span><span class="font-semibold">Inicio:</span> {{ grupal.fecha_inicio.strftime('%d/%m/%Y') }}</span>
+    <span class="text-[#c9a99f]">→</span>
+    <span><span class="font-semibold">Fin:</span> {{ grupal.fecha_fin.strftime('%d/%m/%Y') }}</span>
+    <span class="ml-auto text-xs text-gray-400">Creada: {{ grupal.fecha_registro.strftime('%d/%m/%Y %H:%M') }}</span>
+  </div>
+
+  <!-- ACCIÓN PAGAR TODOS -->
+  {% set pendientes = grupal.individuales|selectattr('estatus','eq','pendiente')|list %}
+  {% if pendientes %}
+  <div class="flex justify-end mb-4">
+    <form method="POST" action="{{ url_for('nomina.pagar_todos', id=grupal.id_nomina_grupal) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <button type="submit"
+              class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition text-sm">
+        ✓ Marcar todos como pagados ({{ pendientes|length }} pendientes)
+      </button>
+    </form>
+  </div>
+  {% endif %}
+
+  <!-- TABLA INDIVIDUAL POR EMPLEADO -->
+  <div class="bg-white rounded-2xl shadow overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-[#561C24] text-[#E8D8C4]">
+        <tr>
+          <th class="px-5 py-3 text-left">Empleado</th>
+          <th class="px-5 py-3 text-left">Puesto</th>
+          <th class="px-5 py-3 text-right">Salario base</th>
+          <th class="px-5 py-3 text-right">Monto</th>
+          <th class="px-5 py-3 text-center">Fecha pago</th>
+          <th class="px-5 py-3 text-center">Estatus</th>
+          <th class="px-5 py-3 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-[#e8d8c4]">
+        {% for ind in grupal.individuales %}
+        <tr class="hover:bg-[#fdf6ee]">
+          <td class="px-5 py-3 font-medium text-[#341915]">{{ ind.empleado.nombre }}</td>
+          <td class="px-5 py-3 text-gray-500">{{ ind.puesto or '—' }}</td>
+          <td class="px-5 py-3 text-right">${{ "%.2f"|format(ind.salario_base) }}</td>
+          <td class="px-5 py-3 text-right font-semibold text-[#341915]">${{ "%.2f"|format(ind.monto_pagado) }}</td>
+          <td class="px-5 py-3 text-center text-xs text-gray-500">
+            {{ ind.fecha_pago.strftime('%d/%m/%Y') if ind.fecha_pago else '—' }}
+          </td>
+          <td class="px-5 py-3 text-center">
+            {% if ind.estatus == 'pagado' %}
+              <span class="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">Pagado</span>
+            {% elif ind.estatus == 'incidencia' %}
+              <span class="px-2 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full">Incidencia</span>
+            {% else %}
+              <span class="px-2 py-1 text-xs font-semibold text-yellow-700 bg-yellow-100 rounded-full">Pendiente</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-3 text-center">
+            <div class="flex items-center justify-center gap-2">
+              <!-- Ver / Editar individual -->
+              <a href="{{ url_for('nomina.detalle_individual', id=ind.id_nomina_ind) }}" title="Ver detalle">
+                <button class="p-1 bg-[#F3E9DB] hover:bg-[#e8d8c4] rounded text-[#341915]">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </button>
+              </a>
+              <!-- Pagar individualmente -->
+              {% if ind.estatus == 'pendiente' %}
+              <form method="POST" action="{{ url_for('nomina.pagar_individual', id=ind.id_nomina_ind) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" title="Marcar pagado" class="p-1 bg-green-100 hover:bg-green-200 rounded text-green-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot class="bg-[#F3E9DB]">
+        <tr>
+          <td colspan="3" class="px-5 py-3 text-right font-bold text-[#341915]">Total nómina</td>
+          <td class="px-5 py-3 text-right font-bold text-[#341915] text-base">
+            ${{ "%.2f"|format(grupal.total_pagado) }}
+          </td>
+          <td colspan="3"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
