@@ -53,8 +53,6 @@ def agregarReceta():
     form.id_producto.choices = [(p.id_producto, p.nombre) for p in productos]
 
     if form.validate_on_submit():
-
-        # 🔥 VALIDAR SI YA EXISTE RECETA PARA ESE PRODUCTO
         receta_existente = Receta.query.filter_by(
             id_producto=form.id_producto.data
         ).first()
@@ -73,7 +71,7 @@ def agregarReceta():
         )
 
         db.session.add(nueva_receta)
-        db.session.flush()  # 🔥 IMPORTANTE (sin commit aún)
+        db.session.flush()  
 
         # 🔹 INGREDIENTES DESDE EL FORM
         materias_ids = request.form.getlist('materia[]')
@@ -84,7 +82,6 @@ def agregarReceta():
             if cantidades[i] == "":
                 continue
 
-            # 🔥 EVITAR DUPLICADOS
             existe = DetalleReceta.query.filter_by(
                 id_receta=nueva_receta.id_receta,
                 id_materia=materias_ids[i]
@@ -110,7 +107,7 @@ def agregarReceta():
     return render_template(
         'modulo-recetas/agregarReceta.html',
         form=form,
-        materias=materias  # 🔥 importante para el select dinámico
+        materias=materias  
     )
 
 # DETALLE RECETA (MATERIAS PRIMAS)

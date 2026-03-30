@@ -119,7 +119,7 @@ class Receta(db.Model):
         db.Integer,
         db.ForeignKey('productos.id_producto'),
         nullable=False,
-        unique=True  # 🔥 UNA receta por producto (opcional)
+        unique=True 
     )
 
     nombre = db.Column(db.String(100), nullable=False)
@@ -140,7 +140,7 @@ class Receta(db.Model):
     # relaciones
     producto = db.relationship(
         'Producto',
-        backref=db.backref('receta', uselist=False)  # 🔥 1 a 1
+        backref=db.backref('receta', uselist=False)  
     )
 
     ingredientes = db.relationship(

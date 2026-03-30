@@ -326,7 +326,6 @@ def cancelar_compra(id):
 
 def convertir_a_stock(materia, cantidad, tipo_empaque):
 
-    # 🔥 usar datos de MateriaPrima
     piezas_por_caja = materia.piezas_por_caja or 1
     peso_por_pieza = materia.peso_por_pieza or 0
 
@@ -347,7 +346,6 @@ def recibir_compra(id):
 
     compra = Compra.query.get_or_404(id)
 
-    # 🔒 Evitar doble recepción
     if compra.estado == "recibida":
         flash("Esta compra ya fue recibida", "warning")
         return redirect(url_for("proveedores.detalleCompra"))
@@ -358,7 +356,6 @@ def recibir_compra(id):
 
             for d in compra.detalles:
 
-                # 🔥 VALIDAR PRECIO
                 precio_str = request.form.get(f"precio_{d.id_detalle}")
 
                 if not precio_str:
@@ -369,12 +366,12 @@ def recibir_compra(id):
                 if precio <= 0:
                     raise Exception("El precio debe ser mayor a 0")
 
-                # 🔥 GUARDAR DETALLE
+                # GUARDAR DETALLE
                 d.precio_unitario_compra = precio
                 d.subtotal = precio * d.cantidad
                 total += d.subtotal
 
-                # 🔥 INVENTARIO
+                # INVENTARIO
                 materia = d.materia
 
                 # CONVERSIÓN (usa datos de MateriaPrima)
@@ -391,13 +388,13 @@ def recibir_compra(id):
                 else:
                     cantidad_stock = piezas  # unidades
 
-                # 🔥 BUSCAR INVENTARIO
+                # BUSCAR INVENTARIO
                 inventario = InventarioMateriaPrima.query.filter_by(
                     id_materia=materia.id_materia,
                     id_sucursal=compra.id_sucursal
                 ).first()
 
-                # 🔥 CREAR SI NO EXISTE
+                # CREAR SI NO EXISTE
                 if not inventario:
                     inventario = InventarioMateriaPrima(
                         id_materia=materia.id_materia,
@@ -407,10 +404,10 @@ def recibir_compra(id):
                     )
                     db.session.add(inventario)
 
-                # 🔥 SUMAR STOCK
+                # SUMAR STOCK
                 inventario.stock_actual += cantidad_stock
 
-                # 🔥 REGISTRAR MOVIMIENTO
+                #  REGISTRAR MOVIMIENTO
                 movimiento = MovimientoInventario(
                     id_materia=materia.id_materia,
                     id_sucursal=compra.id_sucursal,

@@ -45,7 +45,7 @@ def materiaPrima():
 def agregarMateriaPrima():
     form = forms.MateriaPrimaForm()
 
-    # 🔥 ESTA PARTE FALTABA
+  
     proveedores = Proveedor.query.all()
     form.id_proveedor.choices = [(0, 'Seleccione un proveedor')] + [
         (p.id_proveedor, p.nombre) for p in proveedores
