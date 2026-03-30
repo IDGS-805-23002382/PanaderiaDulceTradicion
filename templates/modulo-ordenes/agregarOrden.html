@@ -1,149 +1,55 @@
 {% extends "layoutModulos.html" %}
 {% block container %}
-
 <div class="min-h-screen bg-[#f7efe5] py-6 px-4">
-
-  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    <!-- 🟤 IZQUIERDA: FORMULARIO -->
-    <div class="bg-white rounded-3xl shadow-xl p-6">
-
-      <h2 class="text-2xl font-bold text-[#341915] mb-6">
-        Nueva Venta
-      </h2>
-
-      <form method="POST">
+    <form method="POST">
         {{ form.hidden_tag() }}
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="bg-white rounded-3xl shadow-xl p-6">
+                <h2 class="text-2xl font-bold text-[#341915] mb-6">Nueva Orden</h2>
 
-        <!-- CLIENTE -->
-        <div class="mb-4">
-          <label class="text-sm font-semibold text-[#341915]">Cliente</label>
-          {{ form.cliente_nombre(class="w-full border rounded-xl px-4 py-2 mt-1") }}
+                <div class="mb-4">
+                    <label class="text-sm font-semibold">Sucursal</label>
+                    {{ form.id_sucursal(class="w-full border rounded-xl px-4 py-2") }}
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-sm font-semibold">Producto</label>
+                    <div class="flex gap-2">
+                        {{ form.id_producto(class="w-full border rounded-xl px-4 py-2") }}
+                        <button type="submit" name="btn_verificar" class="bg-gray-200 px-4 rounded-xl text-xs font-bold text-[#341915]">
+                            Verificar Receta
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-sm font-semibold">Cantidad</label>
+                    {{ form.cantidad(class="w-full border rounded-xl px-4 py-2") }}
+                </div>
+            </div>
+
+            <div class="bg-[#341915] text-[#E8D8C4] rounded-3xl shadow-xl p-6 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold mb-6 border-b border-[#E8D8C4]/20 pb-4 text-center">Validación</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between border-b border-[#E8D8C4]/10 pb-2">
+                            <span>Receta Detectada:</span>
+                            <span class="font-bold text-white">{{ receta_nombre }}</span>
+                        </div>
+                        <div class="mt-8 text-center">
+                            <p class="text-xs opacity-60">Total Venta Estimado</p>
+                            <p class="text-4xl font-black text-white">$ {{ "{:,.2f}".format(total_venta) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" name="btn_confirmar" class="w-full bg-[#E8D8C4] text-[#341915] py-4 rounded-2xl text-xl font-extrabold mt-6">
+                    ✅ Confirmar Producción
+                </button>
+            </div>
         </div>
-
-        <div class="mb-4">
-          <label class="text-sm font-semibold text-[#341915]">Teléfono</label>
-          {{ form.cliente_telefono(class="w-full border rounded-xl px-4 py-2 mt-1") }}
-        </div>
-
-        <!-- PRODUCTO -->
-        <div class="mb-4">
-          <label class="text-sm font-semibold text-[#341915]">Producto</label>
-
-          <select name="id_producto" id="producto"
-                  class="w-full border rounded-xl px-4 py-2 mt-1">
-
-            <option value="">Selecciona producto</option>
-
-            {% for p in productos %}
-              <option value="{{ p.id_producto }}"
-                      data-precio="{{ p.precio_venta }}"
-                      data-receta="{{ p.recetas[0].nombre if p.recetas else 'Sin receta' }}">
-                {{ p.nombre }} - ${{ p.precio_venta }}
-              </option>
-            {% endfor %}
-
-          </select>
-        </div>
-
-        <!-- CANTIDAD -->
-        <div class="mb-4">
-          <label class="text-sm font-semibold text-[#341915]">Cantidad</label>
-          {{ form.cantidad(class="w-full border rounded-xl px-4 py-2 mt-1 text-lg", id="cantidad") }}
-        </div>
-
-        <!-- RECETA -->
-        <div class="mb-4">
-          <label class="text-sm font-semibold text-[#341915]">Receta</label>
-          <input type="text" id="receta"
-                 class="w-full bg-gray-100 border rounded-xl px-4 py-2 mt-1"
-                 readonly>
-        </div>
-
-      </form>
-    </div>
-
-
-    <!-- 🟤 DERECHA: RESUMEN / TICKET -->
-    <div class="bg-[#341915] text-[#E8D8C4] rounded-3xl shadow-xl p-6 flex flex-col justify-between">
-
-      <div>
-
-        <h2 class="text-2xl font-bold mb-6">
-          Resumen
-        </h2>
-
-        <!-- PRODUCTO -->
-        <div class="mb-4 border-b border-[#E8D8C4]/30 pb-2">
-          <p class="text-sm opacity-80">Producto</p>
-          <p id="resumen_producto" class="text-lg font-semibold">-</p>
-        </div>
-
-        <!-- CANTIDAD -->
-        <div class="mb-4 border-b border-[#E8D8C4]/30 pb-2">
-          <p class="text-sm opacity-80">Cantidad</p>
-          <p id="resumen_cantidad" class="text-lg font-semibold">0</p>
-        </div>
-
-        <!-- RECETA -->
-        <div class="mb-4 border-b border-[#E8D8C4]/30 pb-2">
-          <p class="text-sm opacity-80">Receta</p>
-          <p id="resumen_receta" class="text-lg font-semibold">-</p>
-        </div>
-
-        <!-- TOTAL -->
-        <div class="mt-6">
-          <p class="text-sm opacity-80">Total</p>
-          <p id="total" class="text-3xl font-bold">$0.00</p>
-        </div>
-
-      </div>
-
-      <!-- BOTÓN COBRAR -->
-      <button type="submit"
-              form="form"
-              class="mt-6 w-full bg-[#E8D8C4] text-[#341915] py-3 rounded-xl text-lg font-bold hover:bg-[#d6c3a7] transition">
-        💰 Cobrar
-      </button>
-
-    </div>
-
-  </div>
+    </form>
 </div>
-
-<!-- JS -->
-<script>
-  const producto = document.getElementById("producto");
-  const cantidad = document.getElementById("cantidad");
-  const receta = document.getElementById("receta");
-
-  const rProducto = document.getElementById("resumen_producto");
-  const rCantidad = document.getElementById("resumen_cantidad");
-  const rReceta = document.getElementById("resumen_receta");
-  const total = document.getElementById("total");
-
-  producto.addEventListener("change", actualizar);
-  cantidad.addEventListener("input", actualizar);
-
-  function actualizar() {
-
-    const selected = producto.options[producto.selectedIndex];
-
-    if (!selected.value) return;
-
-    const nombre = selected.text;
-    const precio = parseFloat(selected.dataset.precio);
-    const nombreReceta = selected.dataset.receta;
-    const cant = parseInt(cantidad.value) || 0;
-
-    receta.value = nombreReceta;
-
-    rProducto.textContent = nombre;
-    rCantidad.textContent = cant;
-    rReceta.textContent = nombreReceta;
-
-    total.textContent = "$" + (precio * cant).toFixed(2);
-  }
-</script>
-
 {% endblock %}

@@ -1,13 +1,27 @@
 {% extends "layoutModulos.html" %}
 {% block container %}
 
-
-
 <div class="max-w-md mx-auto mt-10">
 
     <h2 class="text-2xl font-bold mb-6 text-[#341915] text-center">
         Registrar Producto
     </h2>
+
+    <!-- Mostrar mensajes flash (mejorado con emojis y colores) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="mb-4 p-3 rounded text-sm font-medium shadow
+                    {% if category == 'success' %}bg-green-500 text-white
+                    {% elif category == 'danger' %}bg-red-500 text-white
+                    {% elif category == 'warning' %}bg-yellow-400 text-black
+                    {% elif category == 'info' %}bg-blue-500 text-white
+                    {% else %}bg-gray-500 text-white{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
     <form method="POST"
           action="{{ url_for('productos.agregarProducto') }}"
@@ -15,23 +29,23 @@
 
         {{ form.hidden_tag() }}
 
-        <!-- CODIGO -->
-    
-
         <!-- NOMBRE -->
         <div class="mb-4">
             {{ form.nombre.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.nombre(class="w-full border rounded px-3 py-2") }}
+            {{ form.nombre(class="w-full border rounded px-3 py-2", 
+                          placeholder="Ingrese el nombre del producto") }}
 
             {% for error in form.nombre.errors %}
-                <p class="text-red-500 text-xs">{{ error }}</p>
+                <p class="text-red-500 text-xs mt-1">{{ error }}</p>
             {% endfor %}
         </div>
 
         <!-- DESCRIPCION -->
         <div class="mb-4">
             {{ form.descripcion.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.descripcion(class="w-full border rounded px-3 py-2") }}
+            {{ form.descripcion(class="w-full border rounded px-3 py-2", 
+                               rows="3",
+                               placeholder="Descripción del producto") }}
 
             {% for error in form.descripcion.errors %}
                 <p class="text-red-500 text-xs">{{ error }}</p>
@@ -51,7 +65,9 @@
         <!-- PRECIO -->
         <div class="mb-4">
             {{ form.precio_venta.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.precio_venta(class="w-full border rounded px-3 py-2") }}
+            {{ form.precio_venta(class="w-full border rounded px-3 py-2", 
+                                step="0.01",
+                                placeholder="0.00") }}
 
             {% for error in form.precio_venta.errors %}
                 <p class="text-red-500 text-xs">{{ error }}</p>
@@ -61,7 +77,9 @@
         <!-- COSTO -->
         <div class="mb-4">
             {{ form.costo_unitario_estimado.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.costo_unitario_estimado(class="w-full border rounded px-3 py-2") }}
+            {{ form.costo_unitario_estimado(class="w-full border rounded px-3 py-2", 
+                                           step="0.01",
+                                           placeholder="0.00") }}
 
             {% for error in form.costo_unitario_estimado.errors %}
                 <p class="text-red-500 text-xs">{{ error }}</p>
@@ -70,7 +88,6 @@
 
         <!-- IMAGEN -->
         <div class="mb-4">
-
             <label class="block text-sm font-medium text-gray-700">
                 Imagen del producto
             </label>
@@ -78,19 +95,16 @@
             <input type="file"
                    name="imagen"
                    accept="image/*"
-                   onchange="previewImagen(event)"
                    class="w-full border rounded px-3 py-2 bg-white">
-
-            <!-- PREVIEW -->
-            <img id="preview"
-                 class="mt-3 w-32 h-32 object-cover rounded-lg border hidden">
-
+            
+            <p class="text-xs text-gray-500 mt-1">Formatos permitidos: JPG, PNG, GIF</p>
         </div>
 
         <!-- CADUCIDAD -->
         <div class="mb-4">
             {{ form.dias_caducidad.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.dias_caducidad(class="w-full border rounded px-3 py-2") }}
+            {{ form.dias_caducidad(class="w-full border rounded px-3 py-2", 
+                                  placeholder="Días hasta caducidad") }}
 
             {% for error in form.dias_caducidad.errors %}
                 <p class="text-red-500 text-xs">{{ error }}</p>
@@ -105,9 +119,8 @@
 
         <!-- BOTONES -->
         <div class="flex gap-4">
-
             <button type="submit"
-                class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d]">
+                    class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d]">
                 Guardar
             </button>
 
@@ -115,30 +128,10 @@
                class="text-gray-600 hover:text-gray-800">
                 Cancelar
             </a>
-
         </div>
 
     </form>
 
 </div>
-
-
-<script>
-
-function previewImagen(event){
-
-    const input = event.target;
-    const preview = document.getElementById("preview");
-
-    if(input.files && input.files[0]){
-
-        preview.src = URL.createObjectURL(input.files[0]);
-        preview.classList.remove("hidden");
-
-    }
-
-}
-
-</script>
 
 {% endblock %}

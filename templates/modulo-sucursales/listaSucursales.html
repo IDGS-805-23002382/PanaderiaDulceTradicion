@@ -1,64 +1,144 @@
-{% extends "layoutModulos.html" %}
+{% extends "layout.html" %}
 
 {% block container %}
+<section class="relative w-full h-[400px]">
+    <div class="relative h-full flex items-center justify-center text-center text-white">
+        <img src="{{ url_for('static', filename='img/contenido/pan2.jpg') }}" class="absolute inset-0 w-full h-full object-cover" />
+        
+        <div class="absolute inset-0 bg-black/40"></div>
 
-<div class="max-w-6xl mx-auto">
+        <div class="absolute inset-0 flex items-center justify-center">
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-[#f3e5d8] tracking-widest uppercase font-serif">
+                Sucursales
+            </h1>
+        </div>
+    </div>
+</section>
 
-<div class="flex justify-between items-center mb-6">
+<div class="max-w-7xl mx-auto p-6 -mt-10 relative z-10">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-xl gap-4 border border-gray-100">
+        <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+            <form action="{{ url_for('sucursales.gestion_sucursales') }}" method="GET" class="flex w-full md:w-auto">
+                <input type="text" name="search" placeholder="Buscar por nombre o ciudad..." 
+                       class="border-2 border-gray-100 rounded-l-xl px-4 py-2 w-full md:w-80 focus:border-[#341915] outline-none transition-all"
+                       value="{{ request.args.get('search', '') }}">
+                <button type="submit" class="bg-[#341915] text-white px-6 py-2 rounded-r-xl hover:bg-black transition-colors">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
 
-<h2 class="text-2xl font-bold text-[#341915]">Sucursales</h2>
+            <a href="{{ url_for('sucursales.registrarSucursal') }}" 
+               class="bg-[#341915] text-white px-8 py-2 rounded-xl hover:bg-[#4b231c] transition-all shadow-lg font-bold flex items-center justify-center gap-2">
+               <i class="fas fa-plus"></i> Nueva Sucursal
+            </a>
+        </div>
 
-<a href="/registrarSucursal"
-class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4b231c]">
+      <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+          {% if ver_todos == '1' %}
+              <a href="{{ url_for('sucursales.gestion_sucursales', ver_todos='0') }}" 
+                class="bg-[#341915] text-white px-6 py-3 rounded-xl font-bold hover:bg--[#4a241d] transition-all shadow-lg flex items-center justify-center gap-2">
+                  <i class="fas fa-eye"></i> Ver solo Activas
+              </a>
+          {% else %}
+              <a href="{{ url_for('sucursales.gestion_sucursales', ver_todos='1') }}" 
+                class="bg-[#341915] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#4a241d] transition-all shadow-lg flex items-center justify-center gap-2">
+                  <i class="fas fa-eye-slash"></i> Ver Todas (Inactivas)
+              </a>
+          {% endif %}
+      </div>
+    </div>
 
-Nueva sucursal
-
-</a>
-
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-[#341915] text-white">
+                <tr>
+                    <th class="p-5 uppercase text-[10px] font-bold tracking-widest">Imagen</th>
+                    <th class="p-5 uppercase text-[10px] font-bold tracking-widest">Sucursal</th>
+                    <th class="p-5 uppercase text-[10px] font-bold tracking-widest">Ubicación Detallada</th>
+                    <th class="p-5 uppercase text-[10px] font-bold tracking-widest text-center">Estado</th>
+                    <th class="p-5 uppercase text-[10px] font-bold tracking-widest text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for s in sucursales %}
+                <tr class="hover:bg-amber-50/30 transition-all {{ 'opacity-50' if s.estatus == 'inactivo' else '' }}">
+                    <td class="p-5">
+                        <div class="w-20 h-20 rounded-2xl overflow-hidden shadow-md border-4 border-white mx-auto">
+                            {% if s.imagen_url %}
+                                <img src="{{ s.imagen_url }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-300">
+                                    <i class="fas fa-store text-3xl"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="p-5">
+                        <div class="font-black text-[#341915] text-xl">{{ s.nombre }}</div>
+                        <div class="text-xs text-blue-500 font-medium">{{ s.email }}</div>
+                        <div class="text-xs text-gray-400 mt-1"><i class="fas fa-phone"></i> {{ s.telefono }}</div>
+                    </td>
+                    <td class="p-5">
+                        <div class="text-gray-700 text-sm font-semibold">{{ s.direccion }}</div>
+                        <div class="text-gray-400 text-[11px] uppercase tracking-wider">{{ s.ciudad }}, {{ s.estado }}</div>
+                    </td>
+                    <td class="p-5 text-center">
+                        {% if s.estatus == 'activo' %}
+                            <span class="px-4 py-1.5 rounded-full text-[10px] font-black bg-green-100 text-green-700">ACTIVA</span>
+                        {% else %}
+                            <span class="px-4 py-1.5 rounded-full text-[10px] font-black bg-red-100 text-red-700">INACTIVA</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-5">
+                        <div class="flex justify-center gap-3">
+                            <a href="{{ url_for('sucursales.verMapa', id=s.id_sucursal) }}" 
+                               target="_blank"
+                               class="p-3 bg-amber-100 text-amber-700 rounded-xl hover:bg-amber-600 hover:text-white transition-all" title="Ver Satélite">
+                               <i class="fas fa-location-dot"></i>
+                            </a>
+                            
+                            <a href="{{ url_for('sucursales.editarSucursal', id=s.id_sucursal) }}" 
+                               class="p-3 bg-blue-100 text-blue-700 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
+                               <i class="fas fa-edit"></i>
+                            </a>
+                            
+                            {% if s.estatus == 'activo' %}
+                            <a href="{{ url_for('sucursales.desactivarSucursal', id=s.id_sucursal) }}" 
+                               class="p-3 bg-red-100 text-red-700 rounded-xl hover:bg-red-600 hover:text-white transition-all"
+                               onclick="return confirm('¿Estás seguro de desactivar esta sucursal?')">
+                               <i class="fas fa-trash-can"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="p-20 text-center text-gray-400">
+                        <i class="fas fa-store-slash text-5xl mb-4"></i>
+                        <p>No se encontraron sucursales.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
+<style>
+    /* Asegura que el mapa de Folium ocupe todo el espacio y respete los bordes */
+    .folium-map {
+        border-radius: 2rem !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    /* Estilo para la barra de búsqueda dentro del mapa */
+    .leaflet-control-search {
+        border: 2px solid #341915 !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    }
+</style>
 
-<table class="w-full bg-white rounded shadow">
-
-<thead class="bg-[#341915] text-white">
-
-<tr>
-<th class="p-3 text-left">Nombre</th>
-<th class="p-3 text-left">Dirección</th>
-<th class="p-3 text-left">Teléfono</th>
-<th class="p-3 text-left">Ciudad</th>
-<th class="p-3 text-left">Acciones</th> 
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for s in sucursales %}
-
-<tr class="border-b hover:bg-gray-100">
-
-<td class="p-3">{{ s.nombre }}</td>
-<td class="p-3">{{ s.direccion }}</td>
-<td class="p-3">{{ s.telefono }}</td>
-<td class="p-3">{{ s.ciudad }}</td>
-<td class="p-3">
-<a href="{{ url_for('sucursales.editarSucursal', id=s.id_sucursal) }}">
-Editar
-</a>
-  <a href="{{ url_for('sucursales.desactivarSucursal', id=s.id_sucursal) }}" class="btn btn-danger">
-    Desactivar
-  </a>
-</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-</div>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 {% endblock %}

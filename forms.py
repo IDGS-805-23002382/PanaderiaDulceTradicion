@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import IntegerField, StringField, EmailField, FileField, SelectField, TextAreaField, DecimalField, DateField
-from wtforms import validators, PasswordField, BooleanField
-from wtforms.validators import Length, Email, Optional, EqualTo, ValidationError, DataRequired
+from wtforms import validators, PasswordField, BooleanField, FloatField
+from wtforms.validators import Length, Email, Optional, EqualTo, ValidationError, DataRequired, InputRequired
 
 
 class ProveedorForm(FlaskForm):
@@ -47,46 +47,65 @@ class MateriaPrimaForm(FlaskForm):
 
     id_materia = IntegerField("ID")
 
-    nombre = StringField("Nombre de la materia prima", [
-        validators.InputRequired(message="El nombre es requerido"),
-        validators.Length(min=3, max=100)
-    ])
+    nombre = StringField(
+        "Nombre de la materia prima",
+        validators=[
+            InputRequired(message="El nombre es requerido"),
+            Length(min=3, max=100)
+        ]
+    )
 
     unidad_medida = SelectField(
-    "Unidad de medida",
-    choices=[
-        ("kg", "Kilogramos (kg)"),
-        ("g", "Gramos (g)"),
-        ("l", "Litros (L)"),
-        ("ml", "Mililitros (ml)"),
-        ("pz", "Piezas"),
-        ("bulto", "Bultos"),
-        ("caja", "Cajas"),
-        ("paquete", "Paquetes")
-    ],
-    validators=[DataRequired(message="Seleccione una unidad de medida")]
-)
+        "Unidad de medida",
+        choices=[
+            ("kg", "Kilogramos (kg)"),
+            ("g", "Gramos (g)"),
+            ("l", "Litros (L)"),
+            ("ml", "Mililitros (ml)"),
+            ("pz", "Piezas"),
+            ("bulto", "Bultos"),
+            ("caja", "Cajas"),
+            ("paquete", "Paquetes")
+        ],
+        validators=[
+            DataRequired(message="Seleccione una unidad de medida")
+        ]
+    )
 
-    stock_actual = DecimalField("Stock actual", [
-        validators.InputRequired(message="El stock actual es requerido")
-    ])
+   
+    tipo_empaque = SelectField(
+        "Tipo de empaque",
+        choices=[
+            ("unidad", "Unidad suelta"),
+            ("caja", "Caja")
+        ],
+        default="unidad",
+        validators=[DataRequired()]
+    )
 
-    stock_minimo = DecimalField("Stock mínimo", [
-        validators.InputRequired(message="El stock mínimo es requerido")
-    ])
+    piezas_por_caja = IntegerField(
+        "Piezas por caja",
+        validators=[Optional()]  # solo si es caja
+    )
 
-    precio_unitario = DecimalField("Precio unitario", [
-        validators.InputRequired(message="El precio es requerido")
-    ])
+    peso_por_pieza = FloatField(
+        "Peso por pieza (gramos)",
+        validators=[Optional()]
+    )
+
+    precio_unitario = DecimalField(
+        "Precio unitario",
+        validators=[
+            InputRequired(message="El precio es requerido")
+        ]
+    )
 
     id_proveedor = SelectField(
         "Proveedor",
-        coerce=int
-    )
-
-    fecha_ultima_compra = DateField(
-        "Fecha última compra",
-        format='%Y-%m-%d'
+        coerce=int,
+        validators=[
+            DataRequired(message="Seleccione un proveedor")
+        ]
     )
 
     estatus = SelectField(
@@ -94,6 +113,9 @@ class MateriaPrimaForm(FlaskForm):
         choices=[
             ("activo", "Activo"),
             ("inactivo", "Inactivo")
+        ],
+        validators=[
+            DataRequired(message="Seleccione un estatus")
         ]
     )
 
@@ -200,39 +222,18 @@ class RecetaForm(FlaskForm):
 
 class OrdenForm(FlaskForm):
 
-    id_orden = IntegerField("ID")
+    id_sucursal = SelectField("Sucursal", coerce=int, validators=[DataRequired()])
+    
+    fecha_produccion = DateField("Fecha", validators=[DataRequired()])
 
-    cliente_nombre = StringField(
-        "Nombre del cliente",
-        [
-            validators.InputRequired(message="El nombre del cliente es requerido"),
-            validators.Length(min=3, max=100, message="Debe tener entre 3 y 100 caracteres")
-        ]
-    )
+    id_producto = SelectField("Producto", coerce=int, validators=[DataRequired()])
 
-    cliente_telefono = StringField(
-        "Teléfono",
-        [
-            validators.InputRequired(message="El teléfono es requerido"),
-            validators.Length(min=7, max=20, message="Debe tener entre 7 y 20 caracteres")
-        ]
-    )
+    cantidad = IntegerField("Cantidad", validators=[DataRequired()])
 
-    id_producto = SelectField(
-        "Producto",
-        coerce=int,
-        validators=[
-            DataRequired(message="Seleccione un producto")
-        ]
-    )
+    cliente_nombre = StringField("Cliente")
+    cliente_telefono = StringField("Teléfono")
 
-    cantidad = IntegerField(
-        "Cantidad",
-        [
-            validators.InputRequired(message="La cantidad es requerida"),
-            validators.NumberRange(min=1, message="Debe ser mayor a 0")
-        ]
-    )
+    notas = TextAreaField("Notas")
 
 class SucursalForm(FlaskForm):    
     nombre = StringField("Nombre", [validators.InputRequired()])

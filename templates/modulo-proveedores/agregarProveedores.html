@@ -8,45 +8,67 @@
         Registrar Nuevo Proveedor
     </h2>
 
-    <form method="POST" action="{{ url_for('proveedores.agregarProveedores') }}">
+    <!-- Mostrar mensajes flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded {% if category == 'error' %}bg-red-100 text-red-700 border border-red-400{% else %}bg-green-100 text-green-700 border border-green-400{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
+    <form method="POST" action="{{ url_for('proveedores.agregarProveedores') }}">
         {{ form.hidden_tag() }}
 
         <!-- NOMBRE -->
         <div class="mb-4">
             {{ form.nombre.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.nombre(class="w-full border rounded px-3 py-2") }}
-
-            {% for error in form.nombre.errors %}
-                <p class="text-red-500 text-xs">{{ error }}</p>
-            {% endfor %}
+            {{ form.nombre(class="w-full border rounded px-3 py-2 " + ("border-red-500" if form.nombre.errors else "border-gray-300")) }}
+            
+            {% if form.nombre.errors %}
+                <div class="text-red-500 text-xs mt-1">
+                    {% for error in form.nombre.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- TELEFONO -->
         <div class="mb-4">
             {{ form.telefono.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.telefono(class="w-full border rounded px-3 py-2") }}
-
-            {% for error in form.telefono.errors %}
-                <p class="text-red-500 text-xs">{{ error }}</p>
-            {% endfor %}
+            {{ form.telefono(class="w-full border rounded px-3 py-2 " + ("border-red-500" if form.telefono.errors else "border-gray-300")) }}
+            
+            {% if form.telefono.errors %}
+                <div class="text-red-500 text-xs mt-1">
+                    {% for error in form.telefono.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- EMAIL -->
         <div class="mb-4">
             {{ form.email.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.email(class="w-full border rounded px-3 py-2") }}
-
-            {% for error in form.email.errors %}
-                <p class="text-red-500 text-xs">{{ error }}</p>
-            {% endfor %}
+            {{ form.email(class="w-full border rounded px-3 py-2 " + ("border-red-500" if form.email.errors else "border-gray-300")) }}
+            
+            {% if form.email.errors %}
+                <div class="text-red-500 text-xs mt-1">
+                    {% for error in form.email.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- DIRECCION -->
         <div class="mb-4">
             {{ form.direccion.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.direccion(class="w-full border rounded px-3 py-2") }}
-
+            {{ form.direccion(class="w-full border rounded px-3 py-2 border-gray-300") }}
+            
             {% for error in form.direccion.errors %}
                 <p class="text-red-500 text-xs">{{ error }}</p>
             {% endfor %}
@@ -55,8 +77,8 @@
         <!-- CONTACTO -->
         <div class="mb-4">
             {{ form.contacto.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.contacto(class="w-full border rounded px-3 py-2") }}
-
+            {{ form.contacto(class="w-full border rounded px-3 py-2 border-gray-300") }}
+            
             {% for error in form.contacto.errors %}
                 <p class="text-red-500 text-xs">{{ error }}</p>
             {% endfor %}
@@ -65,8 +87,8 @@
         <!-- NOTAS -->
         <div class="mb-4">
             {{ form.notas.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.notas(class="w-full border rounded px-3 py-2") }}
-
+            {{ form.notas(class="w-full border rounded px-3 py-2 border-gray-300") }}
+            
             {% for error in form.notas.errors %}
                 <p class="text-red-500 text-xs">{{ error }}</p>
             {% endfor %}
@@ -75,12 +97,11 @@
         <!-- ESTATUS -->
         <div class="mb-6">
             {{ form.estatus.label(class="block text-sm font-medium text-gray-700") }}
-            {{ form.estatus(class="w-full border rounded px-3 py-2") }}
+            {{ form.estatus(class="w-full border rounded px-3 py-2 border-gray-300") }}
         </div>
 
         <!-- BOTONES -->
         <div class="flex gap-4">
-
             <button type="submit"
                 class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d]">
                 Guardar
@@ -90,7 +111,6 @@
                class="text-gray-600 hover:text-gray-800">
                 Cancelar
             </a>
-
         </div>
 
     </form>

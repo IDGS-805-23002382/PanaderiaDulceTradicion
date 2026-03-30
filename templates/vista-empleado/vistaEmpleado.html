@@ -1,0 +1,69 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+
+<!-- Título principal -->
+<h2 class="text-4xl md:text-5xl font-bold text-center text-[#341915] mb-16">
+    CONTROL
+</h2>
+
+<!-- Sección de módulos -->
+<section class="relative bg-[#E8D8C4] py-24">
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+            
+            <!-- Módulo 1: DASHBOARD -->
+            <a href="/productos" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+            <div href="/productos" class="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 w-72 overflow-hidden border border-[#d4b6a0]">
+           
+                <img src="{{ url_for('static', filename='img/contenido/dashboard.png') }}"
+                     class="mx-auto w-20 mt-6 drop-shadow-lg"
+                     alt="Dashboard">
+                <div class="p-6 text-center">
+                    <h3 class="font-bold text-2xl text-[#341915] mb-3 group-hover:text-[#b55a3a] transition-colors">
+                        DASHBOARD
+                    </h3>
+                    <p class="text-[#5a3e32] text-sm leading-relaxed">
+                        Visualización y análisis de datos
+                    </p>
+                </div>
+        
+            </div>
+            </a>
+            
+            <!-- Módulo 2: INVENTARIOS -->
+            <div class="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 w-72 overflow-hidden border border-[#d4b6a0]">
+                <img src="{{ url_for('static', filename='img/contenido/inventarios.png') }}"
+                     class="mx-auto w-20 mt-6 drop-shadow-lg"
+                     alt="Inventarios">
+                <div class="p-6 text-center">
+                    <h3 class="font-bold text-2xl text-[#341915] mb-3 group-hover:text-[#b55a3a] transition-colors">
+                        INVENTARIOS
+                    </h3>
+                    <p class="text-[#5a3e32] text-sm leading-relaxed">
+                        Control y gestión de productos
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Módulo 3: GESTIÓN -->
+            <a href="/gestion" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+            <div class="group bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 w-72 overflow-hidden border border-[#d4b6a0]">
+                <img src="{{ url_for('static', filename='img/contenido/gestion.png') }}"
+                     class="mx-auto w-20 mt-6 drop-shadow-lg"
+                     alt="Gestión">
+                <div class="p-6 text-center">
+                    <h3 class="font-bold text-2xl text-[#341915] mb-3 group-hover:text-[#b55a3a] transition-colors">
+                        GESTIÓN
+                    </h3>
+                    <p class="text-[#5a3e32] text-sm leading-relaxed">
+                        Administración completa del sistema
+                    </p>
+                </div>
+            </div>
+            </a>
+            
+        </div>
+    </div>
+</section>
+
+{% endblock %}

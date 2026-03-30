@@ -160,6 +160,63 @@
             </div>
         </div>
     </div>
+
+    <br/>
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-3xl shadow">
+      <h2 class="text-2xl font-bold mb-4 text-[#341915]">Historial de Compras</h2>
+
+      <table class="w-full text-center">
+        <thead class="bg-[#561C24] text-white">
+          <tr>
+            <th>Proveedor</th>
+            <th>Sucursal</th>
+            <th>Pedido</th>
+            <th>Entrega</th>
+            <th>Total</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+
+        <tbody>
+  {% for c in compras %}
+    {# Buscamos el detalle específico que pertenece a esta materia prima #}
+    {% for detalle in c.detalles %}
+      {% if detalle.id_materia == materia.id %} {# Asegúrate que 'id' es el nombre del campo en tu modelo MateriaPrima #}
+      <tr class="border-b">
+        <td>{{ c.proveedor.nombre }}</td>
+        <td>{{ c.sucursal.nombre }}</td>
+        <td>{{ c.fecha_orden.strftime('%Y-%m-%d') }}</td>
+        
+        <td class="font-bold text-[#561C24]">
+          {{ detalle.cantidad }} {{ detalle.tipo_empaque }}
+        </td>
+
+        <td>
+          {% if c.fecha_entrega %}
+            {{ c.fecha_entrega.strftime('%Y-%m-%d %H:%M') }}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+
+        {# Aquí mostramos el subtotal del detalle o el precio unitario, no el total de la factura completa #}
+        <td>${{ "%.2f"|format(detalle.subtotal) }}</td>
+
+        <td>
+          {% if c.estado == 'recibida' %}
+            <span class="bg-green-200 px-2 py-1 rounded">Recibida</span>
+          {% else %}
+            <span class="bg-red-200 px-2 py-1 rounded">Cancelada</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+</tbody>
+      </table>
+    </div>
+ 
 </div>
 
 {% endblock %}

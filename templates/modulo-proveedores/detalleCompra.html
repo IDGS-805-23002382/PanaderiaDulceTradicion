@@ -1,0 +1,53 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+
+<div class="max-w-6xl mx-auto bg-white p-6 rounded-3xl shadow">
+    <h2 class="text-2xl font-bold mb-4 text-[#341915]">Historial de Compras</h2>
+
+    <table class="w-full text-center">
+        <thead class="bg-[#561C24] text-white">
+            <tr>
+                <th>Proveedor</th>
+                <th>Sucursal</th>
+                <th>Pedido</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acciones</th> </tr>
+        </thead>
+        <tbody>
+            {% for c in compras %}
+            <tr class="border-b">
+    <td>{{ c.proveedor.nombre }}</td>
+    <td>{{ c.sucursal.nombre }}</td>
+    <td>{{ c.fecha_orden.strftime('%Y-%m-%d') }}</td>
+    <td>${{ c.total }}</td>
+    <td>
+        {% if c.estado == 'recibida' %}
+            <span class="bg-green-200 px-2 py-1 rounded">Recibida</span>
+        {% else %}
+            <span class="bg-red-200 px-2 py-1 rounded">Cancelada</span>
+        {% endif %}
+    </td>
+    <td class="py-2">
+        <a href="{{ url_for('proveedores.ver_detalle_especifico', id=c.id_compra) }}" 
+           class="bg-[#E8D8C4] p-2 rounded hover:bg-[#d6c3a7] inline-block">
+            <svg class="w-5 h-5 text-[#341915]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+        </a>
+    </td>
+</tr>
+            {% endfor %}
+        </tbody>
+    </table>
+<br/>
+    <div class="flex justify-between items-center mb-8">
+       
+        <a href="{{ url_for('proveedores.compraProveedores') }}" 
+           class="bg-gray-500 text-white px-5 py-2 rounded-xl hover:bg-gray-600 transition-colors">
+            Volver a la orden
+        </a>
+    </div>
+</div>
+{% endblock %}

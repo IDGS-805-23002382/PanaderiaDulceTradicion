@@ -48,19 +48,22 @@ def agregarReceta():
     form = forms.RecetaForm()
 
     productos = Producto.query.all()
+    materias = MateriaPrima.query.all()
+
     form.id_producto.choices = [(p.id_producto, p.nombre) for p in productos]
 
     if form.validate_on_submit():
 
-        # VALIDAR SI YA EXISTE
+        # 🔥 VALIDAR SI YA EXISTE RECETA PARA ESE PRODUCTO
         receta_existente = Receta.query.filter_by(
-            nombre=form.nombre.data
+            id_producto=form.id_producto.data
         ).first()
 
         if receta_existente:
-            flash("Ya existe una receta con ese nombre.", "warning")
+            flash("Este producto ya tiene una receta.", "warning")
             return redirect(url_for('recetas.agregarReceta'))
 
+        # 🔹 CREAR RECETA
         nueva_receta = Receta(
             id_producto=form.id_producto.data,
             nombre=form.nombre.data,
@@ -70,17 +73,45 @@ def agregarReceta():
         )
 
         db.session.add(nueva_receta)
+        db.session.flush()  # 🔥 IMPORTANTE (sin commit aún)
+
+        # 🔹 INGREDIENTES DESDE EL FORM
+        materias_ids = request.form.getlist('materia[]')
+        cantidades = request.form.getlist('cantidad[]')
+
+        for i in range(len(materias_ids)):
+
+            if cantidades[i] == "":
+                continue
+
+            # 🔥 EVITAR DUPLICADOS
+            existe = DetalleReceta.query.filter_by(
+                id_receta=nueva_receta.id_receta,
+                id_materia=materias_ids[i]
+            ).first()
+
+            if existe:
+                continue
+
+            detalle = DetalleReceta(
+                id_receta=nueva_receta.id_receta,
+                id_materia=materias_ids[i],
+                cantidad=cantidades[i]   
+            )
+
+            db.session.add(detalle)
+
         db.session.commit()
 
-        flash("Receta agregada correctamente", "success")
+        flash("Receta agregada correctamente con ingredientes", "success")
 
         return redirect(url_for('recetas.recetas'))
 
     return render_template(
         'modulo-recetas/agregarReceta.html',
-        form=form
+        form=form,
+        materias=materias  # 🔥 importante para el select dinámico
     )
-
 
 # DETALLE RECETA (MATERIAS PRIMAS)
 @recetas_bp.route('/detalleReceta/<int:id>')
@@ -102,32 +133,55 @@ def detalleReceta(id):
 # EDITAR RECETA
 @recetas_bp.route('/editarReceta/<int:id>', methods=['GET','POST'])
 def modificarReceta(id):
-
     receta = Receta.query.get_or_404(id)
-
     form = forms.RecetaForm(obj=receta)
 
+    # Cargar catálogos
     productos = Producto.query.all()
+    materias = MateriaPrima.query.all()
+    
     form.id_producto.choices = [(p.id_producto, p.nombre) for p in productos]
 
-    if form.validate_on_submit():
+    # Obtener los ingredientes actuales para mostrarlos en el formulario
+    ingredientes_actuales = DetalleReceta.query.filter_by(id_receta=id).all()
 
+    if form.validate_on_submit():
         receta.id_producto = form.id_producto.data
         receta.nombre = form.nombre.data
         receta.descripcion = form.descripcion.data
         receta.rendimiento_piezas = form.rendimiento_piezas.data
         receta.estatus = form.estatus.data
 
+        # --- GESTIÓN DE INGREDIENTES ---
+        # 1. Eliminar los detalles anteriores para evitar duplicados o basura
+        DetalleReceta.query.filter_by(id_receta=id).delete()
+
+        # 2. Capturar los nuevos datos del formulario
+        materias_ids = request.form.getlist('materia[]')
+        cantidades = request.form.getlist('cantidad[]')
+
+        for i in range(len(materias_ids)):
+            id_mat = materias_ids[i]
+            cant = cantidades[i]
+
+            if id_mat and cant and float(cant) > 0:
+                nuevo_detalle = DetalleReceta(
+                    id_receta=receta.id_receta,
+                    id_materia=id_mat,
+                    cantidad=float(cant)
+                )
+                db.session.add(nuevo_detalle)
+
         db.session.commit()
-
-        flash("Receta actualizada correctamente", "success")
-
+        flash("Receta e ingredientes actualizados correctamente", "success")
         return redirect(url_for('recetas.recetas'))
 
     return render_template(
         'modulo-recetas/modificarReceta.html',
         form=form,
-        receta=receta
+        receta=receta,
+        materias=materias,
+        ingredientes_actuales=ingredientes_actuales # Enviamos esto
     )
 
 

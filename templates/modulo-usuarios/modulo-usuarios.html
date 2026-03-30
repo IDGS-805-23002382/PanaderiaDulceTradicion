@@ -8,6 +8,21 @@
   </h1>
   <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-8"></div>
 
+  <!--  AGREGAR -->
+    <div class="flex justify-end mb-4">
+        <a href="{{ url_for('usuarios.agregar') }}"
+           class="flex items-center gap-2 bg-[#E8D8C4] px-4 py-2 rounded hover:bg-[#d6c3a7]">
+
+            <img src="{{ url_for('static', filename='img/iconosModulos/nuevo.png') }}"
+                 class="h-6 w-6">
+
+            <span class="text-[#341915] font-medium">
+                Agregar
+            </span>
+
+        </a>
+    </div>
+
   <div class="flex items-center justify-between mb-4">
     <div class="flex items-center gap-2 text-[#341915] font-medium">
       <img src="{{ url_for('static', filename='img/iconosModulos/filtrar.png') }}" class="h-6 w-6"/>
@@ -21,12 +36,10 @@
           <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}" class="h-5 w-5"/>
         </button>
       </div>
-      <a href="{{ url_for('usuarios.agregar') }}">
-        <button class="bg-[#341915] p-2 rounded-full hover:bg-[#561C24] transition" title="Agregar usuario">
-          <img src="{{ url_for('static', filename='img/iconosModulos/agregar-usuario.png') }}" class="h-6 w-6"/>
-        </button>
-      </a>
+     
     </div>
+
+     
   </div>
 
   <div class="overflow-x-auto">

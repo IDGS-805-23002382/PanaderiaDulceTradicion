@@ -1,0 +1,81 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-6">
+  <div class="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl p-6">
+    
+    <h2 class="text-2xl font-bold text-[#341915] mb-6">
+      Inventario de Materia Prima
+    </h2>
+
+    <!-- FILTRO -->
+    <form method="GET" class="mb-6">
+      <div class="flex items-center gap-4">
+        <label class="font-semibold text-[#341915]">Filtrar por sucursal:</label>
+        <select name="sucursal" onchange="this.form.submit()" 
+          class="border rounded-xl px-4 py-2 bg-[#D7C7B0] focus:outline-none focus:ring-2 focus:ring-[#561C24]">
+          
+          <option value="">Todas las sucursales</option>
+
+          {% for s in sucursales %}
+            <option value="{{ s.id_sucursal }}" 
+              {% if request.args.get('sucursal') == s.id_sucursal|string %}selected{% endif %}>
+              {{ s.nombre }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    </form>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-center">
+        <thead class="bg-[#561C24] text-white">
+          <tr>
+            <th class="px-4 py-3">Materia</th>
+            <th class="px-4 py-3">Sucursal</th>
+            <th class="px-4 py-3">Stock Real</th>
+            <th class="px-4 py-3">Equivalente</th>
+            <th class="px-4 py-3">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for i in inventario %}
+          <tr class="border-b hover:bg-gray-100">
+            <td class="px-4 py-2">{{ i.materia }}</td>
+            <td class="px-4 py-2">{{ i.sucursal }}</td>
+            <td class="px-4 py-2 font-medium">{{ i.stock }} {{ i.tipo }}</td>
+            <td class="px-4 py-2">
+              <div class="space-y-1">
+                <span class="bg-green-200 text-green-800 px-2 py-1 rounded inline-block text-xs font-semibold">
+                  {{ i.cajas }} caja(s)
+                </span>
+                <br>
+                <span class="text-gray-600 text-xs">
+                  ({{ i.piezas_totales }} piezas)
+                </span>
+              </div>
+            </td>
+            <td class="px-4 py-2">
+              <div class="flex flex-col gap-2">
+                <a href="{{ url_for('proveedores.movimientosMateria', id_materia=i.id_materia, id_sucursal=i.id_sucursal) }}"
+                   class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm transition text-center">
+                  Ver Movimientos
+                </a>
+                
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="text-center py-8 text-gray-500">
+              No hay inventario registrado
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

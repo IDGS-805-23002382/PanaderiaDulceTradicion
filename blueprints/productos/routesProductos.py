@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, Response
 from models import Producto, Categoria, db, Receta
 from werkzeug.utils import secure_filename
 from sqlalchemy import or_
@@ -51,6 +51,7 @@ def productos():
     )
 
 
+# AGREGAR PRODUCTO - CON VALIDACIÓN DE DUPLICADO
 @productos_bp.route('/agregarProducto', methods=['GET','POST'])
 def agregarProducto():
 
@@ -60,15 +61,16 @@ def agregarProducto():
     form.id_categoria.choices = [(c.id_categoria, c.nombre) for c in categorias]
 
     if form.validate_on_submit():
-
-        # VALIDAR SI YA EXISTE UN PRODUCTO CON EL MISMO NOMBRE
         producto_existente = Producto.query.filter_by(
             nombre=form.nombre.data
         ).first()
 
         if producto_existente:
-            flash("Ya existe un producto con ese nombre.", "warning")
-            return redirect(url_for('productos.agregarProducto'))
+            flash(f"Ya existe un producto con el nombre '{form.nombre.data}'.", "danger")
+            return render_template(
+                'modulo-productos/agregarProducto.html',
+                form=form
+            )
 
         imagen = request.files.get("imagen")
 
@@ -100,23 +102,7 @@ def agregarProducto():
         form=form
     )
 
-
-@productos_bp.route('/detalleProducto/<int:id>')
-def detalleProducto(id):
-
-    producto = Producto.query.get_or_404(id)
-
-    receta = Receta.query.filter_by(
-        id_producto=id
-    ).first()
-
-    return render_template(
-        'modulo-productos/detallesProducto.html',
-        producto=producto,
-        receta=receta
-    )
-
-
+# EDITAR PRODUCTO - CON VALIDACIÓN DE DUPLICADO (excluyendo el producto actual)
 @productos_bp.route('/editarProducto/<int:id>', methods=['GET','POST'])
 def modificarProducto(id):
 
@@ -128,6 +114,20 @@ def modificarProducto(id):
     form.id_categoria.choices = [(c.id_categoria, c.nombre) for c in categorias]
 
     if form.validate_on_submit():
+
+       
+        producto_existente = Producto.query.filter(
+            Producto.nombre == form.nombre.data,
+            Producto.id_producto != id  # Excluir el producto actual
+        ).first()
+        
+        if producto_existente:
+            flash(f"Ya existe otro producto con el nombre '{form.nombre.data}'.", "danger")
+            return render_template(
+                'modulo-productos/modificarProducto.html',
+                form=form,
+                producto=producto
+            )
 
         producto.nombre = form.nombre.data
         producto.descripcion = form.descripcion.data
@@ -155,7 +155,6 @@ def modificarProducto(id):
         producto=producto
     )
 
-
 # DESACTIVAR PRODUCTO
 @productos_bp.route('/eliminarProducto/<int:id>', methods=['GET','POST'])
 def eliminarProducto(id):
@@ -180,3 +179,30 @@ def eliminarProducto(id):
         'modulo-productos/eliminarProducto.html',
         producto=producto
     )
+
+
+@productos_bp.route('/detalleProducto/<int:id>')
+def detalleProducto(id):
+
+    producto = Producto.query.get_or_404(id)
+
+    receta = Receta.query.filter_by(
+        id_producto=id
+    ).first()
+
+    return render_template(
+        'modulo-productos/detallesProducto.html',
+        producto=producto,
+        receta=receta
+    )
+
+# MOSTRAR IMAGEN DEL PRODUCTO
+@productos_bp.route('/producto_imagen/<int:id>')
+def producto_imagen(id):
+    producto = Producto.query.get_or_404(id)
+    
+    if producto.imagen_url:
+        return Response(producto.imagen_url, mimetype='image/jpeg')
+    
+    # Imagen por defecto si no hay imagen
+    return "", 404

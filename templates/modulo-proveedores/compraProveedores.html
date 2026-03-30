@@ -2,129 +2,122 @@
 {% block container %}
 
 <div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-6">
-
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-
-    <div class="bg-white rounded-3xl shadow-2xl p-6">
-
-      <h2 class="text-2xl font-bold text-[#341915] mb-4">
-        Registrar Compra
-      </h2>
-
-      <form method="POST">
-
-        <!-- PROVEEDOR -->
-        <div class="mb-4">
-          <label class="font-semibold text-[#341915]">Proveedor</label>
-          <select name="proveedor"
-                  class="w-full border rounded-xl px-3 py-2 bg-[#D7C7B0]">
-
-            {% for p in proveedores %}
-              <option value="{{ p.id_proveedor }}">{{ p.nombre }}</option>
-            {% endfor %}
-
-          </select>
-        </div>
-
-        <!-- FILAS DINÁMICAS -->
-        {% for i in range(filas) %}
-        <div class="grid grid-cols-3 gap-3 mb-3">
-
-          <select name="materia_id_{{ i }}"
-                  class="border rounded px-2 py-2">
-
-            <option value="">Materia prima</option>
-
-            {% for m in materias %}
-              <option value="{{ m.id_materia }}">{{ m.nombre }}</option>
-            {% endfor %}
-
-          </select>
-
-          <input type="number"
-                 name="cantidad_{{ i }}"
-                 placeholder="Cantidad"
-                 class="border rounded px-2 py-2">
-
-          <input type="number"
-                 step="0.01"
-                 name="precio_{{ i }}"
-                 placeholder="Precio"
-                 class="border rounded px-2 py-2">
-
-        </div>
-        {% endfor %}
-
-        <!-- BOTONES -->
-        <div class="flex gap-3">
-
-          <a href="{{ url_for('proveedores.compraProveedores', filas=filas+1) }}"
-             class="bg-[#E8D8C4] px-4 py-2 rounded">
-            + Agregar
-          </a>
-
-         
-          <button type="submit"
-                  class="flex-1 bg-[#341915] text-white py-2 rounded">
-            Guardar Compra
-          </button>
-
-        </div>
-
-      </form>
+    <div class="flex justify-end mb-4">
+        <a href="{{ url_for('proveedores.detalleCompra') }}"
+           class="flex items-center gap-2 bg-[#E8D8C4] px-4 py-2 rounded hover:bg-[#d6c3a7]">
+            <img src="{{ url_for('static', filename='img/iconosModulos/expediente.png') }}" class="h-6 w-6">
+            <span class="text-[#341915] font-medium">Historial Compras</span>
+        </a>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-2xl p-6">
+    <div class="max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl p-6">
+        <h2 class="text-2xl font-bold text-[#341915] mb-6">Orden de Compra</h2>
 
-      <h2 class="text-2xl font-bold text-[#341915] mb-4">
-        Inventario Actual
-      </h2>
+        <form method="POST" action="{{ url_for('proveedores.compraProveedores') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-      <div class="overflow-y-auto max-h-[500px]">
+            <label class="font-semibold text-[#341915]">Proveedor *</label>
+            <select name="proveedor" onchange="this.form.submit()"
+                    class="w-full mb-4 border rounded-xl px-3 py-2 bg-[#D7C7B0]">
+                <option value="">Seleccione proveedor</option>
+                {% for p in proveedores %}
+                <option value="{{ p.id_proveedor }}" {% if proveedor_id == p.id_proveedor|string %}selected{% endif %}>
+                    {{ p.nombre }}
+                </option>
+                {% endfor %}
+            </select>
 
-        <table class="w-full text-sm">
+            <label class="font-semibold text-[#341915]">Sucursal *</label>
+            <select name="sucursal" class="w-full mb-4 border rounded-xl px-3 py-2 bg-[#D7C7B0]">
+                <option value="">Seleccione sucursal</option>
+                {% for s in sucursales %}
+                <option value="{{ s.id_sucursal }}" {% if datos_form.sucursal == s.id_sucursal|string %}selected{% endif %}>
+                    {{ s.nombre }}
+                </option>
+                {% endfor %}
+            </select>
 
-          <thead class="bg-[#561C24] text-white text-center">
-            <tr>
-              <th class="py-2">Materia</th>
-              <th class="py-2">Stock</th>
-              <th class="py-2">Mínimo</th>
-            </tr>
-          </thead>
+            <label class="font-semibold text-[#341915]">Fecha estimada *</label>
+            <input type="date" name="fecha_estimada_entrega" min="{{ today }}"
+                   value="{{ datos_form.fecha_estimada_entrega }}"
+                   class="w-full mb-4 border rounded-xl px-3 py-2 bg-[#D7C7B0]">
 
-          <tbody>
+            <label class="font-semibold text-[#341915]">Notas</label>
+            <textarea name="notas" rows="3" class="w-full mb-4 border rounded-xl px-3 py-2 bg-[#D7C7B0]"
+                      placeholder="Observaciones...">{{ datos_form.notas }}</textarea>
 
-            {% for m in materias %}
-            <tr class="border-b text-center">
+            <h3 class="font-bold text-[#341915] mb-2">Detalle de Compra</h3>
 
-              <td class="py-2">{{ m.nombre }}</td>
+            {% for i in range(filas) %}
+            <div class="grid grid-cols-3 gap-3 mb-3">
+                <select name="materia_id_{{ i }}" class="border rounded px-2 py-2 bg-[#F5EDE3]">
+                    <option value="">Materia prima</option>
+                    {% for m in materias %}
+                    <option value="{{ m.id_materia }}" 
+                        {% if datos_form.get('materia_id_' ~ i) == m.id_materia|string %}selected{% endif %}>
+                        {{ m.nombre }} ({{ m.tipo_empaque }})
+                    </option>
+                    {% endfor %}
+                </select>
 
-              <td class="py-2">
-                {% if m.stock_actual <= m.stock_minimo %}
-                  <span class="text-red-600 font-bold">
-                    {{ m.stock_actual }}
-                  </span>
-                {% else %}
-                  {{ m.stock_actual }}
-                {% endif %}
-              </td>
+                <select name="tipo_{{ i }}" class="border rounded px-2 py-2 bg-[#F5EDE3]">
+                    <option value="unidad" {% if datos_form.get('tipo_' ~ i) == 'unidad' %}selected{% endif %}>Pieza</option>
+                    <option value="caja" {% if datos_form.get('tipo_' ~ i) == 'caja' %}selected{% endif %}>Caja</option>
+                </select>
 
-              <td class="py-2">{{ m.stock_minimo }}</td>
-
-            </tr>
+                <input type="number" name="cantidad_{{ i }}" step="0.01" min="0.01" placeholder="Cantidad"
+                       value="{{ datos_form.get('cantidad_' ~ i) }}"
+                       class="border rounded px-2 py-2 bg-[#F5EDE3]">
+            </div>
             {% endfor %}
 
-          </tbody>
+            <div class="flex gap-3 mt-4">
+                <input type="hidden" name="num_filas" value="{{ filas }}">
+                
+                <button type="submit" name="accion" value="agregar_fila"
+                        class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+                    + Producto
+                </button>
 
-        </table>
-
-      </div>
-
+                <button type="submit" name="accion" value="guardar"
+                        class="flex-1 bg-[#341915] text-white py-2 rounded hover:bg-[#561C24]">
+                    Guardar Orden
+                </button>
+            </div>
+        </form>
     </div>
 
-  </div>
-
+    <div class="max-w-5xl mx-auto mt-10 bg-white rounded-3xl shadow-2xl p-6">
+        <h2 class="text-2xl font-bold text-[#341915] mb-4">Órdenes Pendientes</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-center">
+                <thead class="bg-[#561C24] text-white">
+                    <tr>
+                        <th>Proveedor</th>
+                        <th>Sucursal</th>
+                        <th>Fecha Pedido</th>
+                        <th>Entrega Estimada</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in compras_pendientes %}
+                    <tr class="border-b hover:bg-gray-100">
+                        <td>{{ c.proveedor.nombre }}</td>
+                        <td>{{ c.sucursal.nombre }}</td>
+                        <td>{{ c.fecha_orden.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ c.fecha_estimada_entrega }}</td>
+                        <td><span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded">Pendiente</span></td>
+                        <td class="flex justify-center gap-2 py-2">
+                            <a href="{{ url_for('proveedores.cancelar_compra', id=c.id_compra) }}" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700">Cancelar</a>
+                            <a href="{{ url_for('proveedores.recibir_compra', id=c.id_compra) }}" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-800">Recibir</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-
 {% endblock %}

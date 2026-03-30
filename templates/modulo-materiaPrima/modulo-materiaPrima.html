@@ -145,16 +145,15 @@
 
             <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
 
-                <tr>
+                 <tr>
                     <th class="px-4 py-2">Nombre</th>
-                    <th class="px-4 py-2">Stock</th>
-                    <th class="px-4 py-2">Stock Min</th>
-                    <th class="px-4 py-2">Precio</th>
+                    <th class="px-4 py-2">Tipo Empaque</th>
+                    <th class="px-4 py-2">Piezas</th>
+                    <th class="px-4 py-2">Peso</th>
                     <th class="px-4 py-2">Proveedor</th>
-                    <th class="px-4 py-2">Última compra</th>
                     <th class="px-4 py-2 w-32">Estatus</th>
                     <th class="px-4 py-2 w-40">Acciones</th>
-                </tr>
+                 </tr>
 
             </thead>
 
@@ -167,16 +166,43 @@
                 <tr class="border-b hover:bg-gray-50">
 
                     <td class="px-6 py-4">{{ materia.nombre }}</td>
+               
+                    <!-- Tipo de empaque -->
+                    <td class="px-6 py-4">
+                        {% if materia.tipo_empaque == 'unidad' %}
+                            Unidad
+                        {% elif materia.tipo_empaque == 'caja' %}
+                            Caja
+                        {% elif materia.tipo_empaque == 'bulto' %}
+                            bulto
+                        {% else %}
+                            {{ materia.tipo_empaque }}
+                        {% endif %}
+                    </td>
                     
-                    <td class="px-6 py-4">{{ "%.0f"|format(materia.stock_actual) }}{{ materia.unidad_medida }}</td>
-                    <td class="px-6 py-4">{{ "%.0f"|format(materia.stock_minimo) }}{{ materia.unidad_medida }}</td>
-                    <td class="px-6 py-4">$ {{ materia.precio_unitario }}</td>
-
+                    <!-- Piezas por caja -->
+                    <td class="px-6 py-4">
+                        {% if materia.piezas_por_caja %}
+                            {{ materia.piezas_por_caja }} {{ materia.unidad_medida }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    
+                    <td class="px-6 py-4 text-center">
+    {% if materia.peso_por_pieza %}
+        {{ materia.peso_por_pieza }} {{ materia.unidad_contenido }}
+        <div class="text-[11px] text-gray-400">
+            por pieza
+        </div>
+    {% else %}
+        -
+    {% endif %}
+</td>
+                              
                     <td class="px-6 py-4">
                         {{ materia.proveedor.nombre if materia.proveedor else 'Sin proveedor' }}
                     </td>
-
-                    <td class="px-6 py-4">{{ materia.fecha_ultima_compra }}</td>
 
 
                     <!-- ESTATUS -->
@@ -201,7 +227,7 @@
 
 
                     <!-- ACCIONES -->
-                    <td class="px-4 py-2 bg-[#561C24] w-40">
+                      <td class="px-4 py-2 bg-[#561C24] w-40">
 
                         <div class="flex justify-center items-center gap-3">
 

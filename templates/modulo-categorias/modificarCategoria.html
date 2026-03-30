@@ -18,6 +18,24 @@
             </a>
         </div>
 
+        <!-- Mostrar mensajes flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-lg 
+                        {% if category == 'success' %}
+                            bg-green-100 border-l-4 border-green-500 text-green-700
+                        {% elif category == 'danger' %}
+                            bg-red-100 border-l-4 border-red-500 text-red-700
+                        {% elif category == 'warning' %}
+                            bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700
+                        {% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         <!-- CARD -->
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
@@ -34,7 +52,6 @@
             <!-- FORM -->
             <div class="p-8">
 
-                <!-- ⚠️ IMPORTANTE -->
                 <form action="{{ url_for('categorias.modificarCategoria', id=categoria.id_categoria) }}"
                       method="POST"
                       enctype="multipart/form-data"
@@ -42,68 +59,92 @@
 
                     {{ form.hidden_tag() }}
 
-                    <!-- NOMBRE -->
+                    <!-- NOMBRE CON VALIDACIÓN DE ERRORES -->
                     <div>
-                        {{ form.nombre.label(class="font-semibold") }}
-                        {{ form.nombre(class="w-full border rounded px-3 py-2") }}
+                        {{ form.nombre.label(class="font-semibold text-gray-700 block mb-2") }}
+                        {{ form.nombre(class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#341915] focus:border-transparent transition " + 
+                                      ('border-red-500 bg-red-50' if form.nombre.errors else 'border-gray-300'),
+                                      placeholder="Ej: Panes Artesanales") }}
+                        
+                        <!-- Mostrar errores de validación del formulario -->
+                        {% if form.nombre.errors %}
+                            <div class="mt-1">
+                                {% for error in form.nombre.errors %}
+                                    <p class="text-red-500 text-sm">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <p class="text-xs text-gray-500 mt-1">El nombre debe ser único y no puede repetirse</p>
                     </div>
 
                     <!-- DESCRIPCION -->
                     <div>
-                        {{ form.descripcion.label(class="font-semibold") }}
-                        {{ form.descripcion(class="w-full border rounded px-3 py-2") }}
+                        {{ form.descripcion.label(class="font-semibold text-gray-700 block mb-2") }}
+                        {{ form.descripcion(class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#341915] focus:border-transparent transition", 
+                                             rows="4",
+                                             placeholder="Descripción de la categoría...") }}
+                        {% if form.descripcion.errors %}
+                            <div class="mt-1">
+                                {% for error in form.descripcion.errors %}
+                                    <p class="text-red-500 text-sm">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <!-- 🔥 IMAGEN ACTUAL -->
                     <div>
-                        <label class="font-semibold block mb-2">
+                        <label class="font-semibold text-gray-700 block mb-2">
                             Imagen actual
                         </label>
 
                         {% if categoria.imagen %}
                             <img src="{{ url_for('categorias.categoria_imagen', id=categoria.id_categoria) }}"
-                                 class="w-32 h-32 object-cover rounded shadow mb-2">
+                                 class="w-32 h-32 object-cover rounded-lg shadow-md mb-2">
                         {% else %}
-                            <p class="text-gray-400">Sin imagen</p>
+                            <p class="text-gray-400 text-sm italic">Sin imagen registrada</p>
                         {% endif %}
                     </div>
 
                     <!-- 🔥 CAMBIAR IMAGEN -->
                     <div>
-                        <label class="font-semibold block mb-2">
+                        <label class="font-semibold text-gray-700 block mb-2">
                             Cambiar imagen
                         </label>
 
                         <input type="file"
                                name="imagen"
                                accept="image/*"
-                               onchange="preview(event)"
-                               class="w-full border rounded px-3 py-2 bg-white">
-
-                        <!-- PREVIEW -->
-                        <img id="previewImg"
-                             class="mt-3 w-32 h-32 object-cover rounded hidden">
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#341915] file:text-white hover:file:bg-[#4a241d] cursor-pointer">
+                        
+                        <p class="text-xs text-gray-500 mt-1">Dejar en blanco para mantener la imagen actual</p>
                     </div>
 
                     <!-- ESTATUS -->
                     <div>
-                        {{ form.estatus.label(class="font-semibold") }}
-                        {{ form.estatus(class="w-full border rounded px-3 py-2") }}
+                        {{ form.estatus.label(class="font-semibold text-gray-700 block mb-2") }}
+                        {{ form.estatus(class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#341915] focus:border-transparent transition") }}
+                        {% if form.estatus.errors %}
+                            <div class="mt-1">
+                                {% for error in form.estatus.errors %}
+                                    <p class="text-red-500 text-sm">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <!-- BOTONES -->
-                    <div class="flex gap-4 mt-6">
-
-                        <button type="submit"
-                            class="bg-[#341915] text-white px-6 py-3 rounded hover:bg-[#4a241d]">
+                    <div class="flex gap-4 mt-8 pt-4 border-t">
+                        <button type="submit" 
+                                class="bg-[#341915] text-white px-6 py-3 rounded-lg hover:bg-[#4a241d] transition duration-200 transform hover:scale-105 font-medium shadow-md">
                             Guardar cambios
                         </button>
 
                         <a href="{{ url_for('categorias.categorias') }}"
-                           class="bg-gray-200 px-6 py-3 rounded hover:bg-gray-300">
+                           class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition duration-200 font-medium">
                             Cancelar
                         </a>
-
                     </div>
 
                 </form>
@@ -115,14 +156,5 @@
     </div>
 
 </div>
-
-<!-- 🔥 SCRIPT PREVIEW -->
-<script>
-function preview(event){
-    const img = document.getElementById("previewImg");
-    img.src = URL.createObjectURL(event.target.files[0]);
-    img.classList.remove("hidden");
-}
-</script>
 
 {% endblock %}

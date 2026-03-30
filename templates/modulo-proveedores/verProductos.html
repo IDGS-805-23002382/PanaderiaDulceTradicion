@@ -1,0 +1,66 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+
+<div class="max-w-5xl mx-auto bg-white p-8 rounded-3xl shadow-xl mt-10">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-[#341915]">Detalle de Productos</h2>
+        <a href="{{ url_for('proveedores.detalleCompra') }}" 
+           class="bg-gray-500 text-white px-5 py-2 rounded-xl hover:bg-gray-600 transition-colors">
+            Volver al Historial
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+    <thead class="bg-[#561C24] text-white">
+        <tr>
+            <th class="p-4 rounded-tl-xl">Producto</th>
+            <th class="p-4">Cantidad</th>
+            <th class="p-4">Empaque</th>
+            <th class="p-4">Pz por Caja</th> <th class="p-4">Precio Unit.</th>
+            <th class="p-4 rounded-tr-xl text-right">Subtotal</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200">
+        {% for d in compra.detalles %}
+        <tr class="hover:bg-orange-50">
+            <td class="p-4 font-medium">
+                {{ d.materia.nombre }} 
+            </td>
+            <td class="p-4">{{ d.cantidad }}</td>
+            <td class="p-4 text-gray-600">{{ d.tipo_empaque }}</td>
+            
+            <td class="p-4">
+                {% if d.tipo_empaque == 'caja' %}
+                    {# Ajusta 'piezas_por_caja' al nombre real de tu columna en MateriaPrima #}
+                    {{ d.materia.piezas_por_caja }} pz
+                {% else %}
+                    1 pz
+                {% endif %}
+            </td>
+
+            <td class="p-4">${{ "%.2f"|format(d.precio_unitario_compra or 0) }}</td>
+            <td class="p-4 text-right font-bold text-[#341915]">
+                ${{ "%.2f"|format(d.subtotal or 0) }}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr class="bg-gray-50">
+            <td colspan="5" class="p-4 text-right font-bold text-xl">Total Pagado:</td>
+            <td class="p-4 text-right font-bold text-2xl text-[#561C24]">${{ "%.2f"|format(compra.total) }}</td>
+        </tr>
+    </tfoot>
+</table>
+    </div>
+
+    {% if compra.notas %}
+    <div class="mt-8 p-6 bg-amber-50 rounded-2xl border-l-8 border-[#561C24]">
+        <h4 class="font-bold text-[#341915] mb-1">Notas de la compra:</h4>
+        <p class="text-gray-700 italic">{{ compra.notas }}</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+
+<div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-6">
+  <div class="max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl p-6">
+    
+    <!-- Encabezado con información de materia y sucursal -->
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold text-[#341915] mb-2">
+        Historial de Movimientos
+      </h2>
+      <div class="bg-[#F5EDE3] p-4 rounded-xl">
+        <p class="text-[#341915]">
+          <span class="font-semibold">Materia Prima:</span> {{ materia.nombre }} |
+          <span class="font-semibold">Sucursal:</span> {{ sucursal.nombre }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Botón para volver -->
+    <div class="mb-4">
+      <a href="{{ url_for('proveedores.inventarioMateria') }}" 
+         class="inline-flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Volver al Inventario
+      </a>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-[#561C24] text-white">
+          <tr>
+            <th class="px-4 py-3">Fecha</th>
+            <th class="px-4 py-3">Tipo</th>
+            <th class="px-4 py-3">Cantidad</th>
+            <th class="px-4 py-3">Stock Antes</th>
+            <th class="px-4 py-3">Stock Después</th>
+            <th class="px-4 py-3">Referencia</th>
+            <th class="px-4 py-3">Proveedor</th>
+            <th class="px-4 py-3">Usuario</th>
+            <th class="px-4 py-3">Motivo</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for m in movimientos %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-4 py-2 text-center">
+              {% if m.fecha %}
+                {{ m.fecha.strftime('%Y-%m-%d %H:%M') if m.fecha else 'N/A' }}
+              {% else %}
+                N/A
+              {% endif %}
+            </td>
+            <td class="px-4 py-2 text-center">
+              {% if m.tipo == 'entrada' %}
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Entrada</span>
+              {% elif m.tipo == 'salida' %}
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">Salida</span>
+              {% else %}
+                <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs">{{ m.tipo }}</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-2 text-center font-medium">{{ m.cantidad if m.cantidad else 0 }}</td>
+            <td class="px-4 py-2 text-center">{{ m.stock_antes if m.stock_antes else 0 }}</td>
+            <td class="px-4 py-2 text-center">{{ m.stock_despues if m.stock_despues else 0 }}</td>
+            <td class="px-4 py-2 text-center">{{ m.referencia if m.referencia else 'N/A' }}</td>
+            <td class="px-4 py-2 text-center">{{ m.proveedor if m.proveedor else 'N/A' }}</td>
+            <td class="px-4 py-2 text-center">{{ m.usuario if m.usuario else 'N/A' }}</td>
+            <td class="px-4 py-2 text-center">{{ m.motivo if m.motivo else 'N/A' }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" class="text-center py-8 text-gray-500">
+              <div class="flex flex-col items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p>No hay movimientos registrados para esta materia prima</p>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Resumen de movimientos -->
+    {% if movimientos %}
+    <div class="mt-6 pt-4 border-t border-gray-200">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-green-50 p-3 rounded-lg">
+          <p class="text-xs text-green-600 font-semibold">Total Entradas</p>
+          <p class="text-xl font-bold text-green-700">
+            {{ movimientos|selectattr('tipo', 'equalto', 'entrada')|map(attribute='cantidad')|sum|default(0) }}
+          </p>
+        </div>
+        <div class="bg-red-50 p-3 rounded-lg">
+          <p class="text-xs text-red-600 font-semibold">Total Salidas</p>
+          <p class="text-xl font-bold text-red-700">
+            {{ movimientos|selectattr('tipo', 'equalto', 'salida')|map(attribute='cantidad')|sum|default(0) }}
+          </p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

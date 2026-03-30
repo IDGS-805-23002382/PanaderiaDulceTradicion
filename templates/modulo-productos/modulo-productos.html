@@ -10,6 +10,7 @@
     <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-4"></div>
 
 
+    
     <!--  AGREGAR -->
     <div class="flex justify-end mb-4">
         <a href="{{ url_for('productos.agregarProducto') }}"
@@ -145,9 +146,10 @@
             <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
 
                 <tr>
+                    <th class="px-4 py-2">Imagen</th>
                     <th class="px-4 py-2">Nombre</th>
+                    <th class="px-4 py-2">Descripción</th>
                     <th class="px-4 py-2">Categoría</th>
-                     <th class="px-4 py-2">Imgen</th>
                     <th class="px-4 py-2">Precio</th>
                     <th class="px-4 py-2">Costo</th>
                     <th class="px-4 py-2">Caducidad</th>
@@ -157,19 +159,11 @@
 
             </thead>
 
-
-
             <tbody class="bg-white">
 
             {% for producto in productos %}
 
                 <tr class="border-b hover:bg-gray-50">
-
-                    <td class="px-6 py-4">{{ producto.nombre }}</td>
-
-                    <td class="px-6 py-4">
-                        {{ producto.categoria.nombre if producto.categoria else 'Sin categoría' }}
-                    </td>
                     <td class="px-6 py-4">{% if producto.imagen_url %}
                         <img src="data:image/jpeg;base64,{{ producto.imagen_url | b64encode }}"
                       class="w-16 h-16 object-cover rounded-lg border">
@@ -177,6 +171,15 @@
                             Sin imagen
                         {% endif %}
                     </td>
+
+                    <td class="px-6 py-4">{{ producto.nombre }}</td>
+
+                    <td class="px-6 py-4">{{ producto.descripcion }}</td>  
+
+                    <td class="px-6 py-4">
+                        {{ producto.categoria.nombre if producto.categoria else 'Sin categoría' }}
+                    </td>
+                    
 
                     <td class="px-6 py-4">$ {{ producto.precio_venta }}</td>
 

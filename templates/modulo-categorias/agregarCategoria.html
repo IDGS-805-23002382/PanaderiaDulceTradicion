@@ -8,7 +8,27 @@
         Registrar Nueva Categoría
     </h2>
 
-    <!-- ⚠️ IMPORTANTE -->
+    <!-- 🔥 MENSAJES FLASH -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for categoria, mensaje in messages %}
+          
+          <div class="flash-msg p-3 rounded mb-4 text-sm font-medium shadow
+            {% if categoria == 'success' %} bg-green-500 text-white
+            {% elif categoria == 'danger' %} bg-red-500 text-white
+            {% elif categoria == 'warning' %} bg-yellow-400 text-black
+            {% elif categoria == 'info' %} bg-blue-500 text-white
+            {% else %} bg-gray-500 text-white
+            {% endif %}
+          ">
+            {{ mensaje }}
+          </div>
+
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- FORMULARIO -->
     <form method="POST"
           action="{{ url_for('categorias.agregarCategoria') }}"
           enctype="multipart/form-data">
@@ -35,7 +55,7 @@
             {% endfor %}
         </div>
 
-        <!-- 🔥 IMAGEN -->
+        <!-- IMAGEN -->
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">
                 Imagen
@@ -61,7 +81,7 @@
         <div class="flex gap-4">
 
             <button type="submit"
-                class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d]">
+                class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d] transition">
                 Guardar
             </button>
 
@@ -75,5 +95,6 @@
     </form>
 
 </div>
+
 
 {% endblock %}

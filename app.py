@@ -45,6 +45,10 @@ def b64encode_filter(s):
 def nosotros():
     return render_template("nosotros.html")
 
+@app.route("/gestion")
+def gestion():
+    return render_template("vista-empleado/gestion/gestion.html")
+
 @app.route("/", methods=['GET','POST'])
 @app.route("/home")
 def home():
@@ -84,6 +88,9 @@ def catalogo():
         categorias=categorias,
         productos=productos
     )
+@app.route("/vistaEmpleado")
+def vistaEmpleado():
+    return render_template("vista-empleado/vistaEmpleado.html")
 
 @app.route("/login")
 def login():
