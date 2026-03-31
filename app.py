@@ -17,6 +17,7 @@ from blueprints.roles.routesRoles import roles_bp
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from blueprints.auth.routesAuth import auth_bp
+from blueprints.finanzas import finanzas_bp
 
 import base64
 
@@ -31,6 +32,7 @@ app.register_blueprint(nomina_bp)
 app.register_blueprint(categorias_bp)
 app.register_blueprint(productos_bp)
 app.register_blueprint(recetas_bp)
+app.register_blueprint(finanzas_bp)
 app.register_blueprint(ordenProduccion_bp)
 app.register_blueprint(sucursales_bp)
 app.register_blueprint(clientes_bp)

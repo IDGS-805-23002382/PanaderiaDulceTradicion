@@ -364,8 +364,6 @@ class Cliente(db.Model):
     fecha_registro = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     estatus        = db.Column(db.Enum('activo','inactivo'), default='activo')
 
-# ── Reemplazar los modelos de nómina en models.py ────────────────────────────
-# Elimina las clases Nomina y DetalleNomina anteriores y pega estas 3
 
 class NominaIndividual(db.Model):
     """Un registro de pago por empleado por periodo."""
@@ -430,3 +428,18 @@ class NominaGrupal(db.Model):
 
     def __repr__(self):
         return f'<NominaGrupal {self.nombre}>'
+
+class GastoExtra(db.Model):
+    """Gastos que no vienen de compras ni nómina: renta, servicios, mantenimiento, etc."""
+    __tablename__ = 'gastos_extra'
+ 
+    id_gasto       = db.Column(db.Integer, primary_key=True)
+    concepto       = db.Column(db.String(150), nullable=False)
+    monto          = db.Column(db.Numeric(10, 2), nullable=False)
+    fecha          = db.Column(db.Date, nullable=False)
+    categoria      = db.Column(db.String(80))   # renta, servicios, mantenimiento, otros
+    notas          = db.Column(db.Text)
+    fecha_registro = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+ 
+    def __repr__(self):
+        return f'<GastoExtra {self.concepto} ${self.monto}>'

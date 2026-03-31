@@ -1,0 +1,35 @@
+<!-- templates/modulo-finanzas/confirmar-eliminar-gasto.html -->
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="flex items-center justify-center min-h-[60vh]">
+  <div style="background:white;" class="rounded-2xl shadow p-10 max-w-md w-full text-center">
+
+    <div class="flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mx-auto mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+      </svg>
+    </div>
+
+    <h2 class="text-xl font-semibold mb-2" style="color:#341915;">¿Eliminar gasto?</h2>
+    <p class="text-gray-600 mb-1">Estás a punto de eliminar:</p>
+    <p class="text-lg font-bold mb-1" style="color:#341915;">{{ gasto.concepto }}</p>
+    <p class="text-sm text-purple-600 font-semibold mb-1">${{ "%.2f"|format(gasto.monto) }}</p>
+    <p class="text-xs text-gray-400 mb-8">{{ gasto.fecha.strftime('%d/%m/%Y') }} — Esta acción no se puede deshacer.</p>
+
+    <div class="flex gap-4">
+      <form method="POST" class="flex-1">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg transition">
+          Sí, eliminar
+        </button>
+      </form>
+      <a href="{{ url_for('finanzas.gastos') }}" class="flex-1">
+        <button class="w-full font-medium py-2 rounded-lg transition" style="border:1px solid #341915; color:#341915;">
+          Cancelar
+        </button>
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
