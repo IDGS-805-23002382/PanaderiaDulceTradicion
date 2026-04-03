@@ -1,12 +1,17 @@
 {% extends "layoutModulos.html" %}
 {% block container %}
+
 <div class="min-h-screen bg-[#f7efe5] py-6 px-4">
     <form method="POST">
         {{ form.hidden_tag() }}
+
         <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+
+            <!-- FORM -->
             <div class="bg-white rounded-3xl shadow-xl p-6">
-                <h2 class="text-2xl font-bold text-[#341915] mb-6">Nueva Orden</h2>
+                <h2 class="text-2xl font-bold text-[#341915] mb-6">
+                    Nueva Orden de Producción
+                </h2>
 
                 <div class="mb-4">
                     <label class="text-sm font-semibold">Sucursal</label>
@@ -15,41 +20,119 @@
 
                 <div class="mb-4">
                     <label class="text-sm font-semibold">Producto</label>
-                    <div class="flex gap-2">
-                        {{ form.id_producto(class="w-full border rounded-xl px-4 py-2") }}
-                        <button type="submit" name="btn_verificar" class="bg-gray-200 px-4 rounded-xl text-xs font-bold text-[#341915]">
-                            Verificar Receta
-                        </button>
-                    </div>
+                    {{ form.id_producto(class="w-full border rounded-xl px-4 py-2") }}
                 </div>
 
                 <div class="mb-4">
-                    <label class="text-sm font-semibold">Cantidad</label>
+                    <label class="text-sm font-semibold">Cantidad a producir</label>
                     {{ form.cantidad(class="w-full border rounded-xl px-4 py-2") }}
                 </div>
+
+                <button type="submit"
+                    class="bg-[#341915] text-white px-4 py-2 rounded-xl w-full">
+                    Calcular Producción
+                </button>
             </div>
 
-            <div class="bg-[#341915] text-[#E8D8C4] rounded-3xl shadow-xl p-6 flex flex-col justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold mb-6 border-b border-[#E8D8C4]/20 pb-4 text-center">Validación</h2>
-                    
-                    <div class="space-y-4">
-                        <div class="flex justify-between border-b border-[#E8D8C4]/10 pb-2">
-                            <span>Receta Detectada:</span>
-                            <span class="font-bold text-white">{{ receta_nombre }}</span>
-                        </div>
-                        <div class="mt-8 text-center">
-                            <p class="text-xs opacity-60">Total Venta Estimado</p>
-                            <p class="text-4xl font-black text-white">$ {{ "{:,.2f}".format(total_venta) }}</p>
-                        </div>
+            <!-- RESUMEN -->
+            <div class="bg-[#341915] text-[#E8D8C4] rounded-3xl shadow-xl p-6">
+
+                <h2 class="text-xl font-bold mb-4 text-center">
+                    Orden de Producción
+                </h2>
+
+                <div class="bg-[#4a241d] p-4 rounded-xl mb-4 text-center">
+                    <p class="text-sm">Receta</p>
+                    <p class="text-lg font-bold text-white">{{ receta_nombre }}</p>
+                </div>
+
+                <!-- COSTOS -->
+                <div class="grid grid-cols-2 gap-4 mb-6 text-center">
+                    <div class="bg-[#4a241d] p-4 rounded-xl">
+                        <p class="text-xs">Costo Total</p>
+                        <p class="text-2xl font-black text-white">
+                            $ {{ "{:,.2f}".format(total_costo) }}
+                        </p>
+                    </div>
+
+                    <div class="bg-[#4a241d] p-4 rounded-xl">
+                        <p class="text-xs">Costo por pieza</p>
+                        <p class="text-2xl font-black text-white">
+                            $ {{ "{:,.2f}".format(costo_unitario) }}
+                        </p>
                     </div>
                 </div>
 
-                <button type="submit" name="btn_confirmar" class="w-full bg-[#E8D8C4] text-[#341915] py-4 rounded-2xl text-xl font-extrabold mt-6">
-                    ✅ Confirmar Producción
+                <!-- INGREDIENTES -->
+                {% if ingredientes %}
+                <div class="max-h-72 overflow-y-auto rounded-xl border border-[#E8D8C4]/20">
+                    <table class="w-full text-sm text-center">
+                        <thead class="bg-[#4a241d] text-white sticky top-0">
+                            <tr>
+                                <th class="py-2">Ingrediente</th>
+                                <th>Cantidad</th>
+                                <th>Stock</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for ing in ingredientes %}
+                            <tr class="border-b border-[#E8D8C4]/10">
+
+                                <td class="py-2 font-medium">
+                                    {{ ing.nombre }}
+                                </td>
+
+                                <td class="px-4 py-2 font-medium">
+                                    {{ ing.cantidad }} {{ ing.tipo }}
+                                </td>
+
+                                <td class="px-4 py-2">
+                                    {{ ing.stock }} {{ ing.tipo }}
+                                </td>
+
+                                <td>
+                                    {% if ing.suficiente %}
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">
+                                            OK
+                                        </span>
+                                    {% else %}
+                                        <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">
+                                            FALTA
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                <!-- ALERTA -->
+                {% if not inventario_ok %}
+                <div class="mt-4 bg-red-500/20 border border-red-400 text-red-300 p-3 rounded-xl text-center font-bold">
+                    ⚠ No hay suficiente inventario
+                </div>
+                {% endif %}
+
+                <!-- BOTON -->
+                <button type="submit" name="btn_confirmar"
+                    class="w-full mt-6 py-3 rounded-xl font-bold
+                    {% if inventario_ok %}
+                        bg-[#E8D8C4] text-[#341915]
+                    {% else %}
+                        bg-gray-400 text-gray-700 cursor-not-allowed
+                    {% endif %}"
+                    {% if not inventario_ok %} disabled {% endif %}>
+                    Confirmar Producción
                 </button>
+
             </div>
         </div>
     </form>
 </div>
+
 {% endblock %}

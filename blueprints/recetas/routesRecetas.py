@@ -139,10 +139,11 @@ def modificarReceta(id):
     
     form.id_producto.choices = [(p.id_producto, p.nombre) for p in productos]
 
-    # Obtener los ingredientes actuales para mostrarlos en el formulario
+    # Obtener los ingredientes actuales
     ingredientes_actuales = DetalleReceta.query.filter_by(id_receta=id).all()
 
     if form.validate_on_submit():
+        # Actualizar datos básicos de la receta
         receta.id_producto = form.id_producto.data
         receta.nombre = form.nombre.data
         receta.descripcion = form.descripcion.data
@@ -150,35 +151,46 @@ def modificarReceta(id):
         receta.estatus = form.estatus.data
 
         # --- GESTIÓN DE INGREDIENTES ---
-        # 1. Eliminar los detalles anteriores para evitar duplicados o basura
+        # 1. Limpiar detalles anteriores
         DetalleReceta.query.filter_by(id_receta=id).delete()
 
-        # 2. Capturar los nuevos datos del formulario
+        # 2. Capturar listas del formulario (incluyendo el nuevo tipo)
         materias_ids = request.form.getlist('materia[]')
         cantidades = request.form.getlist('cantidad[]')
+        tipos_unidades = request.form.getlist('tipo[]') # Captura el select manual
 
         for i in range(len(materias_ids)):
             id_mat = materias_ids[i]
-            cant = cantidades[i]
+            
+            # Validamos que se haya seleccionado una materia y que haya cantidad
+            if id_mat and cantidades[i]:
+                try:
+                    cant_val = float(cantidades[i])
+                    if cant_val > 0:
+                        nuevo_detalle = DetalleReceta(
+                            id_receta=receta.id_receta,
+                            id_materia=id_mat,
+                            cantidad=cant_val,
+                            tipo=tipos_unidades[i] # Guardamos la unidad elegida (g, kg, ml, etc)
+                        )
+                        db.session.add(nuevo_detalle)
+                except ValueError:
+                    continue
 
-            if id_mat and cant and float(cant) > 0:
-                nuevo_detalle = DetalleReceta(
-                    id_receta=receta.id_receta,
-                    id_materia=id_mat,
-                    cantidad=float(cant)
-                )
-                db.session.add(nuevo_detalle)
-
-        db.session.commit()
-        flash("Receta e ingredientes actualizados correctamente", "success")
-        return redirect(url_for('recetas.recetas'))
+        try:
+            db.session.commit()
+            flash("Receta e ingredientes actualizados correctamente", "success")
+            return redirect(url_for('recetas.recetas'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error al guardar: {str(e)}", "danger")
 
     return render_template(
         'modulo-recetas/modificarReceta.html',
         form=form,
         receta=receta,
         materias=materias,
-        ingredientes_actuales=ingredientes_actuales # Enviamos esto
+        ingredientes_actuales=ingredientes_actuales
     )
 
 

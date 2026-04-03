@@ -4,27 +4,27 @@
 <div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 py-12 px-4 sm:px-6 lg:px-8">
 
     <div class="max-w-4xl mx-auto">
-        
-        
+
+        <!-- Botón volver -->
         <div class="mb-6">
             <a href="{{ url_for('materiaPrima.materiaPrima') }}" 
                class="inline-flex items-center text-[#341915] hover:text-[#4a241d] transition-colors duration-200 group">
                 <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform duration-200" 
                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
                 <span class="font-medium">Volver a materias primas</span>
             </a>
         </div>
 
-      
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 backdrop-blur-sm">
-            
-           
+        <!-- Card principal -->
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+
+            <!-- Header -->
             <div class="bg-gradient-to-r from-[#341915] to-[#4a241d] px-8 py-6">
-                
                 <div class="flex items-center space-x-4">
-                    <div class="bg-[#E8D8C4] p-3 rounded-2xl backdrop-blur-sm">
+                    <div class="bg-[#E8D8C4] p-3 rounded-2xl">
                         <img class="w-16 h-16 rounded-xl object-cover"
                              src="{{ url_for('static', filename='img/iconosModulos/materiaPrima.png') }}"
                              alt="Materia Prima"/>
@@ -38,185 +38,190 @@
 
             <!-- Contenido -->
             <div class="p-8">
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    
-                    <!-- Columna izquierda -->
+
+                    <!-- Izquierda -->
                     <div class="space-y-6">
-
-                        <!-- Nombre -->
-                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
-                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
-                                Nombre
-                            </label>
-                            <p class="text-xl font-bold text-gray-800 mt-1">
-                                {{ materia.nombre }}
-                            </p>
+                        <div class="bg-amber-50 rounded-xl p-5 border">
+                            <label class="text-sm font-semibold text-[#341915] uppercase">Nombre</label>
+                            <p class="text-xl font-bold mt-1">{{ materia.nombre }}</p>
                         </div>
 
-                        <!-- Unidad -->
-                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
-                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
-                                Unidad de Medida
-                            </label>
-                            <p class="text-lg text-gray-800 mt-1">
-                                {{ materia.unidad_medida }}
-                            </p>
+                        <div class="bg-amber-50 rounded-xl p-5 border">
+                            <label class="text-sm font-semibold text-[#341915] uppercase">Piezas</label>
+                            <p class="text-lg mt-1">{{ materia.piezas_por_caja }} {{ materia.unidad_medida }} </p>
                         </div>
 
-                        <!-- Proveedor -->
-                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
-                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
-                                Proveedor
-                            </label>
-                            <p class="text-lg text-gray-800 mt-1">
+                        <div class="bg-amber-50 rounded-xl p-5 border">
+                            <label class="text-sm font-semibold text-[#341915] uppercase">Proveedor</label>
+                            <p class="text-lg mt-1">
                                 {{ materia.proveedor.nombre if materia.proveedor else "Sin proveedor" }}
                             </p>
                         </div>
-
                     </div>
 
-                    <!-- Columna derecha -->
+                    <!-- Derecha -->
                     <div class="space-y-6">
-
-                        <!-- Stock -->
-                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
-                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
-                                Stock Actual
-                            </label>
-                            <p class="text-lg font-semibold text-gray-800 mt-1">
-                                {{ materia.stock_actual }}
-                            </p>
+                        <div class="bg-amber-50 rounded-xl p-5 border">
+                            <label class="text-sm font-semibold text-[#341915] uppercase">Peso por pieza</label>
+                            <p class="text-lg font-semibold mt-1">{{ materia.peso_por_pieza }} {{ materia.unidad_contenido }}</p>
                         </div>
 
-                        <!-- Stock minimo -->
-                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
-                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
-                                Stock Mínimo
-                            </label>
-                            <p class="text-lg text-gray-800 mt-1">
-                                {{ materia.stock_minimo }}
-                            </p>
-                        </div>
-
-                        <!-- Precio -->
-                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
-                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
-                                Precio Unitario
-                            </label>
-                            <p class="text-lg text-gray-800 mt-1">
-                                $ {{ materia.precio_unitario }}
-                            </p>
-                        </div>
-
-                        <!-- Fecha compra -->
-                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
-                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
-                                Última Compra
-                            </label>
-                            <p class="text-lg text-gray-800 mt-1">
-                                {{ materia.fecha_ultima_compra }}
-                            </p>
-                        </div>
-
-                        <!-- Estatus -->
-                        <div class="bg-amber-50/50 rounded-xl p-5 border border-amber-100">
-                            <label class="text-sm font-semibold text-[#341915] uppercase tracking-wider">
-                                Estatus
-                            </label>
-
-                            <div class="flex items-center space-x-3 mt-2">
-
+                        <div class="bg-amber-50 rounded-xl p-5 border">
+                            <label class="text-sm font-semibold text-[#341915] uppercase">Estatus</label>
+                            <div class="mt-2">
                                 {% if materia.estatus == 'activo' %}
-                                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                                    <span class="text-green-700 font-semibold bg-green-100 px-4 py-2 rounded-lg">
+                                    <span class="bg-green-100 text-green-700 px-4 py-2 rounded-lg font-semibold">
                                         Activo
                                     </span>
                                 {% else %}
-                                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                                    <span class="text-red-700 font-semibold bg-red-100 px-4 py-2 rounded-lg">
+                                    <span class="bg-red-100 text-red-700 px-4 py-2 rounded-lg font-semibold">
                                         Inactivo
                                     </span>
                                 {% endif %}
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
 
-                <!-- Botón volver -->
-                <div class="mt-10 pt-6 border-t border-amber-200 flex justify-center">
-
+                <!-- Botón -->
+                <div class="mt-10 text-center">
                     <a href="{{ url_for('materiaPrima.materiaPrima') }}" 
-                       class="inline-flex items-center px-6 py-3 bg-[#341915] text-white rounded-xl hover:bg-[#4a241d] transition-all duration-200 transform hover:scale-105 shadow-lg">
+                       class="px-6 py-3 bg-[#341915] text-white rounded-xl hover:bg-[#4a241d] transition">
                         Ver todas las materias primas
                     </a>
-
                 </div>
 
             </div>
         </div>
     </div>
 
-    <br/>
-    <div class="max-w-6xl mx-auto bg-white p-6 rounded-3xl shadow">
-      <h2 class="text-2xl font-bold mb-4 text-[#341915]">Historial de Compras</h2>
+    <!-- HISTORIAL -->
+    <div class="max-w-6xl mx-auto mt-12">
 
-      <table class="w-full text-center">
-        <thead class="bg-[#561C24] text-white">
-          <tr>
-            <th>Proveedor</th>
-            <th>Sucursal</th>
-            <th>Pedido</th>
-            <th>Entrega</th>
-            <th>Total</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
+        <h2 class="text-3xl font-bold text-[#341915] mb-6">
+            Historial de Compras
+        </h2>
 
-        <tbody>
-  {% for c in compras %}
-    {# Buscamos el detalle específico que pertenece a esta materia prima #}
-    {% for detalle in c.detalles %}
-      {% if detalle.id_materia == materia.id %} {# Asegúrate que 'id' es el nombre del campo en tu modelo MateriaPrima #}
-      <tr class="border-b">
-        <td>{{ c.proveedor.nombre }}</td>
-        <td>{{ c.sucursal.nombre }}</td>
-        <td>{{ c.fecha_orden.strftime('%Y-%m-%d') }}</td>
-        
-        <td class="font-bold text-[#561C24]">
-          {{ detalle.cantidad }} {{ detalle.tipo_empaque }}
-        </td>
+        {% for compra in compras %}
 
-        <td>
-          {% if c.fecha_entrega %}
-            {{ c.fecha_entrega.strftime('%Y-%m-%d %H:%M') }}
-          {% else %}
-            -
-          {% endif %}
-        </td>
+        <div class="bg-white p-6 rounded-3xl shadow-xl mb-8">
 
-        {# Aquí mostramos el subtotal del detalle o el precio unitario, no el total de la factura completa #}
-        <td>${{ "%.2f"|format(detalle.subtotal) }}</td>
+            <!-- Encabezado compra -->
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="text-xl font-bold text-[#341915]">
+                        Compra #{{ compra.id_compra }}
+                    </h3>
+                    <p class="text-gray-600 text-sm">
+                        {{ compra.proveedor.nombre }} - {{ compra.sucursal.nombre }}
+                    </p>
+                </div>
 
-        <td>
-          {% if c.estado == 'recibida' %}
-            <span class="bg-green-200 px-2 py-1 rounded">Recibida</span>
-          {% else %}
-            <span class="bg-red-200 px-2 py-1 rounded">Cancelada</span>
-          {% endif %}
-        </td>
-      </tr>
-      {% endif %}
-    {% endfor %}
-  {% endfor %}
-</tbody>
-      </table>
+                <div class="text-right text-sm text-gray-500">
+                    <p>Pedido: {{ compra.fecha_orden.strftime('%Y-%m-%d') }}</p>
+                    <p>
+                        Entrega:
+                        {% if compra.fecha_entrega %}
+                            {{ compra.fecha_entrega.strftime('%Y-%m-%d') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Tabla -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-[#561C24] text-white">
+                        <tr>
+                            <th class="p-3">Producto</th>
+                            <th class="p-3">Cantidad</th>
+                            <th class="p-3">Empaque</th>
+                            <th class="p-3">Pz por Caja</th>
+                            <th class="p-3">Precio Unit.</th>
+                            <th class="p-3 text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+
+                        {% for d in compra.detalles %}
+                            {% if d.id_materia == materia.id_materia %}
+                            <tr class="hover:bg-orange-50">
+                                
+                                <td class="p-3 font-medium">
+                                    {{ d.materia.nombre }}
+                                </td>
+
+                                <td class="p-3">
+                                    {{ d.cantidad }}
+                                </td>
+
+                                <td class="p-3">
+                                    {{ d.tipo_empaque }}
+                                </td>
+
+                                <td class="p-3">
+                                    {% if d.tipo_empaque == 'caja' %}
+                                        {{ d.materia.piezas_por_caja }} pz
+                                    {% else %}
+                                        1 pz
+                                    {% endif %}
+                                </td>
+
+                                <td class="p-3">
+                                    ${{ "%.2f"|format(d.precio_unitario_compra or 0) }}
+                                </td>
+
+                                <td class="p-3 text-right font-bold text-[#341915]">
+                                    ${{ "%.2f"|format(d.subtotal or 0) }}
+                                </td>
+
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+
+                    </tbody>
+
+                    <tfoot>
+                        <tr class="bg-gray-50">
+                            <td colspan="5" class="p-3 text-right font-bold">
+                                Total de la compra:
+                            </td>
+                            <td class="p-3 text-right font-bold text-[#561C24]">
+                                ${{ "%.2f"|format(compra.total) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+            </div>
+
+            <!-- Estado -->
+            <div class="mt-4">
+                {% if compra.estado == 'recibida' %}
+                    <span class="bg-green-200 text-green-800 px-3 py-1 rounded-lg text-sm">
+                        Recibida
+                    </span>
+                {% else %}
+                    <span class="bg-red-200 text-red-800 px-3 py-1 rounded-lg text-sm">
+                        Cancelada
+                    </span>
+                {% endif %}
+            </div>
+
+        </div>
+
+        {% else %}
+        <p class="text-gray-600">
+            No hay compras registradas para esta materia prima.
+        </p>
+        {% endfor %}
+
     </div>
- 
+
 </div>
 
 {% endblock %}

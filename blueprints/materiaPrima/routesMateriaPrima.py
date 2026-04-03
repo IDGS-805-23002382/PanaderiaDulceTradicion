@@ -3,6 +3,7 @@ from flask import render_template, request, redirect, url_for, flash
 from models import MateriaPrima, Proveedor, db, Compra, DetalleCompra
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import contains_eager
 from . import materiaPrima_bp
 import forms
 
@@ -94,11 +95,9 @@ def agregarMateriaPrima():
 def detalleMateriaPrima(id):
     materia = MateriaPrima.query.get_or_404(id)
 
-    # Cargamos las compras Y sus detalles de forma anticipada
-    compras = Compra.query.join(DetalleCompra).filter(
-        DetalleCompra.id_materia == id,
-        Compra.estado == "recibida"
-    ).options(joinedload(Compra.detalles)).order_by(Compra.id_compra.desc()).all()
+    compras = Compra.query.join(DetalleCompra)\
+        .filter(DetalleCompra.id_materia == id)\
+        .all()
 
     return render_template(
         'modulo-materiaPrima/detallesMateriaPrima.html',

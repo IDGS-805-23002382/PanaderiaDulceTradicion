@@ -38,11 +38,6 @@
                         <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Estatus</label>
                         {{ form.estatus(class="w-full bg-amber-50 border-2 border-amber-200 rounded-xl px-4 py-3 text-[#341915] font-semibold") }}
                     </div>
-                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                        <p class="text-xs text-blue-700 leading-tight">
-                            <strong>Edición:</strong> Los cambios en los ingredientes sobrescribirán la lista anterior al guardar.
-                        </p>
-                    </div>
                 </div>
             </div>
 
@@ -60,41 +55,33 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-200">
                     {% for i in range(12) %}
-                        {# Intentamos obtener el ingrediente actual de la lista para llenar la fila #}
                         {% set ing = ingredientes_actuales[i] if i < ingredientes_actuales|length else None %}
                         
                         <div class="flex items-center gap-4 py-3 border-b border-gray-200 last:border-0">
-                            <span class="flex-none w-6 h-6 rounded-full {% if ing %}bg-[#00c853]{% else %}bg-gray-300{% endif %} text-white flex items-center justify-center shadow-sm transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
-                            </span>
-                            
                             <div class="flex-grow">
                                 <select name="materia[]" class="w-full bg-transparent border-none focus:ring-0 text-sm text-gray-700 font-semibold cursor-pointer">
-                                    <option value="">-- Quitar / Seleccionar --</option>
+                                    <option value="">-- Seleccionar Materia --</option>
                                     {% for m in materias %}
                                         <option value="{{ m.id_materia }}" {% if ing and ing.id_materia == m.id_materia %}selected{% endif %}>
                                             {{ m.nombre }} 
-                                            {% if m.contenido_por_pieza %}
-                                                (1 {{ m.unidad_compra }} = {{ m.contenido_por_pieza }} {{ m.unidad_receta }})
-                                            {% endif %}
                                         </option>
                                     {% endfor %}
                                 </select>
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <div class="relative">
-                                    <input type="number" step="0.001" name="cantidad[]" 
-                                           value="{{ ing.cantidad if ing else '' }}" 
-                                           placeholder="0" 
-                                           class="w-28 text-center bg-white border-2 border-[#341915] rounded-full px-4 py-1 text-sm font-bold focus:ring-2 focus:ring-amber-200 outline-none transition-all">
-                                </div>
+                                <input type="number" step="0.001" name="cantidad[]" 
+                                       value="{{ ing.cantidad if ing else '' }}" 
+                                       placeholder="Cant." 
+                                       class="w-20 text-center bg-white border-2 border-[#341915] rounded-lg px-2 py-1 text-sm font-bold">
 
-                                <span class="text-[11px] font-bold text-[#341915] bg-[#fef3c7] px-3 py-1.5 rounded-lg shadow-sm border border-amber-200">
-                                    ml / gr
-                                </span>
+                                <select name="tipo[]" class="text-[11px] font-bold text-[#341915] bg-[#fef3c7] px-2 py-1.5 rounded-lg border border-amber-200 focus:outline-none">
+                                    <option value="g" {% if ing and ing.tipo == 'g' %}selected{% endif %}>g</option>
+                                    <option value="kg" {% if ing and ing.tipo == 'kg' %}selected{% endif %}>kg</option>
+                                    <option value="ml" {% if ing and ing.tipo == 'ml' %}selected{% endif %}>ml</option>
+                                    <option value="l" {% if ing and ing.tipo == 'l' %}selected{% endif %}>l</option>
+                                    <option value="pza" {% if ing and ing.tipo == 'pza' %}selected{% endif %}>pza</option>
+                                </select>
                             </div>
                         </div>
                     {% endfor %}
@@ -102,22 +89,19 @@
             </div>
 
             <div>
-                <label class="block text-xl font-bold text-gray-800 mb-4">🥣 Pasos de Elaboración (Descripción)</label>
-                {{ form.descripcion(class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 focus:border-[#341915] focus:ring-0 min-h-[200px]") }}
+                <label class="block text-xl font-bold text-gray-800 mb-4">🥣 Pasos de Elaboración</label>
+                {{ form.descripcion(class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 focus:border-[#341915] focus:ring-0 min-h-[150px]") }}
             </div>
 
             <div class="flex flex-col md:flex-row gap-4 justify-end pt-6">
-                <a href="{{ url_for('recetas.recetas') }}" 
-                   class="px-8 py-3 text-center font-bold text-gray-500 hover:text-gray-700 transition-colors">
-                    Cancelar Cambios
+                <a href="{{ url_for('recetas.recetas') }}" class="px-8 py-3 text-center font-bold text-gray-500 hover:text-gray-700 transition-colors">
+                    Cancelar
                 </a>
-                <button type="submit" 
-                        class="px-12 py-3 bg-[#341915] text-white font-bold rounded-xl shadow-xl hover:bg-[#4a241d] transform hover:scale-105 transition-all">
-                    Guardar Cambios en Receta
+                <button type="submit" class="px-12 py-3 bg-[#341915] text-white font-bold rounded-xl shadow-xl hover:bg-[#4a241d] transform hover:scale-105 transition-all">
+                    Guardar Cambios
                 </button>
             </div>
         </div>
     </form>
 </div>
-
 {% endblock %}

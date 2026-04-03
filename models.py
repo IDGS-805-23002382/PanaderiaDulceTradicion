@@ -157,6 +157,8 @@ class DetalleReceta(db.Model):
     __tablename__ = 'detalle_receta'
 
     id_detalle = db.Column(db.Integer, primary_key=True)
+    
+    tipo = db.Column(db.String(10), nullable=True)
 
     id_receta = db.Column(
         db.Integer,
@@ -188,6 +190,7 @@ class DetalleReceta(db.Model):
 
     def __repr__(self):
         return f'<DetalleReceta {self.id_detalle}>'
+    
     
     
 class Orden(db.Model):
@@ -247,7 +250,11 @@ class Compra(db.Model):
 
     proveedor = db.relationship('Proveedor')
     sucursal = db.relationship('Sucursal')
-    detalles = db.relationship('DetalleCompra', cascade='all, delete-orphan')
+    detalles = db.relationship(
+    'DetalleCompra',
+    back_populates='compra',
+    cascade='all, delete-orphan'
+)
 
 
 class DetalleCompra(db.Model):
@@ -265,6 +272,10 @@ class DetalleCompra(db.Model):
 
     materia = db.relationship('MateriaPrima')
     
+    compra = db.relationship(
+    'Compra',
+    back_populates='detalles'
+)
 class InventarioMateriaPrima(db.Model):
     __tablename__ = 'inventario_materia_prima'
 
