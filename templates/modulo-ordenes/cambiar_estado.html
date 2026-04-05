@@ -71,21 +71,6 @@
     </div>
 </div>
 
-<!-- SCRIPT -->
-<script>
-    const estatusSelect = document.querySelector("select[name='estatus']");
-    const motivoContainer = document.getElementById("motivoContainer");
 
-    function toggleMotivo() {
-        if (estatusSelect.value === "cancelada") {
-            motivoContainer.classList.remove("hidden");
-        } else {
-            motivoContainer.classList.add("hidden");
-        }
-    }
-
-    estatusSelect.addEventListener("change", toggleMotivo);
-    window.onload = toggleMotivo;
-</script>
 
 {% endblock %}
