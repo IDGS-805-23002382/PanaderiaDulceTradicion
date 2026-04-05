@@ -9,6 +9,21 @@
     </h1>
 
     <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-4"></div>
+
+    <!-- BOTON AGREGAR -->
+    <div class="flex justify-end mb-4">
+        <a href="{{ url_for('ordenProduccion.agregarOrden') }}"
+           class="flex items-center gap-2 bg-[#E8D8C4] px-4 py-2 rounded hover:bg-[#d6c3a7]">
+
+            <img src="{{ url_for('static', filename='img/iconosModulos/nuevo.png') }}"
+                 class="h-6 w-6">
+
+            <span class="text-[#341915] font-medium">
+                Agregar
+            </span>
+
+        </a>
+    </div>
     </div>
 
     <div class="flex items-center justify-between mb-4">
@@ -127,13 +142,10 @@
             <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
 
                 <tr>
-                    <th class="px-4 py-2">ID</th>
-                    <th class="px-4 py-2">Cliente</th>
-                    <th class="px-4 py-2">Teléfono</th>
+                    <th class="px-4 py-2">No. Orden</th>
                     <th class="px-4 py-2">Fecha</th>
-                    <th class="px-4 py-2">Cajera</th>
-                    <th class="px-4 py-2">Total</th>
-                    <th class="px-4 py-2">Estatus de Orde</th>
+                    <th class="px-4 py-2">Usuario</th>
+                    <th class="px-4 py-2">Estatus de Orden</th>
                     <th class="px-4 py-2 w-40">Acciones</th>
                 </tr>
 
@@ -146,15 +158,7 @@
 
                 <tr class="border-b hover:bg-gray-50">
 
-                    <td class="px-4 py-2 text-center">{{ orden.id_orden }}</td>
-
-                    <td class="px-4 py-2">
-                        {{ orden.cliente_nombre }}
-                    </td>
-
-                    <td class="px-4 py-2">
-                        {{ orden.cliente_telefono }}
-                    </td>
+                    <td class="px-4 py-2 text-center">#{{ orden.id_orden }}</td>
 
                     <td class="px-4 py-2 text-center">
                         {{ orden.fecha.strftime('%Y-%m-%d %H:%M') }}
@@ -164,46 +168,44 @@
                         {{ orden.cajera }}
                     </td>
 
-                    <td class="px-4 py-2 text-center font-semibold">
-                        $ {{ orden.total }}
-                    </td>
-
                     <!-- ESTATUS -->
                     <td class="px-4 py-2 text-center">
 
                         {% if orden.estatus == "pendiente" %}
-                        <span class="px-3 py-1 text-sm font-semibold text-yellow-700 bg-yellow-100 rounded-full">
-                            Pendiente
-                        </span>
-
-                        {% elif orden.estatus == "completada" %}
-                        <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">
-                            Completada
-                        </span>
-
+                            <span class="px-3 py-1 text-sm font-semibold text-yellow-700 bg-yellow-100 rounded-full">
+                                Pendiente
+                            </span>
+                        {% elif orden.estatus == "completada" or orden.estatus == "Completa da" %}
+                            <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">
+                                Completada
+                            </span>
+                        {% elif orden.estatus == "planeada" %}
+                            <span class="px-3 py-1 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">
+                                Planeada
+                            </span>
+                        {% elif orden.estatus == "preparacion" %}
+                            <span class="px-3 py-1 text-sm font-semibold text-purple-700 bg-purple-100 rounded-full">
+                                En Preparación
+                            </span>
                         {% else %}
-                        <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">
-                            Cancelada
-                        </span>
+                            <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">
+                                Cancelada
+                            </span>
                         {% endif %}
 
                     </td>
 
 
                     <!-- ACCIONES -->
-                    <td class="px-4 py-2 bg-[#561C24] w-40">
-
-                        <div class="flex justify-center items-center gap-3">
-
-                            <!-- DETALLE -->
-                            <a href="#">
-                                <img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}"
-                                     class="w-5 h-5">
-                            </a>
-
-                        </div>
-
-                    </td>
+                   <td class="px-4 py-2 bg-[#561C24] w-40">
+    <div class="flex justify-center items-center gap-3">
+        <!-- DETALLE -->
+        <a href="{{ url_for('ordenProduccion.detalle_orden', id_orden=orden.id_orden) }}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}"
+                 class="w-5 h-5 hover:opacity-80 transition-opacity">
+        </a>
+    </div>
+</td>
 
                 </tr>
 

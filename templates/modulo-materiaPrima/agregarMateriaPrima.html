@@ -46,15 +46,14 @@
             <select name="tipo_empaque" class="w-full border rounded px-3 py-2">
                 <option value="unidad">Unidad</option>
                 <option value="caja">Caja</option>
-                <option value="bulto">bulto</option>
-           
+                <option value="bulto">Bulto</option>
             </select>
         </div>
 
         <!-- PIEZAS -->
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">Piezas por Caja</label>
-            <input type="number" name="piezas_por_caja"
+            <input type="number" name="piezas_por_caja" value="1"
                    class="w-full border rounded px-3 py-2"
                    placeholder="Ej: 12">
         </div>
@@ -66,7 +65,7 @@
             </label>
 
             <div class="flex mt-1">
-                <input type="number" step="0.01" name="contenido_por_pieza"
+                <input type="number" step="0.01" name="contenido_por_pieza" value="0"
                        class="w-full border-y border-l rounded-l-lg px-3 py-2"
                        placeholder="Ej: 500">
 
@@ -82,9 +81,6 @@
             <p class="text-xs text-gray-500 mt-1">
                 Ejemplo: 500 gr por pieza
             </p>
-        </div>
-
-            {{ form.precio_unitario(class="w-full border rounded px-3 py-2", placeholder="0.00") }}
         </div>
 
         <!-- PROVEEDOR -->

@@ -42,41 +42,39 @@ def materiaPrima():
         materiaPrima=materiaPrima
     )
 
+
 @materiaPrima_bp.route('/agregarMateriaPrima', methods=['GET', 'POST'])
 def agregarMateriaPrima():
     form = forms.MateriaPrimaForm()
 
-  
     proveedores = Proveedor.query.all()
     form.id_proveedor.choices = [(0, 'Seleccione un proveedor')] + [
         (p.id_proveedor, p.nombre) for p in proveedores
     ]
 
     if form.validate_on_submit():
-
-        metodo_precio = request.form.get('metodo_precio')
-        tipo_empaque = request.form.get('tipo_empaque')
-        piezas_val = int(request.form.get('piezas_por_caja') or 1)
-
-        contenido_val = float(request.form.get('contenido_por_pieza') or 0)
-        unidad_contenido = request.form.get('unidad_contenido')
-
-        precio_input = form.precio_unitario.data
-        precio_final = precio_input * piezas_val if metodo_precio == 'pieza' else precio_input
-
-        nueva_materia = MateriaPrima(
-            nombre=form.nombre.data.strip(),
-            unidad_medida=form.unidad_medida.data,
-            tipo_empaque=tipo_empaque,
-            piezas_por_caja=piezas_val,
-            peso_por_pieza=contenido_val,
-            unidad_contenido=unidad_contenido,
-            precio_unitario=precio_final,
-            id_proveedor=form.id_proveedor.data if form.id_proveedor.data != 0 else None,
-            estatus=form.estatus.data
-        )
-
         try:
+            tipo_empaque = request.form.get('tipo_empaque', 'unidad')
+            
+            piezas_val = request.form.get('piezas_por_caja')
+            piezas_val = int(piezas_val) if piezas_val and piezas_val.strip() else 1
+            
+            contenido_val = request.form.get('contenido_por_pieza')
+            contenido_val = float(contenido_val) if contenido_val and contenido_val.strip() else 0
+            
+            unidad_contenido = request.form.get('unidad_contenido', 'gr')
+
+            nueva_materia = MateriaPrima(
+                nombre=form.nombre.data.strip(),
+                unidad_medida=form.unidad_medida.data,
+                tipo_empaque=tipo_empaque,
+                piezas_por_caja=piezas_val,
+                peso_por_pieza=contenido_val,
+                unidad_contenido=unidad_contenido,
+                id_proveedor=form.id_proveedor.data if form.id_proveedor.data != 0 else None,
+                estatus=form.estatus.data
+            )
+
             db.session.add(nueva_materia)
             db.session.commit()
             flash('Materia prima registrada correctamente', 'success')
@@ -84,13 +82,19 @@ def agregarMateriaPrima():
 
         except Exception as e:
             db.session.rollback()
+            print(f"Error detallado: {str(e)}")
             flash(f'Error al guardar: {str(e)}', 'error')
+    else:
+        if form.errors:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(f'Error en {getattr(form, field).label.text}: {error}', 'error')
 
     return render_template(
         'modulo-materiaPrima/agregarMateriaPrima.html',
         form=form
     )
-
+    
 @materiaPrima_bp.route('/detalleMateriaPrima/<int:id>')
 def detalleMateriaPrima(id):
     materia = MateriaPrima.query.get_or_404(id)
@@ -134,7 +138,6 @@ def modificarMateriaPrima(id):
                 # 🔹 CAMPOS DEL WTFORMS
                 materiaPrima.nombre = form.nombre.data.strip()
                 materiaPrima.unidad_medida = form.unidad_medida.data
-                materiaPrima.precio_unitario = form.precio_unitario.data
                 materiaPrima.id_proveedor = form.id_proveedor.data if form.id_proveedor.data != 0 else None
                 materiaPrima.estatus = form.estatus.data
 

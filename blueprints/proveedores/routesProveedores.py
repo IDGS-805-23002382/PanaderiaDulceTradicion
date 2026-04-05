@@ -9,7 +9,66 @@ from flask import jsonify
 from datetime import date, datetime
 import forms
 
+# ===== FUNCIONES DE CONVERSIÓN (directamente aquí) =====
 
+def convertir_a_unidad_legible(cantidad, unidad_origen):
+    """Convierte de unidad base a unidad legible para mostrar"""
+    if not cantidad:
+        return 0, unidad_origen
+    
+    unidad = str(unidad_origen).lower().strip()
+    cantidad_float = float(cantidad)
+    
+    if unidad in ['ml', 'mililitro', 'mililitros'] and cantidad_float >= 1000:
+        return cantidad_float / 1000, 'l'
+    if unidad in ['g', 'gramo', 'gramos'] and cantidad_float >= 1000:
+        return cantidad_float / 1000, 'kg'
+    if unidad in ['ml', 'mililitro', 'mililitros'] and cantidad_float < 1000:
+        return cantidad_float, 'ml'
+    if unidad in ['g', 'gramo', 'gramos'] and cantidad_float < 1000:
+        return cantidad_float, 'g'
+    if unidad in ['l', 'litro', 'litros']:
+        return cantidad_float, 'l'
+    if unidad in ['kg', 'kilogramo', 'kilogramos']:
+        return cantidad_float, 'kg'
+    if unidad in ['pz', 'pieza', 'piezas', 'pza']:
+        return cantidad_float, 'pz'
+    
+    return cantidad_float, unidad_origen
+
+
+def calcular_equivalente(materia, stock_actual):
+    """Calcula cuántas cajas y piezas hay en el stock"""
+    try:
+        if not materia:
+            return 0, 0, 0
+            
+        piezas_por_caja = float(materia.piezas_por_caja) if materia.piezas_por_caja else 1
+        peso_por_pieza = float(materia.peso_por_pieza) if materia.peso_por_pieza else 1
+        
+        unidad = (materia.unidad_contenido or '').lower().strip()
+        
+        if unidad in ['ml', 'g']:
+            stock_en_piezas = stock_actual / peso_por_pieza if peso_por_pieza > 0 else 0
+        elif unidad in ['l', 'kg']:
+            stock_en_unidad_base = stock_actual * 1000
+            stock_en_piezas = stock_en_unidad_base / peso_por_pieza if peso_por_pieza > 0 else 0
+        else:
+            stock_en_piezas = stock_actual
+        
+        if piezas_por_caja > 0:
+            cajas = int(stock_en_piezas // piezas_por_caja)
+            sobrantes = int(stock_en_piezas % piezas_por_caja)
+        else:
+            cajas = 0
+            sobrantes = int(stock_en_piezas)
+        
+        return cajas, sobrantes, int(stock_en_piezas)
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        return 0, 0, 0
+    
 @proveedores_bp.route('/proveedores')
 def proveedores():
     buscar = request.args.get("buscar")
@@ -343,58 +402,54 @@ def convertir_a_stock(materia, cantidad, tipo_empaque):
 
 @proveedores_bp.route("/recibir_compra/<int:id>", methods=["GET", "POST"])
 def recibir_compra(id):
-
+    from flask_login import current_user
+    
     compra = Compra.query.get_or_404(id)
 
     if compra.estado == "recibida":
         flash("Esta compra ya fue recibida", "warning")
-        return redirect(url_for("proveedores.detalleCompra"))
+        return redirect(url_for("proveedores.detalleCompra", id=compra.id_compra))
 
     if request.method == "POST":
         try:
             total = 0
 
             for d in compra.detalles:
-
                 precio_str = request.form.get(f"precio_{d.id_detalle}")
-
                 if not precio_str:
                     raise Exception("Debes ingresar todos los precios")
 
-                precio = float(precio_str)
-
-                if precio <= 0:
+                precio_unitario = float(precio_str)
+                if precio_unitario <= 0:
                     raise Exception("El precio debe ser mayor a 0")
 
-                # GUARDAR DETALLE
-                d.precio_unitario_compra = precio
-                d.subtotal = precio * d.cantidad
+                d.precio_unitario_compra = precio_unitario
+                d.subtotal = precio_unitario * d.cantidad
                 total += d.subtotal
 
-                # INVENTARIO
+                # ========== INVENTARIO ==========
                 materia = d.materia
-
-                # CONVERSIÓN (usa datos de MateriaPrima)
                 piezas_por_caja = materia.piezas_por_caja or 1
                 peso_por_pieza = materia.peso_por_pieza or 0
 
+                # Calcular piezas reales recibidas
                 if d.tipo_empaque == "caja":
-                    piezas = d.cantidad * piezas_por_caja
+                    piezas_recibidas = d.cantidad * piezas_por_caja
                 else:
-                    piezas = d.cantidad
+                    piezas_recibidas = d.cantidad
 
+                # Calcular cantidad en unidad de stock (gramos/kg o piezas)
                 if peso_por_pieza > 0:
-                    cantidad_stock = piezas * peso_por_pieza  # kg
+                    cantidad_stock = piezas_recibidas * peso_por_pieza
                 else:
-                    cantidad_stock = piezas  # unidades
+                    cantidad_stock = piezas_recibidas
 
-                # BUSCAR INVENTARIO
+                # Buscar o crear inventario
                 inventario = InventarioMateriaPrima.query.filter_by(
                     id_materia=materia.id_materia,
                     id_sucursal=compra.id_sucursal
                 ).first()
 
-                # CREAR SI NO EXISTE
                 if not inventario:
                     inventario = InventarioMateriaPrima(
                         id_materia=materia.id_materia,
@@ -403,19 +458,27 @@ def recibir_compra(id):
                         stock_minimo=0
                     )
                     db.session.add(inventario)
+                    db.session.flush()
 
-                # SUMAR STOCK
+                # Guardar stock ANTES
+                stock_antes = inventario.stock_actual
+                
+                # Actualizar stock
                 inventario.stock_actual += cantidad_stock
+                
+                # Guardar stock DESPUÉS
+                stock_despues = inventario.stock_actual
 
-                #  REGISTRAR MOVIMIENTO
+                # Registrar movimiento en el kardex
                 movimiento = MovimientoInventario(
                     id_materia=materia.id_materia,
                     id_sucursal=compra.id_sucursal,
                     tipo="entrada",
                     cantidad=cantidad_stock,
-                    referencia=f"Compra #{compra.id_compra}"
+                    stock_antes=stock_antes,
+                    stock_despues=stock_despues,
+                    referencia=f"Compra #{compra.id_compra} - Proveedor: {compra.proveedor.nombre}"
                 )
-
                 db.session.add(movimiento)
 
             compra.total = total
@@ -423,18 +486,14 @@ def recibir_compra(id):
             compra.fecha_entrega = datetime.now()
 
             db.session.commit()
-
-            flash("Compra recibida correctamente e inventario actualizado", "success")
-            return redirect(url_for("proveedores.detalleCompra"))
+            flash(f"Compra recibida correctamente. Total: ${total:.2f}", "success")
+            return redirect(url_for("proveedores.detalleCompra", id=compra.id_compra))
 
         except Exception as e:
             db.session.rollback()
             flash(f"Error: {str(e)}", "danger")
 
-    return render_template(
-        "modulo-proveedores/recibir.html",
-        compra=compra
-    )
+    return render_template("modulo-proveedores/recibir.html", compra=compra)
 
 def calcular_equivalente(materia, stock):
 
@@ -451,40 +510,80 @@ def calcular_equivalente(materia, stock):
 
     return cajas, sobrantes, piezas_totales
 
+@proveedores_bp.route('/completar_compra/<int:id_compra>')
+def completar_compra(id_compra):
+    compra = Compra.query.get_or_404(id_compra)
+    
+    # Supongamos que aquí validas que la compra pase a estado "recibida"
+    compra.estado = "recibida"
+    compra.fecha_entrega = datetime.utcnow()
+
+    # Iteramos los productos comprados para actualizar su precio en el catálogo
+    for detalle in compra.detalles:
+        materia = MateriaPrima.query.get(detalle.id_materia)
+        if materia and detalle.precio_unitario_compra:
+            # Actualizamos el precio unitario con el de la última compra
+            materia.precio_unitario = detalle.precio_unitario_compra
+    
+    try:
+        db.session.commit()
+        flash("Compra completada y precios de materia prima actualizados.")
+    except Exception as e:
+        db.session.rollback()
+        flash("Error al actualizar: " + str(e))
+        
+    return redirect(url_for('proveedores.detalleCompra'))
+
 @proveedores_bp.route("/inventario_materia")
 def inventarioMateria():
-
-    inventario = InventarioMateriaPrima.query.all()
+    # Obtener todas las sucursales para el filtro
+    sucursales = Sucursal.query.filter_by(estatus='activo').all()
+    
+    # Filtrar por sucursal si se especifica
+    sucursal_id = request.args.get('sucursal')
+    
+    if sucursal_id:
+        inventario = InventarioMateriaPrima.query.filter_by(id_sucursal=sucursal_id).all()
+    else:
+        inventario = InventarioMateriaPrima.query.all()
 
     data = []
 
     for i in inventario:
-
         cajas, sobrantes, piezas_totales = calcular_equivalente(
             i.materia,
             i.stock_actual
         )
+        
+        # Convertir stock a unidad legible para mostrar
+        unidad = i.materia.unidad_contenido or 'pz'
+        stock_legible, unidad_legible = convertir_a_unidad_legible(i.stock_actual, unidad)
 
         data.append({
             "id_materia": i.id_materia,  
             "id_sucursal": i.id_sucursal,
             "materia": i.materia.nombre,
             "sucursal": i.sucursal.nombre,
-            "stock": i.stock_actual,
+            "stock": round(stock_legible, 2),
+            "stock_real": i.stock_actual,  # Stock real en unidad base
+            "unidad_legible": unidad_legible,
             "cajas": cajas,
             "sobrantes": sobrantes,
             "piezas_totales": piezas_totales,
-            "tipo": "kg" if i.materia.peso_por_pieza else "piezas"
+            "tipo": i.materia.unidad_contenido,
+            "peso_por_pieza": i.materia.peso_por_pieza,
+            "piezas_por_caja": i.materia.piezas_por_caja
         })
 
     return render_template(
         "inventarioMateria/inventarioMateria.html",
-        inventario=data
+        inventario=data,
+        sucursales=sucursales
     )
+
 
 @proveedores_bp.route("/movimientos/<int:id_materia>/<int:id_sucursal>")
 def movimientosMateria(id_materia, id_sucursal):
-
     # Obtener materia y sucursal
     materia = MateriaPrima.query.get_or_404(id_materia)
     sucursal = Sucursal.query.get_or_404(id_sucursal)
@@ -500,4 +599,89 @@ def movimientosMateria(id_materia, id_sucursal):
         movimientos=movimientos,
         materia=materia,
         sucursal=sucursal
+    )
+    
+@proveedores_bp.route("/ajustar_stock/<int:id_materia>/<int:id_sucursal>", methods=["GET", "POST"])
+def ajustarStock(id_materia, id_sucursal):
+    from flask_login import current_user
+    
+    materia = MateriaPrima.query.get_or_404(id_materia)
+    sucursal = Sucursal.query.get_or_404(id_sucursal)
+    
+    # Buscar inventario actual
+    inventario = InventarioMateriaPrima.query.filter_by(
+        id_materia=id_materia,
+        id_sucursal=id_sucursal
+    ).first()
+    
+    if not inventario:
+        inventario = InventarioMateriaPrima(
+            id_materia=id_materia,
+            id_sucursal=id_sucursal,
+            stock_actual=0,
+            stock_minimo=0
+        )
+        db.session.add(inventario)
+        db.session.commit()
+    
+    if request.method == "POST":
+        try:
+            tipo = request.form.get("tipo")
+            cantidad = float(request.form.get("cantidad"))
+            id_proveedor = request.form.get("id_proveedor")
+            motivo = request.form.get("motivo")
+            
+            if cantidad <= 0:
+                raise Exception("La cantidad debe ser mayor a 0")
+            
+            # Guardar stock antes
+            stock_antes = inventario.stock_actual
+            
+            # Actualizar stock según tipo
+            if tipo == "entrada":
+                inventario.stock_actual += cantidad
+                cantidad_movimiento = cantidad
+            elif tipo == "salida":
+                if inventario.stock_actual < cantidad:
+                    raise Exception(f"Stock insuficiente. Stock actual: {stock_antes}")
+                inventario.stock_actual -= cantidad
+                cantidad_movimiento = -cantidad
+            else:
+                raise Exception("Tipo de movimiento inválido")
+            
+            # Guardar stock después
+            stock_despues = inventario.stock_actual
+            
+            # Registrar movimiento
+            movimiento = MovimientoInventario(
+                id_materia=id_materia,
+                id_sucursal=id_sucursal,
+                tipo=tipo,
+                cantidad=cantidad,
+                stock_antes=stock_antes,
+                stock_despues=stock_despues,
+                id_proveedor=int(id_proveedor) if id_proveedor and id_proveedor.isdigit() else None,
+                id_usuario=current_user.id_usuario if current_user.is_authenticated else None,
+                motivo=motivo,
+                referencia=f"Ajuste manual desde inventario"
+            )
+            db.session.add(movimiento)
+            db.session.commit()
+            
+            flash(f"Movimiento registrado: {tipo} de {cantidad} unidades. Stock: {stock_antes} → {stock_despues}", "success")
+            return redirect(url_for("proveedores.movimientosMateria", id_materia=id_materia, id_sucursal=id_sucursal))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error: {str(e)}", "danger")
+    
+    # Obtener proveedores para el select
+    proveedores = Proveedor.query.filter_by(estatus='activo').all()
+    
+    return render_template(
+        "inventarioMateria/ajustarStock.html",
+        materia=materia,
+        sucursal=sucursal,
+        inventario=inventario,
+        proveedores=proveedores
     )

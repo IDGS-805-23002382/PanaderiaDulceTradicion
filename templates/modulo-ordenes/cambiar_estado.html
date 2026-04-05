@@ -1,0 +1,91 @@
+{% extends "layoutModulos.html" %}
+
+{% block container %}
+
+<div class="min-h-screen bg-[#f7efe5] py-10 px-4">
+    <div class="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-8">
+
+        <!-- TÍTULO -->
+        <h2 class="text-2xl font-bold text-[#341915] mb-6">
+            Cambiar estado de orden de producción
+        </h2>
+
+        <!-- INFORMACIÓN DE LA ORDEN -->
+        <div class="mb-6 p-4 bg-amber-50 rounded-xl border">
+            <p><strong>ID Orden:</strong> {{ orden.id_orden }}</p>
+            <p><strong>Sucursal:</strong> {{ orden.sucursal.nombre }}</p>
+            <p><strong>Fecha Producción:</strong> {{ orden.fecha_produccion }}</p>
+            <p><strong>Total Unidades:</strong> {{ orden.total_unidades }}</p>
+            <p><strong>Costo Estimado:</strong> ${{ orden.costo_total_estimado }}</p>
+
+            <p class="mt-2">
+                <strong>Estatus actual:</strong>
+                <span class="px-3 py-1 rounded-full text-white
+                    {% if orden.estatus == 'planeada' %} bg-yellow-500
+                    {% elif orden.estatus == 'completada' %} bg-green-600
+                    {% else %} bg-red-600 {% endif %}">
+                    {{ orden.estatus }}
+                </span>
+            </p>
+        </div>
+
+        <!-- FORMULARIO -->
+        <form method="POST" action="{{ url_for('ordenProduccion.cambiar_estado', id_orden=orden.id_orden) }}">
+            
+            {{ form.hidden_tag() }} <!-- 🔥 CSRF -->
+
+            <!-- SELECT ESTATUS -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold mb-2">
+                    Nuevo estado
+                </label>
+                {{ form.estatus(class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-400") }}
+            </div>
+
+            <!-- MOTIVO CANCELACIÓN -->
+            <div class="mb-4 hidden" id="motivoContainer">
+                <label class="block text-sm font-semibold mb-2">
+                    Motivo de cancelación
+                </label>
+                <textarea name="motivo_cancelacion"
+                          class="w-full px-4 py-2 border rounded-lg"
+                          placeholder="Escribe el motivo..."></textarea>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="flex justify-between mt-6">
+                
+                <a href="{{ url_for('ordenProduccion.listar') }}"
+                   class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">
+                    Regresar
+                </a>
+
+                <button type="submit"
+                        class="px-6 py-2 bg-[#c97c5d] text-white rounded-lg hover:bg-[#a65e44]">
+                    Guardar cambios
+                </button>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+    const estatusSelect = document.querySelector("select[name='estatus']");
+    const motivoContainer = document.getElementById("motivoContainer");
+
+    function toggleMotivo() {
+        if (estatusSelect.value === "cancelada") {
+            motivoContainer.classList.remove("hidden");
+        } else {
+            motivoContainer.classList.add("hidden");
+        }
+    }
+
+    estatusSelect.addEventListener("change", toggleMotivo);
+    window.onload = toggleMotivo;
+</script>
+
+{% endblock %}

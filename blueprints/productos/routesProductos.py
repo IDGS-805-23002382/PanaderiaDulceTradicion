@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, Response
-from models import Producto, Categoria, db, Receta
+from models import Producto, Categoria, db, Receta, InventarioProducto, Sucursal, MovimientoInventarioProducto
 from werkzeug.utils import secure_filename
 from sqlalchemy import or_
 import os
@@ -206,3 +206,84 @@ def producto_imagen(id):
     
     # Imagen por defecto si no hay imagen
     return "", 404
+
+@productos_bp.route('/inventario')
+def verInventario():
+    buscar = request.args.get("buscar")
+    id_sucursal = request.args.get("sucursal", type=int)
+    
+    query = InventarioProducto.query
+    
+    # Filtrar por sucursal
+    if id_sucursal:
+        query = query.filter_by(id_sucursal=id_sucursal)
+    
+    # Buscar por nombre de producto
+    if buscar:
+        query = query.join(Producto).filter(
+            Producto.nombre.ilike(f"%{buscar}%")
+        )
+    
+    inventarios = query.all()
+    sucursales = Sucursal.query.filter_by(estatus='activo').all()
+    
+    return render_template(
+        'inventarioProducto/inventarioProducto.html',
+        inventarios=inventarios,
+        sucursales=sucursales,
+        sucursal_seleccionada=id_sucursal
+    )
+
+@productos_bp.route('/historialInventario/<int:id_producto>/<int:id_sucursal>')
+def historialInventario(id_producto, id_sucursal):
+   
+    movimientos = MovimientoInventarioProducto.query.filter_by(
+        id_producto=id_producto,
+        id_sucursal=id_sucursal
+    ).order_by(MovimientoInventarioProducto.fecha.desc()).all()
+    
+    producto = Producto.query.get_or_404(id_producto)
+    sucursal = Sucursal.query.get_or_404(id_sucursal)
+    
+    return render_template(
+        'inventarioProducto/historial.html',
+        movimientos=movimientos,
+        producto=producto,
+        sucursal=sucursal
+    )
+    
+@productos_bp.route('/ajustar_stock/<int:id_inventario>', methods=['GET', 'POST'])
+def ajustarStock(id_inventario):
+    inventario = InventarioProducto.query.get_or_404(id_inventario)
+    
+    if request.method == 'POST':
+        cantidad = int(request.form.get('cantidad', 0))
+        tipo = request.form.get('tipo')
+        
+        if tipo == 'agregar':
+            inventario.stock_actual += cantidad
+            mensaje = f"Se agregaron {cantidad} unidades"
+        elif tipo == 'quitar':
+            if inventario.stock_actual >= cantidad:
+                inventario.stock_actual -= cantidad
+                mensaje = f"Se quitaron {cantidad} unidades"
+            else:
+                flash('No hay suficiente stock', 'error')
+                return redirect(url_for('productos.verInventario'))
+        
+        # Registrar movimiento
+        
+        movimiento = MovimientoInventarioProducto(
+            id_producto=inventario.id_producto,
+            id_sucursal=inventario.id_sucursal,
+            cantidad=cantidad,
+            tipo='ajuste_manual',
+            referencia=f'Ajuste manual por usuario'
+        )
+        db.session.add(movimiento)
+        db.session.commit()
+        
+        flash(mensaje, 'success')
+        return redirect(url_for('productos.verInventario'))
+    
+    return render_template('inventarioProducto/ajustar_stock.html', inventario=inventario)

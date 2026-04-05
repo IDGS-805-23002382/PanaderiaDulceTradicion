@@ -81,6 +81,34 @@
                                 {% endif %}
                             </div>
                         </div>
+
+                        <!-- PRECIO COMPRA -->
+                       <div class="bg-amber-50 rounded-xl p-5 border">
+                            <label class="text-sm font-semibold text-[#341915] uppercase">Precio Compra</label>
+                            <p class="text-lg font-semibold mt-1">{{ materia.precio_unitario }} </p>
+                        </div>
+
+                        <!-- PRECIO POR PIEZA -->
+                        <div class="bg-amber-50 rounded-xl p-5 border">
+                            <label class="text-sm font-semibold text-[#341915] uppercase">Precio Compra</label>
+                            <p class="text-lg font-semibold mt-1">{{ materia.precio_por_pieza }} </p>
+                        </div>
+
+                       <!-- PRECIO POR GRAMO / ML -->
+                        <div class="bg-amber-50 rounded-xl p-5 border">
+                            <label class="text-sm font-semibold text-[#341915] uppercase">Precio Compra</label>
+                            <p class="text-lg font-semibold mt-1">{{ materia.precio_por_gramo_ml }} </p>
+                            <div class="text-[11px] text-gray-400">
+                            {% if materia.unidad_contenido in ['kg','g'] %}
+                                por gramo
+                            {% elif materia.unidad_contenido in ['l','ml'] %}
+                                por ml
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                        </div>
+                    
                     </div>
                 </div>
 

@@ -24,32 +24,72 @@ class Proveedor(db.Model):
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
     
 class MateriaPrima(db.Model):
-
     __tablename__ = 'materias_primas'
 
     id_materia = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     unidad_medida = db.Column(db.String(30), nullable=False)
     unidad_contenido = db.Column(db.String(10))
-    
-    # Nuevos campos para manejo de empaques
+
     tipo_empaque = db.Column(db.String(20), default='unidad')
     piezas_por_caja = db.Column(db.Integer, nullable=True)
     peso_por_pieza = db.Column(db.Float, nullable=True)
-    
-    precio_unitario = db.Column(db.Numeric(10,2), default=0.00)
 
-    id_proveedor = db.Column(
-        db.Integer,
-        db.ForeignKey('proveedores.id_proveedor')
-    )
+    # ELIMINA O COMENTA esta línea si existe:
+    # precio_unitario = db.Column(db.Numeric(10,2), default=0.00)
 
-    estatus = db.Column(
-        db.Enum('activo','inactivo'),
-        default='activo'
-    )
+    id_proveedor = db.Column(db.Integer, db.ForeignKey('proveedores.id_proveedor'))
+    estatus = db.Column(db.Enum('activo','inactivo'), default='activo')
 
     proveedor = db.relationship('Proveedor')
+
+    def get_ultimo_precio(self):
+        """Obtiene el último precio de compra de esta materia prima"""
+        from models import DetalleCompra
+        
+        # CORREGIDO: usar precio_unitario_compra en lugar de precio_unitario
+        ultima_compra = DetalleCompra.query.filter_by(id_materia=self.id_materia)\
+            .order_by(DetalleCompra.id_detalle.desc()).first()
+        
+        if ultima_compra and ultima_compra.precio_unitario_compra:
+            return float(ultima_compra.precio_unitario_compra)
+        return 0.0
+
+    @property
+    def precio_por_pieza(self):
+        """Calcula el precio por pieza según piezas_por_caja usando el último precio de compra"""
+        try:
+            ultimo_precio = self.get_ultimo_precio()
+            if self.piezas_por_caja and self.piezas_por_caja > 0:
+                return ultimo_precio / self.piezas_por_caja
+            return ultimo_precio
+        except:
+            return 0
+
+    @property
+    def precio_por_gramo_ml(self):
+        """Calcula el precio por gramo o ml según peso_por_pieza"""
+        try:
+            if not self.peso_por_pieza or not self.unidad_contenido:
+                return 0
+
+            precio_pieza = self.precio_por_pieza
+            unidad = self.unidad_contenido.lower().strip()
+
+            if unidad in ['gr', 'gramos']:
+                return precio_pieza / self.peso_por_pieza
+            elif unidad in ['kg']:
+                return precio_pieza / (self.peso_por_pieza * 1000)
+            elif unidad in ['ml']:
+                return precio_pieza / self.peso_por_pieza
+            elif unidad in ['l', 'litros']:
+                return precio_pieza / (self.peso_por_pieza * 1000)
+            return 0
+        except:
+            return 0
+
+    def __repr__(self):
+        return f"<MateriaPrima {self.nombre}>"
     
 class Categoria(db.Model):
 
@@ -176,6 +216,9 @@ class DetalleReceta(db.Model):
         db.Numeric(12,4),
         nullable=False
     )
+    
+    precio_por_unidad = db.Column(db.Numeric(12,4), nullable=True)  # Precio por gramo/ml/pieza
+    costo_total_ingrediente = db.Column(db.Numeric(12,4), nullable=True)  # Costo total para la rece
 
     
     __table_args__ = (
@@ -201,20 +244,23 @@ class Orden(db.Model):
     id_sucursal = db.Column(db.Integer, db.ForeignKey('sucursales.id_sucursal'), nullable=False)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'), nullable=False)
 
-    fecha_registro = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    fecha = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     fecha_produccion = db.Column(db.Date, nullable=False)
 
-    cliente_nombre = db.Column(db.String(100))
-    cliente_telefono = db.Column(db.String(20))
 
     total_unidades = db.Column(db.Integer, default=0)
     costo_total_estimado = db.Column(db.Numeric(10,2), default=0.00)
 
-    estatus = db.Column(db.Enum('planeada', 'completada', 'cancelada'), default='planeada')
+    estatus = db.Column(
+    db.Enum('planeada', 'preparacion', 'completada', 'cancelada'),
+    default='planeada'
+)
 
     notas = db.Column(db.Text)
 
     detalles = db.relationship('DetalleOrden', backref='orden', cascade="all, delete-orphan")
+    
+    sucursal = db.relationship('Sucursal')
 
 class DetalleOrden(db.Model):
     __tablename__ = "detalle_orden"
@@ -225,6 +271,7 @@ class DetalleOrden(db.Model):
     id_producto = db.Column(db.Integer, db.ForeignKey('productos.id_producto'), nullable=False)
 
     cantidad = db.Column(db.Integer, nullable=False)
+    cantidad_recetas = db.Column(db.Integer, default=1) 
 
     costo_unitario_produccion = db.Column(db.Numeric(10,2), nullable=False)
     subtotal_costo = db.Column(db.Numeric(10,2), nullable=False)
@@ -293,15 +340,55 @@ class MovimientoInventario(db.Model):
     __tablename__ = 'movimientos_inventario'
 
     id_movimiento = db.Column(db.Integer, primary_key=True)
+    id_materia = db.Column(db.Integer, db.ForeignKey('materias_primas.id_materia'), nullable=False)
+    id_sucursal = db.Column(db.Integer, db.ForeignKey('sucursales.id_sucursal'), nullable=False)
 
-    id_materia = db.Column(db.Integer)
-    id_sucursal = db.Column(db.Integer)
-
-    tipo = db.Column(db.String(20))  # entrada / salida
+    tipo = db.Column(db.String(20))
     cantidad = db.Column(db.Float)
-
+    
+    stock_antes = db.Column(db.Float, default=0)
+    stock_despues = db.Column(db.Float, default=0)
+    
     referencia = db.Column(db.String(100))
     fecha = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    
+    # Relaciones
+    materia = db.relationship('MateriaPrima')
+    sucursal = db.relationship('Sucursal')
+    
+class InventarioProducto(db.Model):
+    __tablename__ = 'inventario_producto'
+    
+    id_inventario = db.Column(db.Integer, primary_key=True)
+    id_producto = db.Column(db.Integer, db.ForeignKey('productos.id_producto'), nullable=False)
+    id_sucursal = db.Column(db.Integer, db.ForeignKey('sucursales.id_sucursal'), nullable=False)
+    
+    stock_actual = db.Column(db.Integer, default=0)  # Cantidad en piezas/unidades
+    stock_minimo = db.Column(db.Integer, default=0)
+    fecha_actualizacion = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    
+    producto = db.relationship('Producto')
+    sucursal = db.relationship('Sucursal')
+    
+    __table_args__ = (
+        db.UniqueConstraint('id_producto', 'id_sucursal', name='unique_producto_sucursal'),
+    )
+
+class MovimientoInventarioProducto(db.Model):
+    __tablename__ = 'movimientos_inventario_producto'
+    
+    id_movimiento = db.Column(db.Integer, primary_key=True)
+    id_producto = db.Column(db.Integer, db.ForeignKey('productos.id_producto'), nullable=False)
+    id_sucursal = db.Column(db.Integer, db.ForeignKey('sucursales.id_sucursal'), nullable=False)
+    
+    tipo = db.Column(db.String(30))  # entrada_produccion, salida_venta, ajuste
+    cantidad = db.Column(db.Integer)
+    
+    referencia = db.Column(db.String(100))
+    fecha = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    
+    producto = db.relationship('Producto')
+    sucursal = db.relationship('Sucursal')
     
 class Sucursal(db.Model):
     __tablename__ = 'sucursales'

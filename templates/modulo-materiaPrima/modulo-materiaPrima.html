@@ -148,8 +148,9 @@
                  <tr>
                     <th class="px-4 py-2">Nombre</th>
                     <th class="px-4 py-2">Tipo Empaque</th>
-                    <th class="px-4 py-2">Piezas</th>
-                    <th class="px-4 py-2">Peso</th>
+                    <th class="px-4 py-2">Piezas x Caja</th>
+                    <th class="px-4 py-2">Peso x Pieza</th>
+                    <th class="px-4 py-3">Último Precio</th>
                     <th class="px-4 py-2">Proveedor</th>
                     <th class="px-4 py-2 w-32">Estatus</th>
                     <th class="px-4 py-2 w-40">Acciones</th>
@@ -157,100 +158,117 @@
 
             </thead>
 
-
-
             <tbody class="bg-white">
 
             {% for materia in materiaPrima %}
 
                 <tr class="border-b hover:bg-gray-50">
 
-                    <td class="px-6 py-4">{{ materia.nombre }}</td>
+                    <td class="px-6 py-4 font-medium">{{ materia.nombre }}</td>
                
-                    <!-- Tipo de empaque -->
-                    <td class="px-6 py-4">
+                    <!-- Tipo de empaque con colores -->
+                    <td class="px-6 py-4 text-center">
                         {% if materia.tipo_empaque == 'unidad' %}
-                            Unidad
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+                                Unidad
+                            </span>
                         {% elif materia.tipo_empaque == 'caja' %}
-                            Caja
+                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                                Caja
+                            </span>
                         {% elif materia.tipo_empaque == 'bulto' %}
-                            bulto
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">
+                                Bulto
+                            </span>
                         {% else %}
                             {{ materia.tipo_empaque }}
                         {% endif %}
                     </td>
                     
                     <!-- Piezas por caja -->
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 text-center">
                         {% if materia.piezas_por_caja %}
-                            {{ materia.piezas_por_caja }} {{ materia.unidad_medida }}
+                            <span class="font-bold">{{ materia.piezas_por_caja }}</span>
+                            <span class="text-xs text-gray-500">{{ materia.unidad_medida }}</span>
                         {% else %}
-                            -
+                            <span class="text-gray-400">-</span>
                         {% endif %}
                     </td>
                     
+                    <!-- Peso por pieza -->
                     <td class="px-6 py-4 text-center">
-    {% if materia.peso_por_pieza %}
-        {{ materia.peso_por_pieza }} {{ materia.unidad_contenido }}
-        <div class="text-[11px] text-gray-400">
-            por pieza
-        </div>
-    {% else %}
-        -
-    {% endif %}
-</td>
-                              
+                        {% if materia.peso_por_pieza %}
+                            <span class="font-bold">{{ materia.peso_por_pieza }}</span>
+                            <span class="text-xs text-gray-500">{{ materia.unidad_contenido }}</span>
+                            <div class="text-[10px] text-gray-400">
+                                por pieza
+                            </div>
+                        {% else %}
+                            <span class="text-gray-400">-</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Precio (último precio de compra) -->
+                    <td class="px-4 py-4 text-center">
+                        {% set ultimo_precio = materia.get_ultimo_precio() %}
+                        {% if ultimo_precio > 0 %}
+                            <span class="font-bold text-[#561C24] text-lg">
+                                ${{ "%.2f"|format(ultimo_precio) }}
+                            </span>
+                            <!-- Mostrar precio por pieza si es caja -->
+                            {% if materia.tipo_empaque == 'caja' and materia.piezas_por_caja %}
+                                <div class="text-[10px] text-gray-500">
+                                    (${{ "%.2f"|format(ultimo_precio / materia.piezas_por_caja) }} x pieza)
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-gray-400 text-sm">Sin precio</span>
+                        {% endif %}
+                    </td>
+                    
+                    <!-- Proveedor -->
                     <td class="px-6 py-4">
                         {{ materia.proveedor.nombre if materia.proveedor else 'Sin proveedor' }}
                     </td>
 
-
                     <!-- ESTATUS -->
                     <td class="px-6 py-4 text-center">
-
                         {% if materia.estatus == "activo" %}
-
-                        <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">
-                            Activo
-                        </span>
-
+                            <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">
+                                Activo
+                            </span>
                         {% else %}
-
-                        <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">
-                            Inactivo
-                        </span>
-
+                            <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">
+                                Inactivo
+                            </span>
                         {% endif %}
-
                     </td>
 
-
-
                     <!-- ACCIONES -->
-                      <td class="px-4 py-2 bg-[#561C24] w-40">
-
+                  <td class="px-4 py-2 bg-[#561C24] w-40">
                         <div class="flex justify-center items-center gap-3">
-
                             <!-- DETALLE -->
-                            <a href="{{ url_for('materiaPrima.detalleMateriaPrima', id=materia.id_materia) }}">
+                            <a href="{{ url_for('materiaPrima.detalleMateriaPrima', id=materia.id_materia) }}"
+                               class="hover:opacity-75 transition">
                                 <img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}"
                                      class="w-5 h-5">
                             </a>
 
                             <!-- EDITAR -->
-                            <a href="{{ url_for('materiaPrima.modificarMateriaPrima', id=materia.id_materia) }}">
+                            <a href="{{ url_for('materiaPrima.modificarMateriaPrima', id=materia.id_materia) }}"
+                               class="hover:opacity-75 transition">
                                 <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}"
                                      class="w-5 h-5">
                             </a>
 
                             <!-- ELIMINAR -->
-                            <a href="{{ url_for('materiaPrima.eliminarMateriaPrima', id=materia.id_materia) }}">
+                            <a href="{{ url_for('materiaPrima.eliminarMateriaPrima', id=materia.id_materia) }}"
+                               class="hover:opacity-75 transition"
+                               onclick="return confirm('¿Estás seguro de eliminar {{ materia.nombre }}?')">
                                 <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}"
                                      class="w-5 h-5">
                             </a>
-
                         </div>
-
                     </td>
 
                 </tr>

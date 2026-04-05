@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import IntegerField, StringField, EmailField, FileField, SelectField, TextAreaField, DecimalField, DateField
 from wtforms import validators, PasswordField, BooleanField, FloatField
-from wtforms.validators import Length, Email, Optional, EqualTo, ValidationError, DataRequired, InputRequired
+from wtforms.validators import Length, Email, Optional, EqualTo, ValidationError, DataRequired, InputRequired, NumberRange
 
 
 class ProveedorForm(FlaskForm):
@@ -93,12 +93,7 @@ class MateriaPrimaForm(FlaskForm):
         validators=[Optional()]
     )
 
-    precio_unitario = DecimalField(
-        "Precio unitario",
-        validators=[
-            InputRequired(message="El precio es requerido")
-        ]
-    )
+    
 
     id_proveedor = SelectField(
         "Proveedor",
@@ -228,12 +223,19 @@ class OrdenForm(FlaskForm):
 
     id_producto = SelectField("Producto", coerce=int, validators=[DataRequired()])
 
-    cantidad = IntegerField("Cantidad", validators=[DataRequired()])
+    cantidad_recetas = IntegerField('Cantidad de Recetas', validators=[DataRequired(), NumberRange(min=1, message='Mínimo 1 receta')])
 
-    cliente_nombre = StringField("Cliente")
-    cliente_telefono = StringField("Teléfono")
-
-    notas = TextAreaField("Notas")
+   
+    
+class CambiarEstadoForm(FlaskForm):
+    estatus = SelectField(
+        'Estatus',
+        choices=[
+            ('planeada', 'Planeada'),
+            ('completada', 'Completada'),
+            ('cancelada', 'Cancelada')
+        ]
+    )
 
 class SucursalForm(FlaskForm):    
     nombre = StringField("Nombre", [validators.InputRequired()])

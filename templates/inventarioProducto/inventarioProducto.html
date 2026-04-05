@@ -1,0 +1,147 @@
+{% extends 'layoutModulos.html' %}
+
+{% block container %}
+
+<div class="w-full">
+
+    <!-- TITULO -->
+    <h1 class="text-2xl font-semibold text-center text-[#341915]">
+        Inventario de Productos Terminados
+    </h1>
+
+    <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-4"></div>
+
+    <!-- CONTROLES -->
+    <div class="flex items-center justify-between mb-4">
+
+        <!-- FILTRO POR SUCURSAL -->
+        <form method="GET" action="{{ url_for('productos.verInventario') }}" class="flex gap-2">
+            <select name="sucursal" class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
+                <option value="">Todas las sucursales</option>
+                {% for suc in sucursales %}
+                <option value="{{ suc.id_sucursal }}" {% if sucursal_seleccionada == suc.id_sucursal %}selected{% endif %}>
+                    {{ suc.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="bg-[#341915] text-white px-3 py-2 rounded hover:bg-[#4a241d]">
+                Filtrar
+            </button>
+        </form>
+
+        <!-- BUSCAR -->
+        <form method="GET" action="{{ url_for('productos.verInventario') }}" class="flex">
+            <input type="hidden" name="sucursal" value="{{ sucursal_seleccionada }}">
+            <input type="text"
+                   name="buscar"
+                   placeholder="Buscar producto"
+                   value="{{ request.args.get('buscar','') }}"
+                   class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0] placeholder-[#7a5a4d]" />
+            <button type="submit"
+                    class="bg-[#341915] px-4 rounded-r flex items-center justify-center">
+                <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}" class="h-5 w-5">
+            </button>
+        </form>
+
+    </div>
+
+    <!-- TABLA DE INVENTARIO -->
+    <div class="overflow-x-auto">
+
+        <table class="w-full text-sm text-left table-fixed">
+
+            <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
+                <tr>
+                    <th class="px-4 py-2">Producto</th>
+                    <th class="px-4 py-2">Sucursal</th>
+                    <th class="px-4 py-2">Stock Actual</th>
+                    <th class="px-4 py-2">Stock Mínimo</th>
+                    <th class="px-4 py-2">Estado</th>
+                    <th class="px-4 py-2 w-32">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody class="bg-white">
+
+            {% if inventarios %}
+                {% for item in inventarios %}
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-2 text-center font-medium">
+                        {{ item.producto.nombre }}
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        {{ item.sucursal.nombre }}
+                    </td>
+                    <td class="px-4 py-2 text-center font-bold">
+                        {{ item.stock_actual }} piezas
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        {{ item.stock_minimo }} piezas
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        {# Convertir a enteros para comparar #}
+                        {% set stock_actual_int = item.stock_actual|int %}
+                        {% set stock_minimo_int = item.stock_minimo|int %}
+                        
+                        {% if stock_actual_int <= stock_minimo_int %}
+                        <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">
+                            ⚠️ Stock bajo
+                        </span>
+                        {% else %}
+                        <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">
+                            ✓ Normal
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        <a href="{{ url_for('productos.historialInventario', id_producto=item.id_producto, id_sucursal=item.id_sucursal) }}"
+                           class="text-blue-600 hover:text-blue-800">
+                            Ver historial
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                        No hay productos en inventario
+                    </td>
+                </tr>
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="mt-6 p-4 bg-[#D7C7B0] rounded-lg">
+        <h3 class="font-semibold text-[#341915] mb-2">📊 Resumen</h3>
+        <div class="grid grid-cols-3 gap-4">
+            <div class="text-center">
+                <p class="text-sm text-gray-600">Total Productos</p>
+                <p class="text-xl font-bold text-[#341915]">{{ inventarios|length }}</p>
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-gray-600">Total Unidades</p>
+                <p class="text-xl font-bold text-[#341915]">{{ inventarios|sum(attribute='stock_actual') }}</p>
+            </div>
+            <div class="text-center">
+                <p class="text-sm text-gray-600">Productos con stock bajo</p>
+                <p class="text-xl font-bold text-red-600">
+                    {% set bajo_stock = [] %}
+                    {% for item in inventarios %}
+                        {% if (item.stock_actual|int) <= (item.stock_minimo|int) %}
+                            {% set _ = bajo_stock.append(1) %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ bajo_stock|length }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -32,8 +32,8 @@
           <tr>
             <th class="px-4 py-3">Materia</th>
             <th class="px-4 py-3">Sucursal</th>
-            <th class="px-4 py-3">Stock Real</th>
-            <th class="px-4 py-3">Equivalente</th>
+            <th class="px-4 py-3">Stock Actual</th>
+            <th class="px-4 py-3">Equivalente en Cajas/Piezas</th>
             <th class="px-4 py-3">Acciones</th>
           </tr>
         </thead>
@@ -41,18 +41,29 @@
         <tbody>
           {% for i in inventario %}
           <tr class="border-b hover:bg-gray-100">
-            <td class="px-4 py-2">{{ i.materia }}</td>
+            <td class="px-4 py-2 font-semibold">{{ i.materia }}</td>
             <td class="px-4 py-2">{{ i.sucursal }}</td>
-            <td class="px-4 py-2 font-medium">{{ i.stock }} {{ i.tipo }}</td>
+            <td class="px-4 py-2">
+              <div class="flex flex-col items-center">
+                <span class="font-bold text-lg {% if i.stock_real < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                  {{ i.stock }} {{ i.unidad_legible }}
+                </span>
+                <span class="text-xs text-gray-500">
+                  ({{ i.stock_real }} {{ i.tipo }} en base)
+                </span>
+              </div>
+            </td>
             <td class="px-4 py-2">
               <div class="space-y-1">
                 <span class="bg-green-200 text-green-800 px-2 py-1 rounded inline-block text-xs font-semibold">
                   {{ i.cajas }} caja(s)
                 </span>
+                {% if i.sobrantes > 0 %}
                 <br>
-                <span class="text-gray-600 text-xs">
-                  ({{ i.piezas_totales }} piezas)
+                <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded inline-block text-xs">
+                  + {{ i.sobrantes }} pieza(s) suelta(s)
                 </span>
+                {% endif %}
               </div>
             </td>
             <td class="px-4 py-2">
@@ -61,13 +72,12 @@
                    class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm transition text-center">
                   Ver Movimientos
                 </a>
-                
               </div>
             </td>
           </tr>
           {% else %}
           <tr>
-            <td colspan="5" class="text-center py-8 text-gray-500">
+            <td colspan="6" class="text-center py-8 text-gray-500">
               No hay inventario registrado
             </td>
           </tr>

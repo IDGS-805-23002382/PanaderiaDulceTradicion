@@ -46,10 +46,8 @@ def recetas():
 def agregarReceta():
 
     form = forms.RecetaForm()
-
     productos = Producto.query.all()
     materias = MateriaPrima.query.all()
-
     form.id_producto.choices = [(p.id_producto, p.nombre) for p in productos]
 
     if form.validate_on_submit():
@@ -61,7 +59,7 @@ def agregarReceta():
             flash("Este producto ya tiene una receta.", "warning")
             return redirect(url_for('recetas.agregarReceta'))
 
-        # 🔹 CREAR RECETA
+        # CREAR RECETA
         nueva_receta = Receta(
             id_producto=form.id_producto.data,
             nombre=form.nombre.data,
@@ -71,61 +69,109 @@ def agregarReceta():
         )
 
         db.session.add(nueva_receta)
-        db.session.flush()  
+        db.session.flush()
 
-        # 🔹 INGREDIENTES DESDE EL FORM
+        # INGREDIENTES DESDE EL FORM (incluyendo el tipo)
         materias_ids = request.form.getlist('materia[]')
         cantidades = request.form.getlist('cantidad[]')
+        tipos_unidades = request.form.getlist('tipo[]')  # 🔥 CAPTURAR EL TIPO
 
         for i in range(len(materias_ids)):
-
-            if cantidades[i] == "":
-                continue
-
-            existe = DetalleReceta.query.filter_by(
-                id_receta=nueva_receta.id_receta,
-                id_materia=materias_ids[i]
-            ).first()
-
-            if existe:
-                continue
-
-            detalle = DetalleReceta(
-                id_receta=nueva_receta.id_receta,
-                id_materia=materias_ids[i],
-                cantidad=cantidades[i]   
-            )
-
-            db.session.add(detalle)
+            if materias_ids[i] and cantidades[i] and cantidades[i].strip():
+                try:
+                    cantidad_val = float(cantidades[i])
+                    if cantidad_val > 0:
+                        detalle = DetalleReceta(
+                            id_receta=nueva_receta.id_receta,
+                            id_materia=materias_ids[i],
+                            cantidad=cantidad_val,
+                            tipo=tipos_unidades[i] if i < len(tipos_unidades) else 'g'  # Guardar la unidad seleccionada
+                        )
+                        db.session.add(detalle)
+                except ValueError:
+                    continue
 
         db.session.commit()
-
         flash("Receta agregada correctamente con ingredientes", "success")
-
         return redirect(url_for('recetas.recetas'))
 
     return render_template(
         'modulo-recetas/agregarReceta.html',
         form=form,
-        materias=materias  
+        materias=materias
     )
 
-# DETALLE RECETA (MATERIAS PRIMAS)
 @recetas_bp.route('/detalleReceta/<int:id>')
 def detalleReceta(id):
 
     receta = Receta.query.get_or_404(id)
 
-    ingredientes = DetalleReceta.query.filter_by(
-        id_receta=id
-    ).all()
+    rendimiento = receta.rendimiento_piezas or 20
+
+    ingredientes = []
+    total_costo = 0
+
+    for detalle in receta.ingredientes:
+
+        materia = detalle.materia
+        tipo = (detalle.tipo or '').lower().strip()
+
+        # 🔹 NORMALIZAR
+        if tipo in ['gr', 'gramos']:
+            tipo = 'g'
+        elif tipo in ['pieza', 'pza']:
+            tipo = 'pz'
+
+        cantidad = float(detalle.cantidad)
+
+        # 🔥 COSTO UNITARIO CORRECTO
+        if tipo in ['g', 'kg', 'ml', 'l']:
+
+            costo_unitario = materia.precio_por_gramo_ml
+
+            # convertir a base
+            if tipo == 'kg':
+                cantidad_base = cantidad * 1000
+                unidad = 'g'
+            elif tipo == 'l':
+                cantidad_base = cantidad * 1000
+                unidad = 'ml'
+            else:
+                cantidad_base = cantidad
+                unidad = tipo
+
+        elif tipo == 'pz':
+
+            costo_unitario = materia.precio_por_pieza
+            cantidad_base = cantidad
+            unidad = 'pz'
+
+        else:
+            costo_unitario = float(materia.precio_unitario)
+            cantidad_base = cantidad
+            unidad = materia.unidad_medida
+
+        subtotal = cantidad_base * costo_unitario
+        total_costo += subtotal
+
+        ingredientes.append({
+            "nombre": materia.nombre,
+            "cantidad": round(cantidad, 2),
+            "unidad": unidad,
+            "costo_unitario": round(costo_unitario, 6),
+            "subtotal": round(subtotal, 2)
+        })
+
+    costo_por_pieza = total_costo / rendimiento if rendimiento > 0 else 0
 
     return render_template(
         'modulo-recetas/detalleReceta.html',
         receta=receta,
-        ingredientes=ingredientes
+        ingredientes=ingredientes,
+        total_costo=round(total_costo, 2),
+        costo_por_pieza=round(costo_por_pieza, 2),
+        rendimiento=rendimiento
     )
-
 
 # EDITAR RECETA
 @recetas_bp.route('/editarReceta/<int:id>', methods=['GET','POST'])

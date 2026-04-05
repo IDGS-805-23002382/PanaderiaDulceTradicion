@@ -1,0 +1,201 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+
+<div class="w-full max-w-6xl mx-auto">
+
+    <!-- Encabezado -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-semibold text-[#341915]">
+                Detalle de Orden #{{ orden.id_orden }}
+            </h1>
+            <div class="w-24 h-1 bg-[#341915] mt-2"></div>
+        </div>
+        
+        <a href="{{ url_for('ordenProduccion.listarOrdenes') }}" 
+           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+            ← Volver
+        </a>
+    </div>
+
+    <!-- Datos Generales -->
+    <div class="bg-white rounded-lg shadow-md mb-6">
+        <div class="bg-[#561C24] text-white px-6 py-3 rounded-t-lg">
+            <h2 class="text-xl font-semibold">Datos Generales</h2>
+        </div>
+        
+        <div class="p-6 grid grid-cols-2 gap-4">
+            <div>
+                <p class="text-sm text-gray-500">Número de Orden</p>
+                <p class="font-semibold text-lg">#{{ orden.id_orden }}</p>
+            </div>
+            
+            <div>
+                <p class="text-sm text-gray-500">Fecha de Producción</p>
+                <p class="font-semibold">{{ orden.fecha_produccion.strftime('%d/%m/%Y') if orden.fecha_produccion else orden.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+            </div>
+            
+            <div>
+                <p class="text-sm text-gray-500">Sucursal</p>
+                <p class="font-semibold">{{ sucursal.nombre if sucursal else 'N/A' }}</p>
+            </div>
+            
+            <div>
+                <p class="text-sm text-gray-500">Usuario</p>
+                <p class="font-semibold">{{ orden.cajera if orden.cajera else 'Administrador' }}</p>
+            </div>
+            
+            <div>
+                <p class="text-sm text-gray-500">Estatus</p>
+                <div>
+                    {% if orden.estatus == "pendiente" %}
+                        <span class="px-3 py-1 text-sm font-semibold text-yellow-700 bg-yellow-100 rounded-full">Pendiente</span>
+                    {% elif orden.estatus == "completada" or orden.estatus == "Completa da" %}
+                        <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">Completada</span>
+                    {% elif orden.estatus == "planeada" %}
+                        <span class="px-3 py-1 text-sm font-semibold text-blue-700 bg-blue-100 rounded-full">Planeada</span>
+                    {% elif orden.estatus == "preparacion" %}
+                        <span class="px-3 py-1 text-sm font-semibold text-purple-700 bg-purple-100 rounded-full">En Preparación</span>
+                    {% elif orden.estatus == "cancelada" %}
+                        <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">Cancelada</span>
+                    {% else %}
+                        <span class="px-3 py-1 text-sm font-semibold text-gray-700 bg-gray-100 rounded-full">{{ orden.estatus }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div>
+                <p class="text-sm text-gray-500">Notas</p>
+                <p class="font-semibold">{{ orden.notas or 'Sin notas' }}</p>
+            </div>
+            
+            {% if orden.motivo_cancelacion %}
+            <div class="col-span-2">
+                <p class="text-sm text-gray-500">Motivo de Cancelación</p>
+                <p class="font-semibold text-red-600">{{ orden.motivo_cancelacion }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Producto a Elaborar -->
+    <div class="bg-white rounded-lg shadow-md mb-6">
+        <div class="bg-[#561C24] text-white px-6 py-3 rounded-t-lg">
+            <h2 class="text-xl font-semibold">Producto a Elaborar</h2>
+        </div>
+        
+        <div class="p-6">
+            <table class="w-full">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-2 text-left">Producto</th>
+                        <th class="px-4 py-2 text-center">Recetas</th>
+                        <th class="px-4 py-2 text-center">Unidades por Receta</th>
+                        <th class="px-4 py-2 text-center">Total Unidades</th>
+                        <th class="px-4 py-2 text-right">Costo Unitario</th>
+                        <th class="px-4 py-2 text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b">
+                        <td class="px-4 py-3">
+                            <div>
+                                <p class="font-semibold">{{ producto.nombre if producto else 'N/A' }}</p>
+                                <p class="text-sm text-gray-500">Código: {{ producto.codigo if producto else 'N/A' }}</p>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-center">{{ detalle.cantidad_recetas }}</td>
+                        <td class="px-4 py-3 text-center">{{ (detalle.cantidad / detalle.cantidad_recetas) | round(0) if detalle.cantidad_recetas > 0 else 0 }}</td>
+                        <td class="px-4 py-3 text-center font-semibold">{{ detalle.cantidad }}</td>
+                        <td class="px-4 py-3 text-right">${{ "%.2f"|format(detalle.costo_unitario_produccion) }}</td>
+                        <td class="px-4 py-3 text-right font-semibold">${{ "%.2f"|format(detalle.subtotal_costo) }}</td>
+                    </tr>
+                </tbody>
+                <tfoot class="bg-gray-50">
+                    <tr>
+                        <td colspan="5" class="px-4 py-3 text-right font-bold">Total Producto:</td>
+                        <td class="px-4 py-3 text-right font-bold text-lg">${{ "%.2f"|format(detalle.subtotal_costo) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- Materia Prima Requerida -->
+    <div class="bg-white rounded-lg shadow-md mb-6">
+        <div class="bg-[#561C24] text-white px-6 py-3 rounded-t-lg">
+            <h2 class="text-xl font-semibold">Desglose de Materia Prima Requerida</h2>
+        </div>
+        
+        <div class="p-6">
+            {% if materia_prima %}
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Insumo</th>
+                            <th class="px-4 py-2 text-center">Cantidad por Receta</th>
+                            <th class="px-4 py-2 text-center">Total Requerido</th>
+                            <th class="px-4 py-2 text-right">Costo Unitario</th>
+                            <th class="px-4 py-2 text-right">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mp in materia_prima %}
+                        <tr class="border-b">
+                            <td class="px-4 py-3 font-medium">{{ mp.nombre }}</td>
+                            <td class="px-4 py-3 text-center">{{ mp.cantidad_por_receta }} {{ mp.unidad_por_receta }}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="font-semibold">{{ mp.cantidad_total }}</span> {{ mp.unidad_total }}
+                            </td>
+                            <td class="px-4 py-3 text-right">${{ "%.4f"|format(mp.costo_unitario) }}</td>
+                            <td class="px-4 py-3 text-right">${{ "%.2f"|format(mp.subtotal) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="bg-gray-50">
+                        <tr>
+                            <td colspan="4" class="px-4 py-3 text-right font-bold">Total Materia Prima:</td>
+                            <td class="px-4 py-3 text-right font-bold text-lg">${{ "%.2f"|format(costo_total_materia_prima) }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-4">No hay materia prima registrada para este producto</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Resumen de Costos -->
+    <div class="bg-white rounded-lg shadow-md mb-6">
+        <div class="bg-[#561C24] text-white px-6 py-3 rounded-t-lg">
+            <h2 class="text-xl font-semibold">Resumen de Producción</h2>
+        </div>
+        
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-gray-600">Total Unidades a Producir</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ detalle.cantidad }}</p>
+                    <p class="text-xs text-gray-500">piezas</p>
+                </div>
+                
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <p class="text-sm text-gray-600">Costo Estimado de Producción</p>
+                    <p class="text-3xl font-bold text-green-600">${{ "%.2f"|format(orden.costo_total_estimado or detalle.subtotal_costo) }}</p>
+                    <p class="text-xs text-gray-500">total</p>
+                </div>
+                
+                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <p class="text-sm text-gray-600">Costo por Unidad</p>
+                    <p class="text-3xl font-bold text-purple-600">${{ "%.2f"|format(detalle.costo_unitario_produccion) }}</p>
+                    <p class="text-xs text-gray-500">por pieza</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

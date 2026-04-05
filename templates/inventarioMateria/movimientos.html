@@ -35,12 +35,8 @@
             <th class="px-4 py-3">Fecha</th>
             <th class="px-4 py-3">Tipo</th>
             <th class="px-4 py-3">Cantidad</th>
-            <th class="px-4 py-3">Stock Antes</th>
-            <th class="px-4 py-3">Stock Después</th>
             <th class="px-4 py-3">Referencia</th>
-            <th class="px-4 py-3">Proveedor</th>
-            <th class="px-4 py-3">Usuario</th>
-            <th class="px-4 py-3">Motivo</th>
+            
           </tr>
         </thead>
 
@@ -64,12 +60,8 @@
               {% endif %}
             </td>
             <td class="px-4 py-2 text-center font-medium">{{ m.cantidad if m.cantidad else 0 }}</td>
-            <td class="px-4 py-2 text-center">{{ m.stock_antes if m.stock_antes else 0 }}</td>
-            <td class="px-4 py-2 text-center">{{ m.stock_despues if m.stock_despues else 0 }}</td>
             <td class="px-4 py-2 text-center">{{ m.referencia if m.referencia else 'N/A' }}</td>
-            <td class="px-4 py-2 text-center">{{ m.proveedor if m.proveedor else 'N/A' }}</td>
-            <td class="px-4 py-2 text-center">{{ m.usuario if m.usuario else 'N/A' }}</td>
-            <td class="px-4 py-2 text-center">{{ m.motivo if m.motivo else 'N/A' }}</td>
+           
           </tr>
           {% else %}
           <tr>
@@ -100,7 +92,7 @@
         <div class="bg-red-50 p-3 rounded-lg">
           <p class="text-xs text-red-600 font-semibold">Total Salidas</p>
           <p class="text-xl font-bold text-red-700">
-            {{ movimientos|selectattr('tipo', 'equalto', 'salida')|map(attribute='cantidad')|sum|default(0) }}
+            {{ movimientos|selectattr('tipo', 'equalto', 'salida_produccion')|map(attribute='cantidad')|sum|default(0) }}
           </p>
         </div>
       </div>
