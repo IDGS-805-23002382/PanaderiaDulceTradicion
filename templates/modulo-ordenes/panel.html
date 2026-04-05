@@ -4,150 +4,217 @@
 <div class="min-h-screen bg-[#f7efe5] py-10 px-4">
     <div class="max-w-7xl mx-auto">
         
-        <div class="mb-8 flex justify-between items-center border-b-2 border-[#341915]/10 pb-4">
+        <!-- Header -->
+        <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-[#341915]/10 pb-4">
             <div>
-                <h1 class="text-3xl font-black text-[#341915] uppercase">Dulce Tradición</h1>
-                <p class="text-xs font-bold text-[#341915]/50 uppercase">Panel de Cocina</p>
+                <h1 class="text-3xl font-black text-[#341915] uppercase tracking-tight">Dulce Tradición</h1>
+                <p class="text-xs font-bold text-[#341915]/40 uppercase tracking-wider mt-1">Panel de Cocina</p>
             </div>
-            <button onclick="window.location.reload()" class="bg-white px-6 py-2 rounded-full text-[#341915] font-black text-xs shadow-sm border">
-                🔄 REFRESCAR
-            </button>
+            <a href="{{ url_for('ordenProduccion.panelCocina') }}" 
+               class="bg-white hover:bg-gray-50 px-6 py-2 rounded-full text-[#341915] font-bold text-xs shadow-sm hover:shadow transition-all border border-[#341915]/10 inline-block text-center">
+                Refrescar
+            </a>
         </div>
 
-        <!-- FLASH -->
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="mb-6 p-4 rounded-xl bg-green-100 text-green-700">
+                    <div class="mb-6 p-4 rounded-xl {% if category == 'success' %}bg-green-100 text-green-700 border-l-4 border-green-600{% elif category == 'error' %}bg-red-100 text-red-700 border-l-4 border-red-600{% else %}bg-blue-100 text-blue-700 border-l-4 border-blue-600{% endif %}">
                         {{ message }}
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
+        <!-- Kanban Board -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- PENDIENTES -->
-            <div class="bg-white rounded-2xl shadow-xl">
-                <div class="bg-yellow-500 text-white px-6 py-4">
-                    <h2 class="text-xl font-black">⏰ Pendientes</h2>
+            <!-- Columna Pendientes -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="bg-amber-500 text-white px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-black uppercase tracking-wider">Pendientes</h2>
+                        <span class="bg-white/20 px-2 py-1 rounded text-xs font-bold">{{ ordenes_pendientes|length }}</span>
+                    </div>
                 </div>
 
-                <div class="p-4 space-y-4">
+                <div class="p-4 space-y-4 max-h-[600px] overflow-y-auto">
                     {% for orden in ordenes_pendientes %}
-                    <div class="border p-4 rounded-xl">
-
-                        <p class="font-bold">Orden #{{ orden.id_orden }}</p>
-                        <p>{{ orden.sucursal.nombre }}</p>
+                    <div class="border border-gray-200 p-4 rounded-xl hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="font-black text-[#341915]">Orden #{{ orden.id_orden }}</p>
+                            <span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-bold">Pendiente</span>
+                        </div>
+                        
+                        <p class="text-sm text-gray-600 mb-3">{{ orden.sucursal.nombre }}</p>
 
                         {% for detalle in orden.detalles %}
-                        <div class="flex justify-between text-sm">
-                            <span>{{ detalle.producto.nombre }}</span>
-                            <span>{{ detalle.cantidad_recetas or detalle.cantidad }}</span>
+                        <div class="flex justify-between items-center text-sm py-1 border-t border-gray-100">
+                            <span class="font-medium text-gray-700">{{ detalle.producto.nombre }}</span>
+                            <span class="font-bold text-[#341915]">{{ detalle.cantidad_recetas or detalle.cantidad }} receta(s)</span>
                         </div>
                         {% endfor %}
 
-                        <form method="POST"
-                              action="{{ url_for('ordenProduccion.cambiar_estado', id_orden=orden.id_orden) }}">
-                            
+                        <form method="POST" action="{{ url_for('ordenProduccion.cambiar_estado', id_orden=orden.id_orden) }}" class="mt-4">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <input type="hidden" name="estatus" value="preparacion">
-
-                            <button class="w-full bg-green-500 text-white mt-2 py-2 rounded">
-                                Iniciar
+                            <button class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg transition-colors text-sm">
+                                Iniciar producción
                             </button>
                         </form>
-
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8 text-gray-400">
+                        <p class="text-sm">No hay órdenes pendientes</p>
                     </div>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- PREPARACIÓN -->
-            <div class="bg-white rounded-2xl shadow-xl">
+            <!-- Columna Preparación -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div class="bg-blue-500 text-white px-6 py-4">
-                    <h2 class="text-xl font-black">🔥 Preparación</h2>
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-black uppercase tracking-wider">En preparación</h2>
+                        <span class="bg-white/20 px-2 py-1 rounded text-xs font-bold">{{ ordenes_preparacion|length }}</span>
+                    </div>
                 </div>
 
-                <div class="p-4 space-y-4">
+                <div class="p-4 space-y-4 max-h-[600px] overflow-y-auto">
                     {% for orden in ordenes_preparacion %}
-                    <div class="border p-4 rounded-xl">
-
-                        <p class="font-bold">Orden #{{ orden.id_orden }}</p>
+                    <div class="border border-gray-200 p-4 rounded-xl hover:shadow-md transition-all">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="font-black text-[#341915]">Orden #{{ orden.id_orden }}</p>
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-bold">En proceso</span>
+                        </div>
 
                         {% for detalle in orden.detalles %}
-                        <div class="flex justify-between text-sm">
-                            <span>{{ detalle.producto.nombre }}</span>
-                            <span>{{ detalle.cantidad_recetas or detalle.cantidad }}</span>
+                        <div class="flex justify-between items-center text-sm py-1 border-t border-gray-100">
+                            <span class="font-medium text-gray-700">{{ detalle.producto.nombre }}</span>
+                            <span class="font-bold text-[#341915]">{{ detalle.cantidad_recetas or detalle.cantidad }} receta(s)</span>
                         </div>
                         {% endfor %}
 
-                        <form method="POST"
-                              action="{{ url_for('ordenProduccion.cambiar_estado', id_orden=orden.id_orden) }}">
+                        <div class="flex gap-2 mt-4">
+                            <form method="POST" action="{{ url_for('ordenProduccion.cambiar_estado', id_orden=orden.id_orden) }}" class="flex-1">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="estatus" value="completada">
+                                <button class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg transition-colors text-sm">
+                                    Completar
+                                </button>
+                            </form>
                             
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <input type="hidden" name="estatus" value="completada">
-
-                            <button class="w-full bg-green-600 text-white mt-2 py-2 rounded">
-                                Completar
-                            </button>
-                        </form>
-
+                            <!-- Botón Cancelar que muestra el modal como un detail -->
+                            <details class="relative">
+                                <summary class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-lg transition-colors text-sm cursor-pointer list-none text-center">
+                                    Cancelar
+                                </summary>
+                                <div class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-10 p-4">
+                                    <form method="POST" action="{{ url_for('ordenProduccion.cambiar_estado', id_orden=orden.id_orden) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="estatus" value="cancelada">
+                                        
+                                        <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">
+                                            Motivo de cancelación
+                                        </label>
+                                        <textarea name="motivo_cancelacion" 
+                                                  class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none"
+                                                  rows="3"
+                                                  required></textarea>
+                                        
+                                        <button type="submit" 
+                                                class="w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition-colors text-sm">
+                                            Confirmar cancelación
+                                        </button>
+                                    </form>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8 text-gray-400">
+                        <p class="text-sm">No hay órdenes en preparación</p>
                     </div>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- CANCELADAS -->
-            <div class="bg-white rounded-2xl shadow-xl">
+            <!-- Columna Canceladas -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div class="bg-gray-600 text-white px-6 py-4">
-                    <h2 class="text-xl font-black">📋 Canceladas</h2>
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-black uppercase tracking-wider">Canceladas</h2>
+                        <span class="bg-white/20 px-2 py-1 rounded text-xs font-bold">{{ ordenes_canceladas|length }}</span>
+                    </div>
                 </div>
 
-                <div class="p-4 space-y-3">
+                <div class="p-4 space-y-3 max-h-[600px] overflow-y-auto">
                     {% for orden in ordenes_canceladas %}
-                    <div class="border-l-4 border-red-500 p-3">
-                        <p>Orden #{{ orden.id_orden }}</p>
-                        <p class="text-xs">Motivo: {{ orden.motivo_cancelacion }}</p>
+                    <div class="border-l-4 border-red-500 bg-gray-50 p-4 rounded-r-xl">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="font-bold text-gray-800">Orden #{{ orden.id_orden }}</p>
+                            <span class="text-xs text-gray-500">{{ orden.fecha_produccion.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1">
+                            <span class="font-semibold">Motivo:</span> {{ orden.motivo_cancelacion or 'No especificado' }}
+                        </p>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8 text-gray-400">
+                        <p class="text-sm">No hay órdenes canceladas</p>
                     </div>
                     {% endfor %}
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
-<!-- MODAL CANCELAR -->
-<div id="modalCancelar" class="fixed inset-0 hidden bg-black/50 items-center justify-center">
-    <div class="bg-white p-6 rounded-xl w-96">
-
-        <form id="formCancelar" method="POST">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="estatus" value="cancelada">
-
-            <textarea name="motivo_cancelacion" class="w-full border p-2"></textarea>
-
-            <div class="flex gap-2 mt-4">
-                <button type="button" onclick="cerrarModal()">Cerrar</button>
-                <button type="submit" class="bg-red-500 text-white px-4 py-2">
-                    Cancelar
-                </button>
-            </div>
-        </form>
-
-    </div>
-</div>
-
-<script>
-function mostrarModalCancelar(id){
-    document.getElementById("modalCancelar").classList.remove("hidden");
-    document.getElementById("formCancelar").action = `/cocina/cambiar_estado/${id}`;
+<style>
+/* Scroll personalizado */
+.max-h-\[600px\]::-webkit-scrollbar {
+    width: 6px;
 }
 
-function cerrarModal(){
-    document.getElementById("modalCancelar").classList.add("hidden");
+.max-h-\[600px\]::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
 }
-</script>
+
+.max-h-\[600px\]::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.max-h-\[600px\]::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Estilo para el summary (botón cancelar) */
+summary {
+    list-style: none;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Animación suave para el modal */
+details[open] > div {
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
 
 {% endblock %}

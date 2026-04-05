@@ -32,6 +32,7 @@ def agregarOrden():
     form.id_sucursal.choices = [(s.id_sucursal, s.nombre) for s in Sucursal.query.all()]
     form.id_producto.choices = [(p.id_producto, p.nombre) for p in Producto.query.filter_by(estatus='activo').all()]
     
+    # 🔄 INICIALIZAR TODAS LAS VARIABLES EN 0 O VACÍO (se borrarán en cada GET)
     total_costo_orden = 0
     costo_unitario_pan = 0
     costo_por_receta = 0
@@ -44,6 +45,30 @@ def agregarOrden():
     hay_stock_suficiente = True
     faltantes = []
 
+    # 🚨 IMPORTANTE: Si es GET, mostrar formulario vacío
+    if request.method == 'GET':
+        # Resetear campos del formulario
+        form.cantidad_recetas.data = None
+        form.id_producto.data = None
+        form.id_sucursal.data = None
+        
+        return render_template(
+            'modulo-ordenes/agregarOrden.html',
+            form=form,
+            total_costo=0,
+            costo_unitario=0,
+            costo_por_receta=0,
+            ingredientes=[],
+            receta_nombre=receta_nombre,
+            sucursal_nombre="",
+            cantidad_recetas=0,
+            piezas_totales=0,
+            rendimiento_receta=rendimiento_receta,
+            hay_stock_suficiente=True,
+            faltantes=[]
+        )
+
+    # PROCESAR POST (solo si viene del formulario)
     if request.method == 'POST':
         id_prod = request.form.get('id_producto')
         id_suc = request.form.get('id_sucursal')
@@ -224,7 +249,9 @@ def agregarOrden():
 
                     db.session.commit()
                     flash('Orden creada correctamente', 'success')
-                    return redirect(url_for('ordenProduccion.listarOrdenes'))
+                    
+                    # 🚀 REDIRIGIR para evitar reenvío de datos al recargar
+                    return redirect(url_for('ordenProduccion.agregarOrden'))
 
     return render_template(
         'modulo-ordenes/agregarOrden.html',

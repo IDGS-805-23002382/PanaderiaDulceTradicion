@@ -1,171 +1,251 @@
 {% extends "layoutModulos.html" %}
 
 {% block container %}
-<div class="min-h-screen bg-[#f7efe5] py-10 px-4">
-    <div class="max-w-6xl mx-auto">
+<div class="min-h-screen bg-gradient-to-br from-[#fef7e8] to-[#f7efe5] py-10 px-4">
+    <div class="max-w-7xl mx-auto">
         
-        <div class="mb-8 flex justify-between items-center border-b-2 border-[#341915]/10 pb-4">
-            <div>
-                <h1 class="text-3xl font-black text-[#341915] tracking-tighter uppercase">Dulce Tradición</h1>
-                <p class="text-xs font-bold text-[#341915]/50 tracking-widest uppercase">Módulo de Producción</p>
+        <!-- Header Elegante -->
+        <div class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-[#341915]/10 pb-6">
+            <div class="group">
+                <h1 class="text-4xl font-black text-[#341915] tracking-tighter flex items-center gap-3">
+                    
+                    Dulce Tradición
+                </h1>
+                <p class="text-xs font-bold text-[#341915]/40 tracking-[0.3em] uppercase mt-2 ml-2">Módulo de Producción</p>
             </div>
-            <a href="{{ url_for('ordenProduccion.listarOrdenes') }}" class="bg-white px-6 py-2 rounded-full text-[#341915] font-black text-xs shadow-sm hover:shadow-md transition-all border border-[#341915]/10">← VOLVER AL LISTADO</a>
+            <button type="button" 
+        onclick="window.location.href='{{ url_for('ordenProduccion.agregarOrden') }}'" 
+        class="bg-white px-6 py-2 rounded-full text-[#341915] font-black text-xs shadow-sm border hover:bg-gray-100 transition-colors">
+    🔄 LIMPIAR FORMULARIO
+</button>
+            <a href="{{ url_for('ordenProduccion.listarOrdenes') }}" 
+               class="group bg-white/80 backdrop-blur-sm px-6 py-2.5 rounded-full text-[#341915] font-black text-xs shadow-md hover:shadow-xl transition-all duration-300 border border-[#341915]/10 hover:bg-white flex items-center gap-2">
+                <span class="text-lg group-hover:-translate-x-1 transition-transform">←</span> 
+                VOLVER AL LISTADO
+            </a>
         </div>
 
-        <!-- Mostrar mensajes flash -->
+        <!-- Mensajes Flash Mejorados -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="mb-6 p-4 rounded-xl {% if category == 'success' %}bg-green-100 text-green-700 border-l-4 border-green-600{% elif category == 'error' %}bg-red-100 text-red-700 border-l-4 border-red-600{% else %}bg-blue-100 text-blue-700 border-l-4 border-blue-600{% endif %}">
-                        {{ message }}
+                    <div class="mb-6 p-5 rounded-2xl backdrop-blur-sm animate-slideDown {% if category == 'success' %}bg-green-100/80 border-l-8 border-green-600 text-green-800{% elif category == 'error' %}bg-red-100/80 border-l-8 border-red-600 text-red-800{% else %}bg-blue-100/80 border-l-8 border-blue-600 text-blue-800{% endif %} shadow-lg">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">
+                                {% if category == 'success' %} {% elif category == 'error' %} {% else %} {% endif %}
+                            </span>
+                            <p class="font-bold text-sm">{{ message }}</p>
+                        </div>
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
-        <form method="POST">
+        <form method="POST" autocomplete="off">
             {{ form.hidden_tag() }}
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
+                <!-- Panel Izquierdo - Configuración -->
                 <div class="lg:col-span-4 space-y-6">
-                    <div class="bg-white rounded-[2rem] p-8 shadow-2xl shadow-[#341915]/5">
-                        <h3 class="text-sm font-black text-[#341915] mb-6 uppercase tracking-widest border-l-4 border-[#341915] pl-3">Nueva Orden</h3>
+                    <div class="bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-[#341915]/5">
+                        <div class="flex items-center gap-3 mb-8 pb-3 border-b-2 border-[#341915]/10">
+                            <div class="w-10 h-10 bg-[#341915] rounded-full flex items-center justify-center">
+                                <span class="text-white text-lg">⚙️</span>
+                            </div>
+                            <h3 class="text-sm font-black text-[#341915] uppercase tracking-wider">Nueva Orden</h3>
+                        </div>
                         
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-[10px] font-black text-gray-400 mb-1 uppercase ml-1">Sucursal Destino</label>
-                                {{ form.id_sucursal(class="w-full bg-gray-50 border-0 rounded-2xl p-4 text-sm font-bold text-[#341915] focus:ring-2 focus:ring-[#341915]") }}
+                        <div class="space-y-5">
+                            <!-- Sucursal -->
+                            <div class="group">
+                                <label class="block text-[11px] font-black text-gray-400 mb-2 uppercase tracking-wider ml-1 group-focus-within:text-[#341915] transition-colors">
+                                     Sucursal Destino
+                                </label>
+                                {{ form.id_sucursal(class="w-full bg-gray-50 border-2 border-transparent rounded-2xl p-4 text-sm font-bold text-[#341915] focus:bg-white focus:border-[#341915]/30 focus:outline-none transition-all duration-200") }}
                             </div>
 
-                            <div>
-                                <label class="block text-[10px] font-black text-gray-400 mb-1 uppercase ml-1">Producto a Elaborar</label>
-                                {{ form.id_producto(class="w-full bg-gray-50 border-0 rounded-2xl p-4 text-sm font-bold text-[#341915] focus:ring-2 focus:ring-[#341915]") }}
+                            <!-- Producto -->
+                            <div class="group">
+                                <label class="block text-[11px] font-black text-gray-400 mb-2 uppercase tracking-wider ml-1">
+                                    Producto a Elaborar
+                                </label>
+                                {{ form.id_producto(class="w-full bg-gray-50 border-2 border-transparent rounded-2xl p-4 text-sm font-bold text-[#341915] focus:bg-white focus:border-[#341915]/30 focus:outline-none transition-all duration-200") }}
                             </div>
 
-                            <div>
-                                <label class="block text-[10px] font-black text-gray-400 mb-1 uppercase ml-1">Cantidad de Recetas</label>
+                            <!-- Cantidad Recetas -->
+                            <div class="group">
+                                <label class="block text-[11px] font-black text-gray-400 mb-2 uppercase tracking-wider ml-1">
+                                     Cantidad de Recetas
+                                </label>
                                 <div class="relative">
-                                    {{ form.cantidad_recetas(class="w-full bg-gray-50 border-0 rounded-2xl p-4 text-sm font-bold text-[#341915] focus:ring-2 focus:ring-[#341915]", placeholder="Ej: 3", min="1") }}
-                                    <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 font-bold">
+                                    {{ form.cantidad_recetas(class="w-full bg-gray-50 border-2 border-transparent rounded-2xl p-4 text-sm font-bold text-[#341915] focus:bg-white focus:border-[#341915]/30 focus:outline-none transition-all duration-200 pr-36", placeholder="Ej: 3", min="1") }}
+                                    <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 font-bold bg-gray-100 px-2 py-1 rounded-full">
                                         1 receta = {{ rendimiento_receta if rendimiento_receta else 20 }} piezas
                                     </div>
                                 </div>
                             </div>
 
-                            <button type="submit" class="w-full bg-[#341915] text-white font-black py-5 rounded-2xl shadow-xl hover:bg-[#4d2621] transform hover:-translate-y-1 transition-all duration-300 mt-4 uppercase text-xs tracking-widest">
+                            <!-- Botón Calcular -->
+                            <button type="submit" 
+                                    class="w-full bg-gradient-to-r from-[#341915] to-[#4d2621] text-white font-black py-5 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 mt-6 uppercase text-xs tracking-wider flex items-center justify-center gap-2 group">
+                               
                                 Calcular Producción
                             </button>
                         </div>
                     </div>
                 </div>
 
+                <!-- Panel Derecho - Resultados -->
                 <div class="lg:col-span-8">
-                    <div class="bg-[#341915] rounded-[2.5rem] p-10 text-[#E8D8C4] shadow-2xl relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-8 opacity-10 text-9xl">🥐</div>
+                    <div class="bg-gradient-to-br from-[#341915] to-[#2a1210] rounded-3xl p-10 text-[#E8D8C4] shadow-2xl relative overflow-hidden">
+                        <!-- Decoración -->
+                        <div class="absolute top-0 right-0 p-8 opacity-5 text-9xl animate-pulse">🥐</div>
+                        
 
-                        <!-- Alerta de stock insuficiente general -->
+                        <!-- Alerta de stock insuficiente -->
                         {% if not hay_stock_suficiente and faltantes %}
-                        <div class="relative z-10 mb-6 bg-red-900/50 border-l-4 border-red-500 text-red-200 p-4 rounded-xl">
-                            <p class="font-bold mb-2 uppercase text-sm tracking-widest">⚠️ No se puede producir por falta de insumos</p>
-                            <ul class="text-xs space-y-1">
-                                {% for falta in faltantes %}
-                                <li class="flex justify-between items-center">
-                                    <span>• {{ falta.nombre }}:</span>
-                                    <span class="font-mono">
-                                        Necesita {{ "%.2f"|format(falta.necesario) }} {{ falta.unidad }} | 
-                                        Disponible {{ "%.2f"|format(falta.disponible) }} {{ falta.unidad }} | 
-                                        <span class="font-bold text-red-300">Faltante: {{ "%.2f"|format(falta.deficit) }} {{ falta.unidad }}</span>
-                                    </span>
-                                </li>
-                                {% endfor %}
-                            </ul>
+                        <div class="relative z-10 mb-8 bg-red-900/40 backdrop-blur-sm border-l-8 border-red-500 text-red-100 p-6 rounded-2xl shadow-lg">
+                            <div class="flex items-start gap-3">
+                               
+                                <div class="flex-1">
+                                    <p class="font-black mb-3 uppercase text-sm tracking-wider">No se puede producir por falta de insumos</p>
+                                    <ul class="space-y-2">
+                                        {% for falta in faltantes %}
+                                        <li class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 text-xs p-2 bg-red-900/30 rounded-lg">
+                                            <span class="font-bold">• {{ falta.nombre }}:</span>
+                                            <span class="font-mono text-red-200">
+                                                Necesita {{ "%.2f"|format(falta.necesario) }} {{ falta.unidad }} | 
+                                                Disponible {{ "%.2f"|format(falta.disponible) }} {{ falta.unidad }}
+                                            </span>
+                                            <span class="font-bold text-red-300 bg-red-900/50 px-2 py-1 rounded">
+                                                Faltante: {{ "%.2f"|format(falta.deficit) }} {{ falta.unidad }}
+                                            </span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         {% endif %}
 
                         {% if ingredientes %}
                             <div class="relative z-10">
-                                <div class="mb-10">
-                                    <p class="text-xs font-bold text-[#E8D8C4]/50 uppercase tracking-widest mb-1">Resumen de producción:</p>
-                                    <h2 class="text-4xl font-black text-white leading-none">{{ receta_nombre }}</h2>
-                                    <div class="flex gap-4 mt-2">
-                                        <p class="text-xs font-bold text-green-400 uppercase tracking-tighter">📍 {{ sucursal_nombre }}</p>
-                                        <p class="text-xs font-bold text-blue-400 uppercase tracking-tighter">📊 {{ cantidad_recetas }} RECETA(S)</p>
-                                        <p class="text-xs font-bold text-yellow-400 uppercase tracking-tighter">🥐 {{ piezas_totales }} PIEZAS TOTALES</p>
+                                <!-- Cabecera Resultados -->
+                                <div class="mb-10 pb-6 border-b border-white/10">
+                                    <p class="text-[11px] font-black text-[#E8D8C4]/40 uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+                                         RESUMEN DE PRODUCCIÓN
+                                    </p>
+                                    <h2 class="text-5xl font-black text-white leading-tight mb-3">{{ receta_nombre }}</h2>
+                                    <div class="flex flex-wrap gap-3 mt-3">
+                                        <span class="text-xs font-bold bg-green-500/20 text-green-300 px-4 py-1.5 rounded-full backdrop-blur-sm">
+                                             {{ sucursal_nombre }}
+                                        </span>
+                                        <span class="text-xs font-bold bg-blue-500/20 text-blue-300 px-4 py-1.5 rounded-full backdrop-blur-sm">
+                                             {{ cantidad_recetas }} RECETA(S)
+                                        </span>
+                                        <span class="text-xs font-bold bg-yellow-500/20 text-yellow-300 px-4 py-1.5 rounded-full backdrop-blur-sm">
+                                             {{ piezas_totales }} PIEZAS
+                                        </span>
                                     </div>
-                                    <p class="text-[10px] font-bold text-[#E8D8C4]/40 uppercase tracking-tighter mt-2">⚙️ Rendimiento: 1 receta = {{ rendimiento_receta }} piezas</p>
+                                    <p class="text-[10px] font-bold text-[#E8D8C4]/30 uppercase tracking-wider mt-4">
+                                         Rendimiento: 1 receta = {{ rendimiento_receta }} piezas
+                                    </p>
                                 </div>
 
+                                <!-- Tarjetas de Costos -->
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                                    <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10">
-                                        <p class="text-[10px] font-black text-[#E8D8C4]/40 uppercase mb-2">Costo por Receta</p>
-                                        <p class="text-3xl font-black text-white leading-none">$ {{ "{:,.2f}".format(costo_por_receta) }}</p>
+                                    <div class="bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all">
+                                        <p class="text-[10px] font-black text-[#E8D8C4]/40 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                            Costo por Receta
+                                        </p>
+                                        <p class="text-3xl font-black text-white">$ {{ "{:,.2f}".format(costo_por_receta) }}</p>
                                     </div>
-                                    <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10">
-                                        <p class="text-[10px] font-black text-[#E8D8C4]/40 uppercase mb-2">Inversión Total</p>
-                                        <p class="text-3xl font-black text-white leading-none">$ {{ "{:,.2f}".format(total_costo) }}</p>
+                                    <div class="bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all">
+                                        <p class="text-[10px] font-black text-[#E8D8C4]/40 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                            Inversión Total
+                                        </p>
+                                        <p class="text-3xl font-black text-white">$ {{ "{:,.2f}".format(total_costo) }}</p>
                                     </div>
-                                    <div class="bg-[#E8D8C4] p-6 rounded-[2rem] shadow-inner">
-                                        <p class="text-[10px] font-black text-[#341915]/40 uppercase mb-2">Costo por Pieza</p>
-                                        <p class="text-3xl font-black text-[#341915] leading-none">$ {{ "{:,.2f}".format(costo_unitario) }}</p>
+                                    <div class="bg-gradient-to-br from-[#E8D8C4] to-[#f5ede3] p-6 rounded-2xl shadow-inner transform hover:scale-105 transition-all">
+                                        <p class="text-[10px] font-black text-[#341915]/50 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                             Costo por Pieza
+                                        </p>
+                                        <p class="text-3xl font-black text-[#341915]">$ {{ "{:,.2f}".format(costo_unitario) }}</p>
                                     </div>
                                 </div>
 
-                                <div class="space-y-2">
-                                    <h4 class="text-[10px] font-black text-[#E8D8C4]/30 uppercase tracking-[0.2em] mb-4">Desglose de Materia Prima (para {{ cantidad_recetas }} receta(s))</h4>
+                                <!-- Lista de Ingredientes -->
+                                <div class="space-y-2 mb-8">
+                                    <h4 class="text-[10px] font-black text-[#E8D8C4]/30 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                                        Desglose de Materia Prima
+                                        <span class="text-white/20 text-xs">({{ cantidad_recetas }} receta(s))</span>
+                                    </h4>
                                     {% for item in ingredientes %}
-                                    <div class="flex justify-between items-center p-5 rounded-2xl transition-all border 
-                                        {% if not item.stock_suficiente %}border-red-500 bg-red-500/20{% else %}border-white/5 bg-white/5 hover:bg-white/10{% endif %}">
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-5 rounded-2xl transition-all duration-200 backdrop-blur-sm 
+                                        {% if not item.stock_suficiente %}border-2 border-red-500 bg-red-500/20{% else %}border border-white/10 bg-white/5 hover:bg-white/10{% endif %}">
                                         <div class="flex-1">
                                             <p class="font-black text-white text-sm tracking-tight">{{ item.nombre }}</p>
-                                            <div class="flex gap-4 mt-1">
+                                            <div class="flex flex-wrap gap-3 mt-2">
                                                 <p class="text-[10px] font-bold text-[#E8D8C4]/60 uppercase">
-                                                    Necesita: {{ "%.2f"|format(item.cantidad) }} {{ item.unidad }}
+                                                     Necesita: {{ "%.2f"|format(item.cantidad) }} {{ item.unidad }}
                                                 </p>
                                                 <p class="text-[10px] font-bold {% if item.stock_suficiente %}text-green-400{% else %}text-red-400{% endif %} uppercase">
-                                                    Stock: {{ "%.2f"|format(item.stock_disponible) }} {{ item.unidad }}
+                                                     Stock: {{ "%.2f"|format(item.stock_disponible) }} {{ item.unidad }}
                                                 </p>
                                             </div>
                                             {% if not item.stock_suficiente %}
-                                            <p class="text-red-400 text-[10px] font-bold mt-1 uppercase tracking-wider">
+                                            <p class="text-red-400 text-[10px] font-bold mt-2 uppercase tracking-wider flex items-center gap-1">
                                                 INSUFICIENTE - Faltante: {{ "%.2f"|format(item.cantidad - item.stock_disponible) }} {{ item.unidad }}
                                             </p>
                                             {% endif %}
                                         </div>
                                         <div class="text-right">
-                                            <p class="font-mono text-green-400 font-bold">$ {{ "{:,.2f}".format(item.costo) }}</p>
+                                            <p class="font-mono text-green-400 font-bold text-sm">$ {{ "{:,.2f}".format(item.costo) }}</p>
                                         </div>
                                     </div>
                                     {% endfor %}
                                 </div>
 
-                                <!-- Resumen de stock general -->
-                                <div class="mt-6 p-4 rounded-xl bg-white/5 border border-white/10">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-[10px] font-black text-[#E8D8C4]/60 uppercase tracking-widest">Estado del inventario:</span>
+                                <!-- Estado Inventario -->
+                                <div class="mt-6 p-5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm mb-6">
+                                    <div class="flex justify-between items-center flex-wrap gap-3">
+                                        <span class="text-[10px] font-black text-[#E8D8C4]/60 uppercase tracking-wider flex items-center gap-2">
+                                         Estado del inventario:
+                                        </span>
                                         {% if hay_stock_suficiente %}
-                                            <span class="text-green-400 text-xs font-bold uppercase bg-green-400/20 px-3 py-1 rounded-full">✅ Stock Suficiente</span>
+                                            <span class="text-green-400 text-xs font-bold uppercase bg-green-400/20 px-4 py-2 rounded-full backdrop-blur-sm flex items-center gap-2">
+                                                Stock Suficiente
+                                            </span>
                                         {% else %}
-                                            <span class="text-red-400 text-xs font-bold uppercase bg-red-400/20 px-3 py-1 rounded-full">❌ Stock Insuficiente</span>
+                                            <span class="text-red-400 text-xs font-bold uppercase bg-red-400/20 px-4 py-2 rounded-full backdrop-blur-sm flex items-center gap-2">
+                                                Stock Insuficiente
+                                            </span>
                                         {% endif %}
                                     </div>
                                 </div>
 
+                                <!-- Botón Confirmar -->
                                 <button type="submit" name="confirmar" 
                                     {% if not hay_stock_suficiente %}disabled{% endif %}
-                                    class="w-full mt-6 {% if hay_stock_suficiente %}bg-white text-[#341915] hover:bg-[#E8D8C4] cursor-pointer{% else %}bg-gray-500 text-gray-300 cursor-not-allowed{% endif %} font-black py-5 rounded-2xl transition-all shadow-2xl uppercase text-xs tracking-widest">
+                                    class="w-full mt-4 {% if hay_stock_suficiente %}bg-gradient-to-r from-white to-[#E8D8C4] text-[#341915] hover:shadow-2xl cursor-pointer{% else %}bg-gray-600 text-gray-300 cursor-not-allowed{% endif %} font-black py-5 rounded-2xl transition-all duration-300 shadow-xl uppercase text-xs tracking-wider flex items-center justify-center gap-2 group">
                                     {% if hay_stock_suficiente %}
+                                        
                                         Confirmar y Guardar Orden ({{ cantidad_recetas }} receta(s) = {{ piezas_totales }} piezas)
                                     {% else %}
+                                      
                                         Stock Insuficiente - No se puede procesar
                                     {% endif %}
                                 </button>
                             </div>
                         {% else %}
-                            <div class="h-[400px] flex flex-col items-center justify-center text-center opacity-20">
-                                <div class="text-8xl mb-6"></div>
-                                <p class="font-black text-2xl uppercase tracking-[0.3em]">Esperando Datos</p>
-                                <p class="text-sm font-bold mt-2">Selecciona un producto para desglosar la receta</p>
+                            <!-- Estado Vacío -->
+                            <div class="h-[500px] flex flex-col items-center justify-center text-center">
+                               
+                                <p class="font-black text-3xl uppercase tracking-[0.15em] text-white/20">Esperando Datos</p>
+                                <p class="text-sm font-bold mt-4 text-white/20 max-w-md">
+                                    Selecciona un producto para desglosar la receta y calcular los costos
+                                </p>
                             </div>
                         {% endif %}
                     </div>
@@ -175,5 +255,29 @@
     </div>
 </div>
 
-
+<!-- Animaciones CSS personalizadas -->
+<style>
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-slideDown {
+        animation: slideDown 0.3s ease-out;
+    }
+    
+    select, input {
+        transition: all 0.2s ease;
+    }
+    
+    select:hover, input:hover {
+        transform: translateY(-1px);
+    }
+</style>
 {% endblock %}
