@@ -1,0 +1,86 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="max-w-6xl mx-auto bg-white p-6 rounded-3xl shadow">
+  <h2 class="text-2xl font-bold mb-4">Recibir Compra</h2>
+
+  <!-- DATOS GENERALES -->
+  <div class="grid grid-cols-2 gap-4 mb-6">
+    <div>
+      <p><b>Proveedor:</b> {{ compra.proveedor.nombre }}</p>
+      <p><b>Sucursal:</b> {{ compra.sucursal.nombre }}</p>
+    </div>
+    <div>
+      <p><b>Fecha Pedido:</b> {{ compra.fecha_orden }}</p>
+      <p><b>Entrega Estimada:</b> {{ compra.fecha_estimada_entrega }}</p>
+    </div>
+  </div>
+
+  <div class="mb-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-sm">
+    📌 <strong>Importante:</strong> Ingresa el <strong>precio por unidad de compra</strong> (lo que cuesta 1 caja o 1 unidad).
+    <br>Ejemplo: Si compraste 4 cajas por $1,812 total, ingresa <strong>$453.00</strong>
+  </div>
+
+  <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
+    <table class="w-full text-center mb-4 border">
+      <thead class="bg-[#561C24] text-white">
+        <tr>
+          <th class="p-2">Materia</th>
+          <th class="p-2">Cantidad</th>
+          <th class="p-2">Tipo</th>
+          <th class="p-2">Piezas x Caja</th>
+          <th class="p-2">Precio por {{ 'caja' if compra.detalles[0].tipo_empaque == 'caja' else 'unidad' }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in compra.detalles %}
+        <tr class="border-b">
+          <td class="p-2">{{ d.materia.nombre }}</td>
+          <td class="p-2 font-bold">{{ d.cantidad }}</td>
+          <td class="p-2">
+            {% if d.tipo_empaque == 'caja' %}
+              <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Caja</span>
+            {% else %}
+              <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Unidad</span>
+            {% endif %}
+          </td>
+          <td class="p-2">
+            {% if d.tipo_empaque == 'caja' %}
+              {{ d.materia.piezas_por_caja or '?' }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td class="p-2">
+            <input type="number" 
+                   step="0.01" 
+                   name="precio_{{ d.id_detalle }}" 
+                   class="border rounded px-2 py-1 w-32 text-center"
+                   value="{{ d.precio_unitario_compra or '' }}"
+                   required />
+            <div class="text-xs text-gray-500 mt-1">
+              {% if d.tipo_empaque == 'caja' %}
+                (Ej: 453.00 por caja)
+              {% else %}
+                (Precio por unidad)
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="flex gap-4 mt-4">
+      <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+        Recibir Compra
+      </button>
+      <a href="{{ url_for('proveedores.detalleCompra', id=compra.id_compra) }}" 
+         class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 text-center">
+        Cancelar
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

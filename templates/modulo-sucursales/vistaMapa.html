@@ -1,75 +1,145 @@
 {% extends "layout.html" %}
 
 {% block container %}
+<!-- BANNER HERO -->
 <section class="relative w-full h-[350px]">
     <div class="relative h-full flex items-center justify-center text-center text-white">
         <img src="{{ url_for('static', filename='img/contenido/pan2.jpg') }}" class="absolute inset-0 w-full h-full object-cover" />
-        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="absolute inset-0 bg-black/40"></div>
         <div class="absolute inset-0 flex items-center justify-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-[#f3e5d8] tracking-widest uppercase font-serif">
-                Nuestras Sucursales
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-[#f3e5d8] tracking-widest">
+                NUESTRAS SUCURSALES
             </h1>
         </div>
     </div>
 </section>
 
-<div class="max-w-7xl mx-auto p-6 -mt-10 relative z-10">
-    
-    <div class="flex flex-col md:flex-row justify-between items-end mb-8 bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
-        <div>
-            <h2 class="text-2xl font-black text-[#341915]">Mapa de Cobertura</h2>
-            <p class="text-gray-400 text-sm">Encuentra tu sucursal más cercana de Dulce Tradición</p>
+<!-- MAPA INTERACTIVO -->
+<section class="bg-[#E8D8C4] py-16 px-10">
+    <div class="max-w-7xl mx-auto">
+        <!-- TITULO -->
+        <h2 class="text-3xl md:text-4xl font-bold text-[#5a1f1f] mb-6 text-center">
+            Mapa de Cobertura
+        </h2>
+        <p class="text-center text-[#3a2a20] mb-10 text-sm md:text-base">
+            Encuentra tu sucursal más cercana de Dulce Tradición
+        </p>
+
+        <!-- CONTENEDOR MAPA -->
+        <div class="bg-white p-3 rounded-[2.5rem] shadow-2xl border-4 border-[#5a1f1f] overflow-hidden">
+            <div class="h-[550px] w-full rounded-[2.2rem] overflow-hidden shadow-inner">
+                {% if mapa_html %}
+                    {{ mapa_html | safe }}
+                {% else %}
+                    <div class="flex items-center justify-center h-full bg-gray-100 text-[#5a1f1f] font-bold">
+                        <i class="fas fa-spinner fa-spin mr-2"></i> Cargando Mapa Interactivo...
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
+</section>
 
-    <div class="mb-10 bg-white p-2 rounded-[2.5rem] shadow-2xl border-4 border-white overflow-hidden">
-        <div class="h-[550px] w-full rounded-[2.2rem] overflow-hidden shadow-inner">
-            {% if mapa_html %}
-                {{ mapa_html | safe }}
-            {% else %}
-                <div class="flex items-center justify-center h-full bg-gray-100 text-gray-400 font-bold">
-                    <i class="fas fa-spinner fa-spin mr-2"></i> Cargando Mapa Satelital...
+<!-- TARJETAS DE SUCURSALES -->
+<section class="bg-[#E8D8C4] py-20 px-10">
+    <div class="max-w-7xl mx-auto">
+        <!-- TITULO -->
+        <h2 class="text-3xl md:text-4xl font-bold text-[#5a1f1f] mb-16 text-center">
+            Conoce Nuestras Sucursales
+        </h2>
+
+        <!-- GRID DE TARJETAS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {% for s in sucursales %}
+            <!-- TARJETA SUCURSAL -->
+            <div class="group bg-white rounded-[30px] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border-4 border-[#5a1f1f] transform hover:scale-105 flex flex-col">
+                
+                <!-- IMAGEN -->
+                <div class="relative w-full h-80 overflow-hidden bg-gradient-to-br from-[#E8D8C4] to-[#d4c1b0] flex items-center justify-center flex-shrink-0 border-b-8 border-[#5a1f1f]">
+                    <img src="{{ s.imagen_url if s.imagen_url else url_for('static', filename='img/default-store.png') }}" 
+                         alt="{{ s.nombre }}"
+                         class="w-5/6 h-5/6 object-contain group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
                 </div>
-            {% endif %}
-        </div>
-    </div>
 
-    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-90">
-        <table class="w-full text-left">
-            <thead class="bg-[#341915] text-white">
-                <tr>
-                    <th class="p-5 text-[10px] font-bold uppercase tracking-widest">Imagen</th>
-                    <th class="p-5 text-[10px] font-bold uppercase tracking-widest">Información</th>
-                    <th class="p-5 text-[10px] font-bold uppercase tracking-widest">Ubicación</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-                {% for s in sucursales %}
-                <tr class="hover:bg-amber-50/30 transition-all">
-                    <td class="p-4">
-                        <div class="w-16 h-16 rounded-xl overflow-hidden shadow-sm border-2 border-white mx-auto">
-                            <img src="{{ s.imagen_url if s.imagen_url else url_for('static', filename='img/default-store.png') }}" 
-                                 class="w-full h-full object-cover">
+                <!-- CONTENIDO -->
+                <div class="p-8">
+                    <!-- NOMBRE -->
+                    <h3 class="text-2xl font-bold text-[#5a1f1f] mb-3">{{ s.nombre }}</h3>
+
+                    <!-- UBICACIÓN -->
+                    <div class="mb-4 space-y-2">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt text-[#d67c2e] mt-1 flex-shrink-0"></i>
+                            <p class="text-[#3a2a20] text-sm">{{ s.direccion }}</p>
                         </div>
-                    </td>
-                    <td class="p-4">
-                        <div class="font-bold text-[#341915]">{{ s.nombre }}</div>
-                        <div class="text-xs text-gray-400">{{ s.telefono }}</div>
-                    </td>
-                    <td class="p-4">
-                        <div class="text-xs text-gray-600 line-clamp-1">{{ s.direccion }}</div>
-                        <div class="text-[10px] text-amber-700 font-bold uppercase">{{ s.ciudad }}, {{ s.estado }}</div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        <p class="text-[#d67c2e] font-semibold text-sm pl-8">{{ s.ciudad }}, {{ s.estado }}</p>
+                    </div>
+
+                    <!-- TELÉFONO -->
+                    <div class="mb-6 flex items-center gap-3">
+                        <i class="fas fa-phone text-[#d67c2e]"></i>
+                        <a href="tel:{{ s.telefono }}" class="text-[#3a2a20] font-semibold hover:text-[#d67c2e] transition-colors">
+                            {{ s.telefono }}
+                        </a>
+                    </div>
+
+                    <!-- BOTONES DE ACCIÓN -->
+                    <div class="flex gap-3">
+                        <!-- BOTÓN LLAMAR -->
+                        <a href="tel:{{ s.telefono }}" 
+                           class="flex-1 bg-[#d67c2e] hover:bg-[#b8641e] text-white font-bold py-3 rounded-xl transition-all duration-300 text-center flex items-center justify-center gap-2">
+                            <i class="fas fa-phone text-sm"></i>
+                            <span>Llamar</span>
+                        </a>
+
+                        <!-- BOTÓN UBICACIÓN (Google Maps) -->
+                        <a href="https://www.google.com/maps/search/{{ s.direccion }}+{{ s.ciudad }}" 
+                           target="_blank"
+                           class="flex-1 bg-[#5a1f1f] hover:bg-[#3a2a20] text-white font-bold py-3 rounded-xl transition-all duration-300 text-center flex items-center justify-center gap-2">
+                            <i class="fas fa-directions text-sm"></i>
+                            <span>Directions</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- MENSAJE SI NO HAY SUCURSALES -->
+        {% if not sucursales %}
+        <div class="text-center py-16">
+            <i class="fas fa-info-circle text-4xl text-[#5a1f1f] mb-4"></i>
+            <p class="text-[#3a2a20] text-lg">No hay sucursales registradas en este momento.</p>
+        </div>
+        {% endif %}
     </div>
-</div>
+</section>
 
 <style>
-    .folium-map { border-radius: 2rem !important; }
-    /* Estilo para que el popup de Folium se vea como Dulce Tradición */
-    .leaflet-popup-content-wrapper { border-radius: 12px; padding: 5px; }
-</style>
+    /* Estilos del mapa Folium */
+    .folium-map { 
+        border-radius: 2rem !important; 
+    }
+    
+    /* Estilo para los popups de Leaflet */
+    .leaflet-popup-content-wrapper { 
+        border-radius: 15px; 
+        padding: 0;
+        border: 3px solid #5a1f1f;
+    }
+
+    .leaflet-popup-content {
+        margin: 0;
+        padding: 12px;
+        color: #3a2a20;
+        font-size: 13px;
+    }
+
+    .leaflet-popup-tip {
+        background-color: white;
+        border: 3px solid #5a1f1f;
+    }
+
+   </style>
 {% endblock %}

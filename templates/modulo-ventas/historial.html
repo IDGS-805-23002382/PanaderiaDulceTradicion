@@ -1,0 +1,58 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<section class="bg-[#d8c9b4] py-12 min-h-screen">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="bg-[#d8c9b4] border-4 border-[#6b1f26] rounded-2xl p-8 shadow-xl">
+            <h2 class="text-3xl font-black text-[#2c1b16] mb-8 uppercase tracking-widest border-b-4 border-[#6b1f26] pb-2">
+                Historial de Ventas
+            </h2>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-[#6b1f26] text-[#f3e5d8] uppercase text-sm">
+                            <th class="p-4 rounded-tl-lg">Folio</th>
+                            <th class="p-4">Fecha</th>
+                            <th class="p-4">Cliente</th>
+                            <th class="p-4">Tipo</th>
+                            <th class="p-4">Método</th>
+                            <th class="p-4">Total</th>
+                            <th class="p-4 rounded-tr-lg">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#6b1f26]/20">
+                        {% for venta in ventas %}
+                        <tr class="hover:bg-white/30 transition">
+                            <td class="p-4 font-bold text-[#6b1f26]">#{{ venta._id }}</td>
+                            <td class="p-4 text-[#2c1b16]">{{ venta.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td class="p-4 text-[#2c1b16]">{{ venta.nombre_cliente }}</td>
+                            <td class="p-4">
+                                <span class="px-2 py-1 rounded-full text-xs font-bold
+                                    {% if venta.tipo == 'online' %}bg-blue-100 text-blue-700
+                                    {% else %}bg-green-100 text-green-700{% endif %}">
+                                    {{ venta.tipo | upper }}
+                                </span>
+                            </td>
+                            <td class="p-4 font-semibold text-[#2c1b16]">{{ venta.metodo_pago }}</td>
+                            <td class="p-4 font-black text-[#6b1f26]">${{ "%.2f"|format(venta.total) }}</td>
+                            <td class="p-4">
+                                <a href="{{ url_for('ventas.ver_detalle_venta', id_venta=venta._id|string) }}"
+                                   class="bg-[#2c1b16] text-white px-4 py-2 rounded-lg text-xs font-black hover:bg-[#6b1f26] transition uppercase tracking-widest">
+                                    Ver Detalle
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="p-10 text-center text-[#6b1f26] font-bold uppercase">
+                                No se han realizado ventas aún.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

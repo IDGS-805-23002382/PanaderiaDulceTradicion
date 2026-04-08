@@ -1,0 +1,73 @@
+<!-- templates/modulo-finanzas/form-gasto.html -->
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="w-full max-w-xl mx-auto">
+
+  <h1 class="text-2xl font-semibold text-center text-[#341915]">
+    {{ 'Editar' if gasto else 'Nuevo' }} Gasto Extra
+  </h1>
+  <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-8"></div>
+
+  <div class="bg-white rounded-2xl shadow p-8">
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-[#341915] mb-1">Concepto</label>
+          <input type="text" name="concepto" required
+                 value="{{ gasto.concepto if gasto else '' }}"
+                 placeholder="Ej: Pago de renta local"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Monto</label>
+          <input type="number" name="monto" step="0.01" min="0" required
+                 value="{{ gasto.monto if gasto else '' }}"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Fecha</label>
+          <input type="date" name="fecha" required
+                 value="{{ gasto.fecha.strftime('%Y-%m-%d') if gasto else '' }}"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-[#341915] mb-1">Categoría</label>
+          <select name="categoria"
+                  class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]">
+            <option value="">Sin categoría</option>
+            {% for cat in categorias %}
+            <option value="{{ cat }}" {% if gasto and gasto.categoria == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-[#341915] mb-1">Notas</label>
+          <textarea name="notas" rows="3"
+                    placeholder="Descripción adicional..."
+                    class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]">{{ gasto.notas if gasto else '' }}</textarea>
+        </div>
+
+      </div>
+
+      <div class="flex gap-3 mt-8">
+        <button type="submit"
+                class="flex-1 bg-[#341915] hover:bg-[#561C24] text-[#E8D8C4] font-medium py-2 rounded-lg transition">
+          {{ 'Guardar cambios' if gasto else 'Registrar gasto' }}
+        </button>
+        <a href="{{ url_for('finanzas.gastos') }}"
+           class="flex-1 text-center border border-[#341915] text-[#341915] hover:bg-[#e8d8c4] font-medium py-2 rounded-lg transition">
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

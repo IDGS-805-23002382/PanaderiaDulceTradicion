@@ -1,0 +1,185 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+
+<div class="relative min-h-screen">
+  
+  <!-- Breadcrumb mejorado -->
+  <div class="relative z-20 container mx-auto px-4 pt-6">
+    <nav class="w-full mb-4" aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2">
+        <li class="flex items-center">
+          <a href="vistaEmpleado" class="group inline-flex items-center gap-2.5 py-2.5 px-5 text-base font-semibold text-[#341915] bg-white/60 backdrop-blur-sm hover:bg-[#b55a3a] hover:text-white rounded-xl transition-all duration-300 shadow-sm hover:shadow-md border border-white/30">
+            <svg class="w-5 h-5 transition-transform group-hover:-translate-y-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
+            </svg>
+            <span>Panel de Control</span>
+          </a>
+        </li>
+        <li class="flex items-center">
+          <span class="text-[#5a3e32] mx-1">/</span>
+          <span class="text-[#b55a3a] font-semibold">Inicio</span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Sección Hero de bienvenida -->
+  <section class="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+    
+    <!-- Fondo con gradiente y patrón -->
+    <div class="absolute inset-0 bg-gradient-to-br from-[#E8D8C4] via-[#dac8b2] to-[#c9b498]"></div>
+    
+    <!-- Elementos decorativos flotantes -->
+    <div class="absolute top-20 left-10 w-72 h-72 bg-amber-500/5 rounded-full blur-3xl animate-float"></div>
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-amber-600/5 rounded-full blur-3xl animate-float-delayed"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-400/5 rounded-full blur-3xl"></div>
+    
+    <!-- Contenido principal -->
+    <div class="container mx-auto px-4 relative z-10 text-center">
+      
+      
+      <!-- Título principal -->
+      <div class="mb-6 animate-fade-in-up">
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold text-[#341915] mb-4 tracking-tight">
+          Bienvenido
+        </h1>
+        <div class="flex justify-center gap-3">
+          <div class="w-20 h-1 bg-gradient-to-r from-[#b55a3a] to-[#341915] rounded-full"></div>
+          <div class="w-12 h-1 bg-[#b55a3a] rounded-full"></div>
+          <div class="w-20 h-1 bg-gradient-to-l from-[#b55a3a] to-[#341915] rounded-full"></div>
+        </div>
+      </div>
+      
+      <!-- Subtítulo principal -->
+      <div class="animate-fade-in-up animation-delay-200">
+        <h2 class="text-4xl md:text-6xl lg:text-7xl font-semibold text-[#b55a3a] mb-6 italic tracking-tight">
+          Dulce Tradición
+        </h2>
+        
+        <!-- Línea decorativa con ícono -->
+        <div class="flex items-center justify-center gap-4 mb-6">
+          <div class="w-12 h-px bg-gradient-to-r from-transparent to-[#b55a3a]"></div>
+          <svg class="w-6 h-6 text-[#b55a3a]" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4zm0 5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9zm-1 5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1z"/>
+          </svg>
+          <div class="w-12 h-px bg-gradient-to-l from-transparent to-[#b55a3a]"></div>
+        </div>
+        
+        <p class="text-lg md:text-xl lg:text-2xl text-[#5a3e32] max-w-2xl mx-auto leading-relaxed">
+          Donde los sabores tradicionales cobran vida
+        </p>
+        
+        <!-- Separador decorativo -->
+        <div class="mt-8 flex justify-center gap-2">
+          <div class="w-2 h-2 bg-[#b55a3a] rounded-full animate-pulse"></div>
+          <div class="w-2 h-2 bg-[#b55a3a]/60 rounded-full animate-pulse animation-delay-200"></div>
+          <div class="w-2 h-2 bg-[#b55a3a]/30 rounded-full animate-pulse animation-delay-400"></div>
+        </div>
+      </div>
+      
+      
+    </div>
+    
+    <!-- Ola decorativa en la parte inferior -->
+    <div class="absolute bottom-0 left-0 w-full">
+      <svg class="w-full h-16 text-[#E8D8C4]" preserveAspectRatio="none" viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,64L80,69C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z" fill="currentColor"/>
+      </svg>
+    </div>
+    
+  </section>
+</div>
+
+<style>
+  /* Animaciones personalizadas */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px) translateX(0px);
+    }
+    50% {
+      transform: translateY(-20px) translateX(10px);
+    }
+  }
+  
+  @keyframes floatDelayed {
+    0%, 100% {
+      transform: translateY(0px) translateX(0px);
+    }
+    50% {
+      transform: translateY(20px) translateX(-10px);
+    }
+  }
+  
+  @keyframes spinSlow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes spinSlower {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-float-delayed {
+    animation: floatDelayed 8s ease-in-out infinite;
+  }
+  
+  .animate-spin-slow {
+    animation: spinSlow 20s linear infinite;
+  }
+  
+  .animate-spin-slower {
+    animation: spinSlower 25s linear infinite;
+  }
+  
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+  
+  .animation-delay-400 {
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 0.05;
+    }
+    50% {
+      opacity: 0.15;
+    }
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+</style>
+
+{% endblock %}

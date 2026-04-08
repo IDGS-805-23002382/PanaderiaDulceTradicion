@@ -17,7 +17,7 @@ def login():
                 flash('Tu cuenta está inactiva. Contacta al administrador.', 'danger')
                 return redirect(url_for('auth.login'))
             login_user(usuario, remember=form.remember.data)
-            return redirect(url_for('home'))
+            return redirect(url_for('vistaEmpleado'))
         flash('Correo o contraseña incorrectos.', 'danger')
     return render_template('auth/login.html', form=form)
 

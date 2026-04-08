@@ -1,227 +1,138 @@
+<!-- templates/modulo-empleado/modulo-empleado.html -->
 {% extends 'layoutModulos.html' %}
 {% block container %}
-
 <div class="w-full">
 
-    <!-- TITULO -->
-    <h1 class="text-2xl font-semibold text-center text-[#341915]">
-        Gestión de Empleados
-    </h1>
+  <h1 class="text-2xl font-semibold text-center text-[#341915]">
+    Gestión de Empleados
+  </h1>
+  <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-8"></div>
 
-    <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-4"></div>
+  <div class="flex items-center justify-between mb-4">
 
+    <!-- FILTRO -->
+    <details class="relative">
+      <summary class="flex items-center gap-2 text-[#341915] font-medium cursor-pointer">
+        <img src="{{ url_for('static', filename='img/iconosModulos/filtrar.png') }}" class="h-6 w-6"/>
+        <span>Filtrar</span>
+      </summary>
+      <div class="absolute mt-3 bg-white shadow-lg rounded-lg p-4 w-64 border z-50">
+        <form method="GET" action="{{ url_for('empleados.index') }}" class="flex flex-col gap-3">
 
-    <!-- BOTON AGREGAR -->
-    <div class="flex justify-end mb-4">
-        <a href="{{ url_for('empleados.agregar') }}"
-           class="flex items-center gap-2 bg-[#E8D8C4] px-4 py-2 rounded hover:bg-[#d6c3a7]">
+          <label class="text-sm text-[#341915] font-semibold">Estatus</label>
+          <select name="estatus" class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
+            <option value="">Todos</option>
+            <option value="activo" {% if request.args.get('estatus') == 'activo' %}selected{% endif %}>Activos</option>
+            <option value="inactivo" {% if request.args.get('estatus') == 'inactivo' %}selected{% endif %}>Inactivos</option>
+          </select>
 
-            <img src="{{ url_for('static', filename='img/iconosModulos/empleados.png') }}"
-                 class="h-6 w-6">
+          <label class="text-sm text-[#341915] font-semibold">Ordenar</label>
+          <select name="orden" class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
+            <option value="">Sin ordenar</option>
+            <option value="az" {% if request.args.get('orden') == 'az' %}selected{% endif %}>Nombre A-Z</option>
+            <option value="za" {% if request.args.get('orden') == 'za' %}selected{% endif %}>Nombre Z-A</option>
+          </select>
 
-            <span class="text-[#341915] font-medium">
-                Agregar
-            </span>
-
-        </a>
-    </div>
-
-
-    <!-- FILTRO Y BUSCAR -->
-    <div class="flex items-center justify-between mb-4">
-
-        <!-- FILTRO -->
-        <details class="relative">
-
-            <summary class="flex items-center gap-2 text-[#341915] font-medium cursor-pointer">
-                <img src="{{ url_for('static', filename='img/iconosModulos/filtrar.png') }}"
-                     class="h-6 w-6">
-                <span>Filtrar</span>
-            </summary>
-
-            <!-- PANEL FILTRO -->
-            <div class="absolute mt-3 bg-white shadow-lg rounded-lg p-4 w-64 border z-50">
-
-                <form method="GET"
-                      action="{{ url_for('empleados.index') }}"
-                      class="flex flex-col gap-3">
-
-                    <!-- ESTATUS -->
-                    <label class="text-sm text-[#341915] font-semibold">
-                        Estatus
-                    </label>
-
-                    <select name="estatus"
-                            class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
-
-                        <option value="">Todos</option>
-
-                        <option value="activo"
-                        {% if request.args.get('estatus') == 'activo' %} selected {% endif %}>
-                            Activos
-                        </option>
-
-                        <option value="inactivo"
-                        {% if request.args.get('estatus') == 'inactivo' %} selected {% endif %}>
-                            Inactivos
-                        </option>
-
-                    </select>
-
-                    <!-- ORDEN -->
-                    <label class="text-sm text-[#341915] font-semibold">
-                        Ordenar
-                    </label>
-
-                    <select name="orden"
-                            class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
-
-                        <option value="">Sin ordenar</option>
-
-                        <option value="az"
-                        {% if request.args.get('orden') == 'az' %} selected {% endif %}>
-                            Nombre A-Z
-                        </option>
-
-                        <option value="za"
-                        {% if request.args.get('orden') == 'za' %} selected {% endif %}>
-                            Nombre Z-A
-                        </option>
-
-                    </select>
-
-                    <!-- BOTONES -->
-                    <div class="flex gap-2 mt-2">
-
-                        <button type="submit"
-                                class="bg-[#341915] text-white px-3 py-2 rounded hover:bg-[#4a241d] text-sm">
-                            Aplicar
-                        </button>
-
-                        <a href="{{ url_for('empleados.index') }}"
-                           class="bg-gray-200 px-3 py-2 rounded text-sm hover:bg-gray-300">
-                            Limpiar
-                        </a>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-        </details>
-
-        <!-- BUSCAR -->
-        <form method="GET"
-              action="{{ url_for('empleados.index') }}"
-              class="flex">
-
-            <input type="text"
-                   name="buscar"
-                   placeholder="Buscar empleado"
-                   value="{{ request.args.get('buscar','') }}"
-                   class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0] placeholder-[#7a5a4d]" />
-
+          <div class="flex gap-2 mt-2">
             <button type="submit"
-                    class="bg-[#341915] px-4 rounded-r flex items-center justify-center">
-
-                <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}"
-                     class="h-5 w-5">
-
+                    class="bg-[#341915] text-white px-3 py-2 rounded hover:bg-[#4a241d] text-sm">
+              Aplicar
             </button>
+            <a href="{{ url_for('empleados.index') }}"
+               class="bg-gray-200 px-3 py-2 rounded text-sm hover:bg-gray-300">
+              Limpiar
+            </a>
+          </div>
 
         </form>
+      </div>
+    </details>
 
+    <!-- BUSCAR + AGREGAR -->
+    <div class="flex items-center gap-3">
+      <form method="GET" action="{{ url_for('empleados.index') }}" class="flex">
+        <input type="text" name="buscar" placeholder="Buscar empleado"
+               value="{{ request.args.get('buscar', '') }}"
+               class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0] placeholder-[#7a5a4d]" />
+        <button type="submit" class="bg-[#341915] px-4 rounded-r flex items-center justify-center">
+          <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}" class="h-5 w-5"/>
+        </button>
+      </form>
+      <a href="{{ url_for('empleados.agregar') }}">
+        <button class="bg-[#341915] p-2 rounded-full hover:bg-[#561C24] transition" title="Agregar empleado">
+          <img src="{{ url_for('static', filename='img/iconosModulos/empleados.png') }}" class="h-5 w-5"/>
+        </button>
+      </a>
     </div>
 
+  </div>
 
-    <!-- TABLA -->
-    <div class="overflow-x-auto">
+  <!-- TABLA -->
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
+        <tr>
+          <th class="px-4 py-2">Nombre</th>
+          <th class="px-4 py-2">Teléfono</th>
+          <th class="px-4 py-2">Email</th>
+          <th class="px-4 py-2">Dirección</th>
+          <th class="px-4 py-2">Puesto</th>
+          <th class="px-4 py-2">Salario</th>
+          <th class="px-4 py-2">Fecha Contratación</th>
+          <th class="px-4 py-2">Estatus</th>
+          <th class="px-4 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white">
 
-        <table class="w-full text-sm text-left table-fixed">
-
-            <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
-                <tr>
-                    <th class="px-4 py-2">Nombre</th>
-                    <th class="px-4 py-2">Teléfono</th>
-                    <th class="px-4 py-2">Email</th>
-                    <th class="px-4 py-2">Dirección</th>
-                    <th class="px-4 py-2">Puesto</th>
-                    <th class="px-4 py-2">Salario</th>
-                    <th class="px-4 py-2">Fecha Contratación</th>
-                    <th class="px-4 py-2 w-32">Estatus</th>
-                    <th class="px-4 py-2 w-40">Acciones</th>
-                </tr>
-            </thead>
-
-            <tbody class="bg-white">
-
-            {% for empleado in empleados %}
-
-                <tr class="border-b hover:bg-gray-50">
-
-                    <td class="px-4 py-2">{{ empleado.nombre }}</td>
-                    <td class="px-4 py-2">{{ empleado.telefono }}</td>
-                    <td class="px-4 py-2 whitespace-nowrap">{{ empleado.email }}</td>
-                    <td class="px-4 py-2">{{ empleado.direccion }}</td>
-                    <td class="px-4 py-2">{{ empleado.puesto }}</td>
-                    <td class="px-4 py-2">${{ empleado.salario }}</td>
-                    <td class="px-4 py-2">{{ empleado.fecha_contratacion }}</td>
-
-                    <!-- ESTATUS -->
-                    <td class="px-4 py-2 text-center">
-                        {% if empleado.estatus == 'activo' %}
-                            <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">
-                                Activo
-                            </span>
-                        {% else %}
-                            <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">
-                                Inactivo
-                            </span>
-                        {% endif %}
-                    </td>
-
-                    <!-- ACCIONES -->
-                    <td class="px-4 py-2 bg-[#561C24] w-40">
-                        <div class="flex justify-center items-center gap-3">
-
-                            <!-- EDITAR -->
-                            <a href="{{ url_for('empleados.editar', id=empleado.id_empleado) }}">
-                                <button class="w-9 h-9 flex items-center justify-center hover:bg-[#7a3a30] rounded-lg transition" title="Editar">
-                                    <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}"
-                                         class="w-5 h-5">
-                                </button>
-                            </a>
-
-                            <!-- ACTIVAR / DESACTIVAR -->
-                            <a href="{{ url_for('empleados.eliminar', id=empleado.id_empleado) }}"
-                               onclick="return confirm('¿Cambiar estatus de este empleado?')">
-                                <button class="w-9 h-9 flex items-center justify-center hover:bg-[#7a3a30] rounded-lg transition"
-                                        title="{{ 'Desactivar' if empleado.estatus == 'activo' else 'Activar' }}">
-                                    <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}"
-                                         class="w-5 h-5">
-                                </button>
-                            </a>
-
-                        </div>
-                    </td>
-
-                </tr>
-
+        {% for empleado in empleados %}
+        <tr class="border-b hover:bg-gray-50">
+          <td class="px-4 py-2">{{ empleado.nombre }}</td>
+          <td class="px-4 py-2">{{ empleado.telefono }}</td>
+          <td class="px-4 py-2">{{ empleado.email }}</td>
+          <td class="px-4 py-2">{{ empleado.direccion }}</td>
+          <td class="px-4 py-2">{{ empleado.puesto }}</td>
+          <td class="px-4 py-2">${{ empleado.salario }}</td>
+          <td class="px-4 py-2">{{ empleado.fecha_contratacion }}</td>
+          <td class="px-4 py-2 text-center">
+            {% if empleado.estatus == 'activo' %}
+              <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">Activo</span>
             {% else %}
-                <tr>
-                    <td colspan="9" class="text-center py-6 text-gray-500">
-                        No hay empleados registrados
-                    </td>
-                </tr>
-            {% endfor %}
+              <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">Inactivo</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-2 bg-[#561C24]">
+            <div class="flex items-center justify-center gap-2">
+              <a href="{{ url_for('empleados.editar', id=empleado.id_empleado) }}">
+                <button class="p-1 hover:bg-[#7a3a30] rounded" title="Ver detalle">
+                  <img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}" class="h-5 w-5"/>
+                </button>
+              </a>
+              <a href="{{ url_for('empleados.editar', id=empleado.id_empleado) }}">
+                <button class="p-1 hover:bg-[#7a3a30] rounded" title="Editar">
+                  <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}" class="h-5 w-5"/>
+                </button>
+              </a>
+              <a href="{{ url_for('empleados.eliminar', id=empleado.id_empleado) }}">
+                <button class="p-1 hover:bg-[#7a3a30] rounded" title="Eliminar">
+                  <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}" class="h-5 w-5"/>
+                </button>
+              </a>
+            </div>
+          </td>
+        </tr>
 
-            </tbody>
+        {% else %}
+        <tr>
+          <td colspan="9" class="text-center py-6 text-gray-500">
+            No hay empleados registrados
+          </td>
+        </tr>
+        {% endfor %}
 
-        </table>
-
-    </div>
+      </tbody>
+    </table>
+  </div>
 
 </div>
-
 {% endblock %}

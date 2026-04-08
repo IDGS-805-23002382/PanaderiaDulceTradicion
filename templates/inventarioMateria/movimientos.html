@@ -1,0 +1,249 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+
+<div class="min-h-screen bg-[#E8D8C4] p-6">
+
+  <!-- BREADCRUMB MEJORADO -->
+  <nav class="w-full mb-6" aria-label="Breadcrumb">
+    <ol class="flex flex-wrap items-center gap-2">
+      <li class="flex items-center">
+        <a href="vistaEmpleado" 
+           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
+          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
+          </svg>
+          <span>Panel de Control</span>
+        </a>
+      </li>
+      <li class="text-[#561C24] font-bold">
+        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+        </svg>
+      </li>
+      <li class="flex items-center">
+        <a href="inventario_materia" 
+           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+          <span>Inventario Materia Prima</span>
+        </a>
+      </li>
+      <li class="text-[#561C24] font-bold">
+        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+        </svg>
+      </li>
+      <li class="flex items-center">
+        <div class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#561C24] bg-[#E8D8C4] rounded-lg border border-[#C7B7A3] shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+          <span>Historial de Movimientos</span>
+        </div>
+      </li>
+    </ol>
+  </nav>
+
+  <!-- TARJETA PRINCIPAL -->
+  <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
+    
+    <!-- ENCABEZADO -->
+    <div class="bg-[#341915] px-6 py-5">
+      <div class="flex justify-between items-center flex-wrap gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white tracking-tight">Historial de Movimientos</h2>
+          <p class="text-[#C7B7A3] text-sm mt-1">Registro detallado de entradas y salidas</p>
+        </div>
+        <a href="{{ url_for('proveedores.inventarioMateria') }}" 
+           class="inline-flex items-center gap-2 bg-[#E8D8C4] hover:bg-[#C7B7A3] text-[#341915] px-4 py-2 rounded-lg transition-all duration-200 font-semibold">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Volver al Inventario
+        </a>
+      </div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="p-6">
+
+      <!-- INFO DE MATERIA Y SUCURSAL -->
+      <div class="bg-[#E8D8C4] rounded-xl p-5 mb-6 border border-[#C7B7A3]">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-[#561C24] rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-[#561C24] uppercase tracking-wide">Materia Prima</p>
+              <p class="text-lg font-bold text-[#341915]">{{ materia.nombre }}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-[#561C24] rounded-full flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-[#561C24] uppercase tracking-wide">Sucursal</p>
+              <p class="text-lg font-bold text-[#341915]">{{ sucursal.nombre }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA DE MOVIMIENTOS -->
+      {% if movimientos %}
+      <div class="overflow-x-auto rounded-xl border border-[#C7B7A3]">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-[#561C24] text-white">
+              <th class="px-4 py-3 text-left font-semibold">Fecha</th>
+              <th class="px-4 py-3 text-left font-semibold">Tipo</th>
+              <th class="px-4 py-3 text-center font-semibold">Cantidad</th>
+              <th class="px-4 py-3 text-left font-semibold">Referencia</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#C7B7A3]">
+            {% for m in movimientos %}
+            <tr class="hover:bg-[#E8D8C4] transition duration-150">
+              <td class="px-4 py-3 text-gray-700">
+                <div class="flex items-center gap-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  {% if m.fecha %}
+                    {{ m.fecha.strftime('%d/%m/%Y %H:%M') }}
+                  {% else %}
+                    N/A
+                  {% endif %}
+                </div>
+              </td>
+              <td class="px-4 py-3">
+                {% if m.tipo == 'entrada' %}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Entrada
+                  </span>
+                {% elif m.tipo == 'salida' or m.tipo == 'salida_produccion' %}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                    </svg>
+                    Salida
+                  </span>
+                {% else %}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    {{ m.tipo }}
+                  </span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-3 text-center font-bold text-[#341915]">
+                {{ m.cantidad if m.cantidad else 0 }}
+              </td>
+              <td class="px-4 py-3 text-gray-600">
+                {% if m.referencia %}
+                  <span class="inline-flex items-center gap-1">
+                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                    </svg>
+                    {{ m.referencia }}
+                  </span>
+                {% else %}
+                  <span class="text-gray-400">—</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- RESUMEN DE MOVIMIENTOS -->
+      <div class="mt-6">
+        <h3 class="text-md font-semibold text-[#341915] mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          Resumen de Movimientos
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-green-50 rounded-xl p-4 border border-green-200">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs text-green-600 font-semibold uppercase">Total Entradas</p>
+                <p class="text-2xl font-bold text-green-700 mt-1">
+                  {{ movimientos|selectattr('tipo', 'equalto', 'entrada')|map(attribute='cantidad')|sum|default(0) }}
+                </p>
+              </div>
+              <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="bg-red-50 rounded-xl p-4 border border-red-200">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs text-red-600 font-semibold uppercase">Total Salidas</p>
+                <p class="text-2xl font-bold text-red-700 mt-1">
+                  {% set salidas = movimientos|selectattr('tipo', 'in', ['salida', 'salida_produccion'])|map(attribute='cantidad')|sum|default(0) %}
+                  {{ salidas }}
+                </p>
+              </div>
+              <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs text-blue-600 font-semibold uppercase">Movimientos Totales</p>
+                <p class="text-2xl font-bold text-blue-700 mt-1">
+                  {{ movimientos|length }}
+                </p>
+              </div>
+              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <!-- ESTADO VACÍO -->
+      <div class="text-center py-12 bg-[#E8D8C4] rounded-xl border border-[#C7B7A3]">
+        <svg class="w-16 h-16 mx-auto text-[#C7B7A3] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+        </svg>
+        <p class="text-lg font-medium text-[#341915]">No hay movimientos registrados</p>
+        <p class="text-sm text-gray-500 mt-1">Esta materia prima aún no tiene movimientos de entrada o salida</p>
+        <div class="mt-4">
+          <a href="{{ url_for('proveedores.inventarioMateria') }}" 
+             class="inline-flex items-center gap-2 text-[#561C24] hover:text-[#341915] font-semibold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver al inventario
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

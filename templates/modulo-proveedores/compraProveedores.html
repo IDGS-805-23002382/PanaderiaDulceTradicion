@@ -1,128 +1,265 @@
 {% extends "layoutModulos.html" %}
 {% block container %}
 
-<div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-6">
+<div class="min-h-screen bg-[#E8D8C4] p-6">
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- BREADCRUMB MEJORADO -->
+  <nav class="w-full mb-6" aria-label="Breadcrumb">
+    <ol class="flex flex-wrap items-center gap-2">
+        
+      <li class="flex items-center">
+        <a href="vistaEmpleado" 
+           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
+          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
+          </svg>
+          <span>Panel de Control</span>
+        </a>
+      </li>
+      <li class="text-[#561C24] font-bold">
+        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+        </svg>
+      </li>
+       <li class="flex items-center">
+        <a href="inventario_materia" 
+           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
+          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
+          </svg>
+          <span>Inventario Materia Prima</span>
+        </a>
+      </li>
+      <li class="text-[#561C24] font-bold">
+        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+        </svg>
+      </li>
+      <li class="flex items-center">
+        <div class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#561C24] bg-[#E8D8C4] rounded-lg border border-[#C7B7A3] shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+          <span>Orden de Compra</span>
+        </div>
+      </li>
+    </ol>
+  </nav>
 
+  <!-- BOTÓN HISTORIAL -->
+  <div class="max-w-5xl mx-auto mb-4">
+    <div class="flex justify-end">
+      <a href="{{ url_for('proveedores.detalleCompra') }}"
+         class="inline-flex items-center gap-2 bg-[#341915] text-white px-5 py-2.5 rounded-xl hover:bg-[#561C24] transition-all duration-200 shadow-md hover:shadow-lg group">
+        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <span class="font-semibold">Historial de Compras</span>
+      </a>
+    </div>
+  </div>
 
-    <div class="bg-white rounded-3xl shadow-2xl p-6">
+  <!-- FORMULARIO PRINCIPAL -->
+  <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3] mb-8">
+    <div class="bg-gradient-to-r from-[#341915] to-[#561C24] px-6 py-4">
+      <h2 class="text-2xl font-bold text-white tracking-tight">Nueva Orden de Compra</h2>
+      <p class="text-[#C7B7A3] text-sm mt-1">Complete los datos para generar la orden</p>
+    </div>
 
-      <h2 class="text-2xl font-bold text-[#341915] mb-4">
-        Registrar Compra
-      </h2>
+    <div class="p-6">
+      <form method="POST" action="{{ url_for('proveedores.compraProveedores') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-      <form method="POST">
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <!-- Proveedor -->
+          <div>
+            <label class="block text-sm font-semibold text-[#341915] mb-2">
+              Proveedor <span class="text-red-500">*</span>
+            </label>
+            <select name="proveedor" onchange="this.form.submit()"
+                    class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5 bg-white focus:outline-none focus:border-[#561C24] focus:ring-2 focus:ring-[#561C24]/30 transition">
+              <option value=""> Seleccione proveedor</option>
+              {% for p in proveedores %}
+              <option value="{{ p.id_proveedor }}" {% if proveedor_id == p.id_proveedor|string %}selected{% endif %}>
+                {{ p.nombre }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
 
-        <!-- PROVEEDOR -->
-        <div class="mb-4">
-          <label class="font-semibold text-[#341915]">Proveedor</label>
-          <select name="proveedor"
-                  class="w-full border rounded-xl px-3 py-2 bg-[#D7C7B0]">
+          <!-- Sucursal -->
+          <div>
+            <label class="block text-sm font-semibold text-[#341915] mb-2">
+              Sucursal <span class="text-red-500">*</span>
+            </label>
+            <select name="sucursal" class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5 bg-white focus:outline-none focus:border-[#561C24] focus:ring-2 focus:ring-[#561C24]/30 transition">
+              <option value="">Seleccione sucursal</option>
+              {% for s in sucursales %}
+              <option value="{{ s.id_sucursal }}" {% if datos_form.sucursal == s.id_sucursal|string %}selected{% endif %}>
+                {{ s.nombre }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
 
-            {% for p in proveedores %}
-              <option value="{{ p.id_proveedor }}">{{ p.nombre }}</option>
+          <!-- Fecha estimada -->
+          <div>
+            <label class="block text-sm font-semibold text-[#341915] mb-2">
+              Fecha Estimada de Entrega <span class="text-red-500">*</span>
+            </label>
+            <input type="date" name="fecha_estimada_entrega" min="{{ today }}"
+                   value="{{ datos_form.fecha_estimada_entrega }}"
+                   class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5 bg-white focus:outline-none focus:border-[#561C24] focus:ring-2 focus:ring-[#561C24]/30 transition">
+          </div>
+
+          <!-- Notas -->
+          <div>
+            <label class="block text-sm font-semibold text-[#341915] mb-2">
+              Notas u Observaciones
+            </label>
+            <textarea name="notas" rows="1" class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5 bg-white focus:outline-none focus:border-[#561C24] focus:ring-2 focus:ring-[#561C24]/30 transition"
+                      placeholder="Ej: Envío urgente, factura adjunta...">{{ datos_form.notas }}</textarea>
+          </div>
+        </div>
+
+        <!-- DETALLE DE COMPRA -->
+        <div class="border-t border-[#C7B7A3] pt-6 mt-4">
+          <h3 class="text-lg font-bold text-[#341915] mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+            Detalle de Compra
+          </h3>
+
+          <div class="space-y-3">
+            {% for i in range(filas) %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-[#E8D8C4] rounded-xl">
+              <select name="materia_id_{{ i }}" class="border-2 border-[#C7B7A3] rounded-lg px-3 py-2 bg-white focus:outline-none focus:border-[#561C24]">
+                <option value="">Seleccione materia prima</option>
+                {% for m in materias %}
+                <option value="{{ m.id_materia }}" 
+                    {% if datos_form.get('materia_id_' ~ i) == m.id_materia|string %}selected{% endif %}>
+                  {{ m.nombre }} ({{ m.tipo_empaque }})
+                </option>
+                {% endfor %}
+              </select>
+
+              <select name="tipo_{{ i }}" class="border-2 border-[#C7B7A3] rounded-lg px-3 py-2 bg-white focus:outline-none focus:border-[#561C24]">
+                <option value="unidad" {% if datos_form.get('tipo_' ~ i) == 'unidad' %}selected{% endif %}>Pieza</option>
+                <option value="caja" {% if datos_form.get('tipo_' ~ i) == 'caja' %}selected{% endif %}> Caja</option>
+              </select>
+
+              <input type="number" name="cantidad_{{ i }}" step="0.01" min="0.01" placeholder="Cantidad"
+                     value="{{ datos_form.get('cantidad_' ~ i) }}"
+                     class="border-2 border-[#C7B7A3] rounded-lg px-3 py-2 bg-white focus:outline-none focus:border-[#561C24]">
+            </div>
             {% endfor %}
+          </div>
 
-          </select>
+          <!-- BOTONES -->
+          <div class="flex flex-col sm:flex-row gap-3 mt-6">
+            <input type="hidden" name="num_filas" value="{{ filas }}">
+            
+            <button type="submit" name="accion" value="agregar_fila"
+                    class="inline-flex items-center justify-center gap-2 bg-[#C7B7A3] hover:bg-[#341915] text-[#341915] hover:text-white px-5 py-2.5 rounded-xl transition-all duration-200 font-semibold">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Agregar Producto
+            </button>
+
+            <button type="submit" name="accion" value="guardar"
+                    class="flex-1 inline-flex items-center justify-center gap-2 bg-[#341915] hover:bg-[#561C24] text-white py-2.5 rounded-xl transition-all duration-200 font-semibold shadow-md hover:shadow-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+              </svg>
+              Guardar Orden de Compra
+            </button>
+          </div>
         </div>
-
-        <!-- FILAS DINÁMICAS -->
-        {% for i in range(filas) %}
-        <div class="grid grid-cols-3 gap-3 mb-3">
-
-          <select name="materia_id_{{ i }}"
-                  class="border rounded px-2 py-2">
-
-            <option value="">Materia prima</option>
-
-            {% for m in materias %}
-              <option value="{{ m.id_materia }}">{{ m.nombre }}</option>
-            {% endfor %}
-
-          </select>
-
-          <input type="number"
-                 name="cantidad_{{ i }}"
-                 placeholder="Cantidad"
-                 class="border rounded px-2 py-2">
-
-          <input type="number"
-                 step="0.01"
-                 name="precio_{{ i }}"
-                 placeholder="Precio"
-                 class="border rounded px-2 py-2">
-
-        </div>
-        {% endfor %}
-
-        <!-- BOTONES -->
-        <div class="flex gap-3">
-
-          <a href="{{ url_for('proveedores.compraProveedores', filas=filas+1) }}"
-             class="bg-[#E8D8C4] px-4 py-2 rounded">
-            + Agregar
-          </a>
-
-         
-          <button type="submit"
-                  class="flex-1 bg-[#341915] text-white py-2 rounded">
-            Guardar Compra
-          </button>
-
-        </div>
-
       </form>
     </div>
+  </div>
 
-    <div class="bg-white rounded-3xl shadow-2xl p-6">
-
-      <h2 class="text-2xl font-bold text-[#341915] mb-4">
-        Inventario Actual
-      </h2>
-
-      <div class="overflow-y-auto max-h-[500px]">
-
-        <table class="w-full text-sm">
-
-          <thead class="bg-[#561C24] text-white text-center">
-            <tr>
-              <th class="py-2">Materia</th>
-              <th class="py-2">Stock</th>
-              <th class="py-2">Mínimo</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            {% for m in materias %}
-            <tr class="border-b text-center">
-
-              <td class="py-2">{{ m.nombre }}</td>
-
-              <td class="py-2">
-                {% if m.stock_actual <= m.stock_minimo %}
-                  <span class="text-red-600 font-bold">
-                    {{ m.stock_actual }}
-                  </span>
-                {% else %}
-                  {{ m.stock_actual }}
-                {% endif %}
-              </td>
-
-              <td class="py-2">{{ m.stock_minimo }}</td>
-
-            </tr>
-            {% endfor %}
-
-          </tbody>
-
-        </table>
-
+  <!-- ÓRDENES PENDIENTES -->
+  <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
+    <div class="bg-[#561C24] px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold text-white tracking-tight">Órdenes Pendientes</h2>
+          <p class="text-[#C7B7A3] text-sm mt-1">Compras que requieren atención</p>
+        </div>
+        <div class="bg-yellow-500 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
+          {{ compras_pendientes|length }} pendiente(s)
+        </div>
       </div>
-
     </div>
 
+    <div class="p-6">
+      {% if compras_pendientes %}
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-[#E8D8C4] border-b-2 border-[#C7B7A3]">
+              <th class="px-4 py-3 text-left text-[#341915] font-semibold">Proveedor</th>
+              <th class="px-4 py-3 text-left text-[#341915] font-semibold">Sucursal</th>
+              <th class="px-4 py-3 text-left text-[#341915] font-semibold">Fecha Pedido</th>
+              <th class="px-4 py-3 text-left text-[#341915] font-semibold">Entrega Estimada</th>
+              <th class="px-4 py-3 text-center text-[#341915] font-semibold">Estado</th>
+              <th class="px-4 py-3 text-center text-[#341915] font-semibold">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in compras_pendientes %}
+            <tr class="border-b border-[#C7B7A3] hover:bg-[#E8D8C4] transition duration-150">
+              <td class="px-4 py-3 font-medium text-[#341915]">{{ c.proveedor.nombre }}</td>
+              <td class="px-4 py-3 text-gray-700">{{ c.sucursal.nombre }}</td>
+              <td class="px-4 py-3 text-gray-700">{{ c.fecha_orden.strftime('%Y-%m-%d') }}</td>
+              <td class="px-4 py-3">
+                <span class="{% if c.fecha_estimada_entrega < today %}text-red-600 font-semibold{% else %}text-gray-700{% endif %}">
+                  {{ c.fecha_estimada_entrega }}
+                  {% if c.fecha_estimada_entrega < today %}(Atrasada){% endif %}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-center">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
+                  Pendiente
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center justify-center gap-2">
+                  <a href="{{ url_for('proveedores.cancelar_compra', id=c.id_compra) }}" 
+                     class="inline-flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Cancelar
+                  </a>
+                  <a href="{{ url_for('proveedores.recibir_compra', id=c.id_compra) }}" 
+                     class="inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Recibir
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-12">
+        <svg class="w-16 h-16 mx-auto text-[#C7B7A3] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+        </svg>
+        <p class="text-lg font-medium text-[#341915]">No hay órdenes pendientes</p>
+        <p class="text-sm text-gray-500 mt-1">Todas las compras han sido recibidas o canceladas</p>
+      </div>
+      {% endif %}
+    </div>
   </div>
 
 </div>

@@ -1,0 +1,314 @@
+{% extends "layoutModulos.html" %}
+
+{% block container %}
+
+<div class="min-h-screen bg-[#E8D8C4] p-6">
+
+  <!-- BREADCRUMB MEJORADO -->
+  <nav class="w-full mb-6" aria-label="Breadcrumb">
+    <ol class="flex flex-wrap items-center gap-2">
+      <li class="flex items-center">
+        <a href="ordenProduccion" 
+           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
+          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
+          </svg>
+          <span>Orden de Procesos</span>
+        </a>
+      </li>
+      <li class="text-[#561C24] font-bold">
+        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+        </svg>
+      </li>
+      <li class="flex items-center">
+        <div class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#561C24] bg-[#E8D8C4] rounded-lg border border-[#C7B7A3] shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+          <span>Panel de Cocina</span>
+        </div>
+      </li>
+    </ol>
+  </nav>
+
+  <!-- HEADER PRINCIPAL -->
+  <div class="max-w-7xl mx-auto mb-6">
+    <div class="bg-white rounded-2xl shadow-xl border border-[#C7B7A3] overflow-hidden">
+      <div class="bg-[#341915] px-6 py-5">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 class="text-3xl font-black text-white tracking-tight">Dulce Tradición</h1>
+            <p class="text-sm font-semibold text-[#C7B7A3] uppercase tracking-wider mt-1">Panel de Cocina - Control de Producción</p>
+          </div>
+          <div class="flex gap-3">
+            <a href="{{ url_for('ordenProduccion.panelCocina') }}" 
+               class="inline-flex items-center gap-2 bg-[#E8D8C4] hover:bg-[#C7B7A3] text-[#341915] px-5 py-2 rounded-xl transition-all duration-200 font-semibold shadow-md hover:shadow-lg">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              Refrescar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLASH MESSAGES MEJORADOS -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="max-w-7xl mx-auto mb-6">
+        {% for category, message in messages %}
+          <div class="p-4 rounded-xl border-l-8 
+            {% if category == 'success' %}bg-green-100 text-green-700 border-green-600{% elif category == 'error' %}bg-red-100 text-red-700 border-red-600{% else %}bg-blue-100 text-blue-700 border-blue-600{% endif %}">
+            <div class="flex items-center gap-2">
+              {% if category == 'success' %}
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              {% elif category == 'error' %}
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              {% else %}
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              {% endif %}
+              {{ message }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- KANBAN BOARD -->
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Columna PENDIENTES -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
+        <div class="bg-[#561C24] px-5 py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <h2 class="text-lg font-black text-white uppercase tracking-wider">Pendientes</h2>
+            </div>
+            <span class="bg-white/20 px-2.5 py-1 rounded-full text-xs font-bold text-white">{{ ordenes_pendientes|length }}</span>
+          </div>
+        </div>
+
+        <div class="p-4 space-y-4 max-h-[600px] overflow-y-auto custom-scroll">
+          {% for orden in ordenes_pendientes %}
+          <div class="border border-[#C7B7A3] bg-white rounded-xl p-4 hover:shadow-lg transition-all duration-200">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <p class="font-black text-[#341915] text-lg">Orden #{{ orden.id_orden }}</p>
+                <p class="text-xs text-gray-500 mt-1">{{ orden.sucursal.nombre }}</p>
+              </div>
+              <span class="text-xs bg-yellow-100 text-yellow-800 px-2.5 py-1 rounded-full font-semibold">⏳ Pendiente</span>
+            </div>
+            
+            <div class="space-y-2 mb-4">
+              {% for detalle in orden.detalles %}
+              <div class="flex justify-between items-center text-sm py-1 border-t border-[#C7B7A3]">
+                <span class="font-medium text-gray-700">{{ detalle.producto.nombre }}</span>
+                <span class="font-bold text-[#561C24]">{{ detalle.cantidad_recetas or detalle.cantidad }} receta(s)</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <form method="POST" action="{{ url_for('ordenProduccion.cambiar_estado', id_orden=orden.id_orden) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="estatus" value="preparacion">
+              <button class="w-full bg-[#341915] hover:bg-[#561C24] text-white font-bold py-2.5 rounded-xl transition-all duration-200 text-sm shadow-md hover:shadow-lg">
+                🍳 Iniciar producción
+              </button>
+            </form>
+          </div>
+          {% else %}
+          <div class="text-center py-12">
+            <svg class="w-12 h-12 mx-auto text-[#C7B7A3] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <p class="text-sm text-gray-400">No hay órdenes pendientes</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Columna EN PREPARACIÓN -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
+        <div class="bg-[#C7B7A3] px-5 py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-[#341915]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              <h2 class="text-lg font-black text-[#341915] uppercase tracking-wider">En preparación</h2>
+            </div>
+            <span class="bg-[#341915]/20 px-2.5 py-1 rounded-full text-xs font-bold text-[#341915]">{{ ordenes_preparacion|length }}</span>
+          </div>
+        </div>
+
+        <div class="p-4 space-y-4 max-h-[600px] overflow-y-auto custom-scroll">
+          {% for orden in ordenes_preparacion %}
+          <div class="border border-[#C7B7A3] bg-white rounded-xl p-4 hover:shadow-lg transition-all duration-200">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <p class="font-black text-[#341915] text-lg">Orden #{{ orden.id_orden }}</p>
+                <p class="text-xs text-gray-500 mt-1">{{ orden.sucursal.nombre }}</p>
+              </div>
+              <span class="text-xs bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full font-semibold">⚡ En proceso</span>
+            </div>
+
+            <div class="space-y-2 mb-4">
+              {% for detalle in orden.detalles %}
+              <div class="flex justify-between items-center text-sm py-1 border-t border-[#C7B7A3]">
+                <span class="font-medium text-gray-700">{{ detalle.producto.nombre }}</span>
+                <span class="font-bold text-[#561C24]">{{ detalle.cantidad_recetas or detalle.cantidad }} receta(s)</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('ordenProduccion.cambiar_estado', id_orden=orden.id_orden) }}" class="flex-1">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="estatus" value="completada">
+                <button class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-xl transition-all duration-200 text-sm shadow-md hover:shadow-lg">
+                  ✓ Completar
+                </button>
+              </form>
+              
+              <!-- Modal de cancelación mejorado -->
+              <details class="relative">
+                <summary class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2.5 rounded-xl transition-all duration-200 text-sm cursor-pointer list-none text-center">
+                  ✗ Cancelar
+                </summary>
+                <div class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border border-[#C7B7A3] z-10 p-5">
+                  <form method="POST" action="{{ url_for('ordenProduccion.cambiar_estado', id_orden=orden.id_orden) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="estatus" value="cancelada">
+                    
+                    <label class="block text-xs font-bold text-[#341915] mb-2 uppercase tracking-wider">
+                      Motivo de cancelación
+                    </label>
+                    <textarea name="motivo_cancelacion" 
+                              class="w-full border-2 border-[#C7B7A3] rounded-lg p-2 text-sm focus:border-[#561C24] focus:ring-1 focus:ring-[#561C24] outline-none"
+                              rows="3"
+                              placeholder="Ej: Falta de ingredientes, error en la orden..."
+                              required></textarea>
+                    
+                    <button type="submit" 
+                            class="w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl transition-all duration-200 text-sm">
+                      Confirmar cancelación
+                    </button>
+                  </form>
+                </div>
+              </details>
+            </div>
+          </div>
+          {% else %}
+          <div class="text-center py-12">
+            <svg class="w-12 h-12 mx-auto text-[#C7B7A3] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+            <p class="text-sm text-gray-400">No hay órdenes en preparación</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Columna CANCELADAS -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
+        <div class="bg-gray-600 px-5 py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+              <h2 class="text-lg font-black text-white uppercase tracking-wider">Canceladas</h2>
+            </div>
+            <span class="bg-white/20 px-2.5 py-1 rounded-full text-xs font-bold text-white">{{ ordenes_canceladas|length }}</span>
+          </div>
+        </div>
+
+        <div class="p-4 space-y-3 max-h-[600px] overflow-y-auto custom-scroll">
+          {% for orden in ordenes_canceladas %}
+          <div class="border-l-8 border-red-500 bg-gray-50 p-4 rounded-r-xl border border-[#C7B7A3]">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <p class="font-bold text-[#341915]">Orden #{{ orden.id_orden }}</p>
+                <p class="text-xs text-gray-500 mt-1">{{ orden.sucursal.nombre }}</p>
+              </div>
+              <span class="text-xs text-gray-500">{{ orden.fecha_produccion.strftime('%d/%m/%Y') }}</span>
+            </div>
+            <p class="text-sm text-gray-600 mt-2">
+              <span class="font-semibold text-red-600">Motivo:</span> {{ orden.motivo_cancelacion or 'No especificado' }}
+            </p>
+          </div>
+          {% else %}
+          <div class="text-center py-12">
+            <svg class="w-12 h-12 mx-auto text-[#C7B7A3] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            <p class="text-sm text-gray-400">No hay órdenes canceladas</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Scroll personalizado */
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #E8D8C4;
+  border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #C7B7A3;
+  border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #561C24;
+}
+
+/* Estilo para el summary (botón cancelar) */
+summary {
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Animación suave para el modal */
+details[open] > div {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+
+{% endblock %}

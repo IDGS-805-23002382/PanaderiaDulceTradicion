@@ -1,0 +1,162 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<section class="relative w-full h-[200px]">
+        <br>
+        <div class="absolute inset-0 flex items-center justify-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#121212] tracking-widest uppercase">Finalizar Compra</h1>
+        </div>
+    </div>
+</section>
+
+<section class="bg-[#d8c9b4] py-12 min-h-screen">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+            <div class="bg-[#d8c9b4] border-4 border-[#6b1f26] rounded-2xl p-8 shadow-xl">
+                <h2 class="text-2xl font-bold text-[#2c1b16] mb-6 uppercase tracking-wider border-b-2 border-[#6b1f26]/20 pb-2">Mi Pedido</h2>
+                <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                    {% if carrito %}
+                        {% for id, item in carrito.items() %}
+                        <div class="flex items-center justify-between bg-white/40 p-4 rounded-xl border border-[#6b1f26]/10">
+                            <div class="flex items-center gap-4">
+                                <div class="w-16 h-16 bg-white rounded-lg border-2 border-[#6b1f26] overflow-hidden">
+                                    {% if item.imagen_url %}
+                                        <img src="{{ url_for('ventas.producto_imagen', id=item.id_producto) }}"
+                                             class="w-full h-full object-cover">
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='img/productos/default.png') }}"
+                                             class="w-full h-full object-cover">
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-[#6b1f26] uppercase text-sm">{{ item.nombre }}</h3>
+                                    <div>
+                                        <label class="text-[10px] font-bold text-[#6b1f26]">Cantidad:</label>
+                                        <input type="number" 
+                                               name="cantidad_{{ item.id_producto }}" 
+                                               value="{{ item.cantidad }}" 
+                                               min="1" 
+                                               class="w-16 text-center border rounded"
+                                               data-precio-unitario="{{ item.precio }}"
+                                               data-producto-id="{{ item.id_producto }}"
+                                               onchange="actualizarCantidad(this)">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-black text-[#6b1f26]" id="subtotal-{{ item.id_producto }}">${{ "%.2f"|format(item.precio * item.cantidad) }}</p>
+                                <p class="text-[10px] text-gray-600">${{ "%.2f"|format(item.precio) }} c/u</p>
+                                <a href="{{ url_for('ventas.eliminar_del_carrito', id_producto=item.id_producto) }}"
+                                   class="mt-2 text-xs text-red-600 hover:text-red-800 font-bold uppercase"
+                                   onclick="return confirm('¿Eliminar este producto del carrito?')">
+                                     Eliminar
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center py-10 font-bold text-[#6b1f26] uppercase">El carrito está vacío</p>
+                    {% endif %}
+                </div>
+                <div class="mt-8 pt-6 border-t-4 border-[#6b1f26] flex justify-between items-center">
+                    <span class="text-xl font-black text-[#2c1b16] uppercase">Total a Pagar:</span>
+                    <span class="text-3xl font-black text-[#6b1f26]">${{ "%.2f"|format(total if total else 0) }}</span>
+                </div>
+            </div>
+
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border-t-8 border-[#6b1f26]">
+                <form action="{{ url_for('ventas.registrar_venta') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div>
+                        <label class="block text-xs font-black text-[#6b1f26] uppercase mb-2">Nombre del Cliente</label>
+                        <input type="text" name="nombre_cliente" value="{{ current_user.nombre }}" readonly
+                               class="w-full bg-[#d8c9b4]/30 border-2 border-[#6b1f26]/20 rounded-xl px-4 py-3 font-bold text-[#2c1b16]">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black text-[#6b1f26] uppercase mb-2">Sucursal de Origen</label>
+                        <select name="id_sucursal" required
+                                class="w-full bg-white border-2 border-[#6b1f26] rounded-xl px-4 py-3 font-bold text-[#6b1f26] outline-none">
+                            {% for s in sucursales %}
+                            <option value="{{ s.id_sucursal }}">{{ s.nombre }} - {{ s.ciudad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black text-[#6b1f26] uppercase mb-2">Método de Pago</label>
+                        <select id="metodo_pago" name="metodo_pago" required
+                                class="w-full bg-white border-2 border-[#6b1f26] rounded-xl px-4 py-3 font-bold text-[#6b1f26] outline-none">
+                            <option value="efectivo">Efectivo</option>
+                            <option value="transferencia">Transferencia Bancaria</option>
+                        </select>
+                    </div>
+
+                    <div id="info_transferencia" class="hidden bg-[#d8c9b4]/50 p-5 rounded-xl border-2 border-dashed border-[#6b1f26]">
+                        <p class="text-[10px] font-black text-[#6b1f26] uppercase mb-2">Datos de Depósito</p>
+                        <p class="text-sm font-bold text-[#2c1b16]">Banco: <span class="font-normal uppercase text-xs text-black">BBVA Bancomer</span></p>
+                        <p class="text-sm font-bold text-[#2c1b16]">CLABE: <span class="font-normal text-xs text-black">0123 4567 8901 2345 67</span></p>
+                        <p class="text-sm font-bold text-[#2c1b16] mb-4">Concepto: <span class="font-normal text-xs text-black">Pana-{{ current_user.nombre[:5] }}</span></p>
+                        <label class="block text-[10px] font-black text-[#6b1f26] uppercase mb-1">Subir Comprobante</label>
+                        <input type="file" name="comprobante" class="text-xs font-bold">
+                    </div>
+
+                    <button type="submit"
+                            class="w-full bg-[#6b1f26] text-white py-4 rounded-xl font-black text-xl uppercase tracking-widest hover:bg-[#4b1e1e] transition-all transform hover:scale-[1.02] shadow-lg">
+                        Confirmar Pedido
+                    </button>
+
+                    <a href="{{ url_for('catalogo') }}" class="block text-center text-xs font-bold text-[#6b1f26] uppercase hover:underline mt-4">
+                        ← Seguir Comprando
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    const selectPago = document.getElementById('metodo_pago');
+    const infoTrans  = document.getElementById('info_transferencia');
+    selectPago.addEventListener('change', function() {
+        infoTrans.classList.toggle('hidden', this.value !== 'transferencia');
+    });
+
+    // Función para actualizar cantidad y precios dinámicamente
+    function actualizarCantidad(input) {
+        const cantidad = parseInt(input.value) || 1;
+        const precioUnitario = parseFloat(input.dataset.precioUnitario);
+        const productoId = input.dataset.productoId;
+        
+        // Calcular nuevo subtotal para este producto
+        const nuevoSubtotal = cantidad * precioUnitario;
+        
+        // Actualizar el subtotal mostrado
+        const subtotalElement = document.getElementById(`subtotal-${productoId}`);
+        if (subtotalElement) {
+            subtotalElement.textContent = `$${nuevoSubtotal.toFixed(2)}`;
+        }
+        
+        // Recalcular el total general del carrito
+        actualizarTotalGeneral();
+    }
+
+    // Función para recalcular el total general
+    function actualizarTotalGeneral() {
+        let totalGeneral = 0;
+        
+        // Sumar todos los subtotales
+        document.querySelectorAll('[id^="subtotal-"]').forEach(element => {
+            const precioText = element.textContent.replace('$', '');
+            totalGeneral += parseFloat(precioText) || 0;
+        });
+        
+        // Actualizar el total mostrado
+        const totalElement = document.querySelector('.text-3xl.font-black.text-\\[\\#6b1f26\\]');
+        if (totalElement) {
+            totalElement.textContent = `$${totalGeneral.toFixed(2)}`;
+        }
+    }
+</script>
+{% endblock %}

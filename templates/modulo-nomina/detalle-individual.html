@@ -1,0 +1,140 @@
+<!-- templates/modulo-nomina/detalle-individual.html -->
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="w-full max-w-2xl mx-auto">
+
+  <div class="flex items-center justify-between mb-2">
+    <h1 class="text-xl font-semibold text-[#341915]">
+      Nómina — {{ nomina.empleado.nombre }}
+    </h1>
+    <a href="{{ url_for('nomina.detalle_grupal', id=nomina.id_nomina_grupal) if nomina.id_nomina_grupal else url_for('nomina.index') }}"
+       class="text-sm text-[#341915] hover:underline">← Volver</a>
+  </div>
+  <div class="w-1/2 h-1 bg-[#341915] mt-2 mb-6"></div>
+
+  <!-- ESTATUS BADGE -->
+  <div class="flex items-center gap-3 mb-6">
+    {% if nomina.estatus == 'pagado' %}
+      <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">✓ Pagado</span>
+    {% elif nomina.estatus == 'incidencia' %}
+      <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">⚠ Incidencia</span>
+    {% else %}
+      <span class="px-3 py-1 text-sm font-semibold text-yellow-700 bg-yellow-100 rounded-full">⏳ Pendiente</span>
+    {% endif %}
+    {% if nomina.id_nomina_grupal %}
+      <span class="text-xs text-gray-400">Parte de nómina grupal #{{ nomina.id_nomina_grupal }}</span>
+    {% endif %}
+  </div>
+
+  <!-- FORMULARIO EDITABLE -->
+  <div class="bg-white rounded-2xl shadow p-8">
+    <form method="POST" action="{{ url_for('nomina.editar_individual', id=nomina.id_nomina_ind) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+        <!-- PUESTO -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Puesto (al momento del pago)</label>
+          <input type="text" name="puesto" value="{{ nomina.puesto or '' }}"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <!-- SALARIO BASE -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Salario base</label>
+          <input type="number" name="salario_base" step="0.01" value="{{ nomina.salario_base }}"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <!-- MONTO PAGADO -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Monto a pagar</label>
+          <input type="number" name="monto_pagado" step="0.01" value="{{ nomina.monto_pagado }}"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <!-- PERIODO -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Periodo</label>
+          <select name="periodo"
+                  class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]">
+            <option value="quincenal" {% if nomina.periodo == 'quincenal' %}selected{% endif %}>Quincenal</option>
+            <option value="mensual"   {% if nomina.periodo == 'mensual'   %}selected{% endif %}>Mensual</option>
+          </select>
+        </div>
+
+        <!-- FECHA INICIO -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Fecha inicio</label>
+          <input type="date" name="fecha_inicio" value="{{ nomina.fecha_inicio.strftime('%Y-%m-%d') }}"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <!-- FECHA FIN -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Fecha fin</label>
+          <input type="date" name="fecha_fin" value="{{ nomina.fecha_fin.strftime('%Y-%m-%d') }}"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <!-- FECHA PAGO REAL -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Fecha de pago real</label>
+          <input type="date" name="fecha_pago"
+                 value="{{ nomina.fecha_pago.strftime('%Y-%m-%d') if nomina.fecha_pago else '' }}"
+                 class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]"/>
+        </div>
+
+        <!-- ESTATUS -->
+        <div>
+          <label class="block text-sm font-medium text-[#341915] mb-1">Estatus</label>
+          <select name="estatus"
+                  class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]">
+            <option value="pendiente"  {% if nomina.estatus == 'pendiente'  %}selected{% endif %}>Pendiente</option>
+            <option value="pagado"     {% if nomina.estatus == 'pagado'     %}selected{% endif %}>Pagado</option>
+            <option value="incidencia" {% if nomina.estatus == 'incidencia' %}selected{% endif %}>Con Incidencia</option>
+          </select>
+        </div>
+
+        <!-- NOTAS -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-[#341915] mb-1">
+            Notas / Descripción de incidencia
+          </label>
+          <textarea name="notas" rows="3"
+                    placeholder="Describe cualquier corrección, incidencia o aclaración..."
+                    class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]">{{ nomina.notas or '' }}</textarea>
+        </div>
+
+      </div>
+
+      <div class="flex gap-3 mt-8">
+        <button type="submit"
+                class="flex-1 bg-[#341915] hover:bg-[#561C24] text-[#E8D8C4] font-medium py-2 rounded-lg transition">
+          Guardar cambios
+        </button>
+
+        {% if nomina.estatus == 'pendiente' %}
+        <div class="flex-1">
+          <form method="POST" action="{{ url_for('nomina.pagar_individual', id=nomina.id_nomina_ind) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit"
+                    class="w-full h-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg transition">
+                Marcar como Pagado
+            </button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+
+    </form>
+  </div>
+
+  <!-- INFO NO EDITABLE -->
+  <div class="mt-4 text-xs text-gray-400 text-center">
+    Registro creado: {{ nomina.fecha_registro.strftime('%d/%m/%Y %H:%M') }}
+  </div>
+
+</div>
+{% endblock %}

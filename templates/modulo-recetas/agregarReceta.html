@@ -1,104 +1,120 @@
 {% extends "layoutModulos.html" %}
 {% block container %}
 
-<div class="max-w-md mx-auto mt-10">
-
-    <h2 class="text-2xl font-bold mb-6 text-[#341915] text-center">
-        Registrar Receta
-    </h2>
-
-    <form method="POST"
-          action="{{ url_for('recetas.agregarReceta') }}">
-
+<div class="max-w-5xl mx-auto mt-8 mb-16 px-4">
+    <form method="POST" action="{{ url_for('recetas.agregarReceta') }}" class="bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-100">
         {{ form.hidden_tag() }}
 
-        <!-- PRODUCTO -->
-        <div class="mb-4">
-
-            {{ form.id_producto.label(class="block text-sm font-medium text-gray-700") }}
-
-            {{ form.id_producto(class="w-full border rounded px-3 py-2") }}
-
-            {% for error in form.id_producto.errors %}
-                <p class="text-red-500 text-xs">{{ error }}</p>
-            {% endfor %}
-
+        <div class="bg-[#341915] p-6 text-white">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold">Nueva Receta</h2>
+                    <p class="text-amber-200 text-sm italic">Gestión de producción y materias primas</p>
+                </div>
+                <div class="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
+                    <span class="text-xs uppercase tracking-widest block font-semibold text-amber-400">Rendimiento</span>
+                    <div class="flex items-center gap-2">
+                        {{ form.rendimiento_piezas(class="bg-transparent text-xl font-bold w-16 focus:outline-none border-b border-white/40 text-white", placeholder="20") }}
+                        <span class="text-lg">piezas</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <div class="p-8 space-y-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="md:col-span-2 space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Producto Final</label>
+                        {{ form.id_producto(class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-[#341915] focus:ring-0 transition-all text-lg") }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Nombre de la Receta</label>
+                        {{ form.nombre(class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-[#341915] focus:ring-0", placeholder="Ej: Cuernito de Almendra Especial") }}
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Estatus Inicial</label>
+                        {{ form.estatus(class="w-full bg-amber-50 border-2 border-amber-200 rounded-xl px-4 py-3 text-[#341915] font-semibold") }}
+                    </div>
+                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                        <p class="text-xs text-blue-700 leading-tight">
+                            <strong>Nota:</strong> Especifica las cantidades según la unidad de medida de cada ingrediente.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-        <!-- NOMBRE RECETA -->
-        <div class="mb-4">
+            <hr class="border-gray-100">
 
-            {{ form.nombre.label(class="block text-sm font-medium text-gray-700") }}
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="bg-amber-100 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#341915]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 012-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Ingredientes Requeridos</h3>
+                </div>
 
-            {{ form.nombre(class="w-full border rounded px-3 py-2") }}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-200">
+                    {% for i in range(10) %}
+                    <div class="flex items-center gap-4 py-3 border-b border-gray-200 last:border-0">
+                        
+                        <span class="flex-none w-6 h-6 rounded-full bg-[#00c853] text-white flex items-center justify-center shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        
+                        <div class="flex-grow">
+                            <select name="materia[]" class="w-full bg-transparent border-none focus:ring-0 text-sm text-gray-700 font-semibold cursor-pointer">
+                                <option value="">-- Seleccionar Ingrediente --</option>
+                                {% for m in materias %}
+                                    <option value="{{ m.id_materia }}">
+                                        {{ m.nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-            {% for error in form.nombre.errors %}
-                <p class="text-red-500 text-xs">{{ error }}</p>
-            {% endfor %}
+                        <div class="flex items-center gap-2">
+                            <input type="number" step="0.001" name="cantidad[]" placeholder="0" 
+                                   class="w-24 text-center bg-white border-2 border-[#341915] rounded-lg px-3 py-1.5 text-sm font-bold focus:ring-2 focus:ring-amber-200 outline-none transition-all">
 
+                            <!-- 🔥 SELECTOR DE UNIDADES (igual que en modificarReceta) -->
+                            <select name="tipo[]" class="text-[11px] font-bold text-[#341915] bg-[#fef3c7] px-2 py-1.5 rounded-lg border border-amber-200 focus:outline-none">
+                                <option value="g">g</option>
+                                <option value="kg">kg</option>
+                                <option value="ml">ml</option>
+                                <option value="l">l</option>
+                                <option value="pza">pza</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xl font-bold text-gray-800 mb-4">🥣 Pasos de Elaboración (Descripción)</label>
+                {{ form.descripcion(class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 focus:border-[#341915] focus:ring-0 min-h-[200px]", placeholder="Paso 1: Mezclar los secos...\nPaso 2: Añadir los líquidos lentamente...") }}
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 justify-end pt-6">
+                <a href="{{ url_for('recetas.recetas') }}" 
+                   class="px-8 py-3 text-center font-bold text-gray-500 hover:text-gray-700 transition-colors">
+                    Descartar
+                </a>
+                <button type="submit" 
+                        class="px-12 py-3 bg-[#341915] text-white font-bold rounded-xl shadow-xl hover:bg-[#4a241d] transform hover:scale-105 transition-all">
+                    Finalizar y Guardar Receta
+                </button>
+            </div>
         </div>
-
-
-        <!-- DESCRIPCION -->
-        <div class="mb-4">
-
-            {{ form.descripcion.label(class="block text-sm font-medium text-gray-700") }}
-
-            {{ form.descripcion(class="w-full border rounded px-3 py-2") }}
-
-            {% for error in form.descripcion.errors %}
-                <p class="text-red-500 text-xs">{{ error }}</p>
-            {% endfor %}
-
-        </div>
-
-
-        <!-- RENDIMIENTO -->
-        <div class="mb-4">
-
-            {{ form.rendimiento_piezas.label(class="block text-sm font-medium text-gray-700") }}
-
-            {{ form.rendimiento_piezas(class="w-full border rounded px-3 py-2") }}
-
-            {% for error in form.rendimiento_piezas.errors %}
-                <p class="text-red-500 text-xs">{{ error }}</p>
-            {% endfor %}
-
-        </div>
-
-
-        <!-- ESTATUS -->
-        <div class="mb-6">
-
-            {{ form.estatus.label(class="block text-sm font-medium text-gray-700") }}
-
-            {{ form.estatus(class="w-full border rounded px-3 py-2") }}
-
-        </div>
-
-
-        <!-- BOTONES -->
-        <div class="flex gap-4">
-
-            <button type="submit"
-                class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4a241d]">
-
-                Guardar
-
-            </button>
-
-            <a href="{{ url_for('recetas.recetas') }}"
-               class="text-gray-600 hover:text-gray-800">
-
-                Cancelar
-
-            </a>
-
-        </div>
-
     </form>
-
 </div>
 
 {% endblock %}

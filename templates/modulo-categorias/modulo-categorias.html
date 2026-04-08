@@ -26,9 +26,112 @@
     </div>
 
 
-    <!-- FILTRO Y BUSCAR (igual) -->
+   <!-- FILTRO Y BUSCAR -->
     <div class="flex items-center justify-between mb-4">
-        <!-- (no se modifica nada aquí) -->
+
+        <!-- FILTRO -->
+        <details class="relative">
+
+            <summary class="flex items-center gap-2 text-[#341915] font-medium cursor-pointer">
+                <img src="{{ url_for('static', filename='img/iconosModulos/filtrar.png') }}"
+                     class="h-6 w-6">
+                <span>Filtrar</span>
+            </summary>
+
+            <div class="absolute mt-3 bg-white shadow-lg rounded-lg p-4 w-64 border z-50">
+
+                <form method="GET"
+                      action="{{ url_for('categorias.categorias') }}"
+                      class="flex flex-col gap-3">
+
+                    <!-- ESTATUS -->
+                    <label class="text-sm text-[#341915] font-semibold">
+                        Estatus
+                    </label>
+
+                    <select name="estatus"
+                            class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
+
+                        <option value="">Todos</option>
+
+                        <option value="activo"
+                        {% if request.args.get('estatus') == 'activo' %} selected {% endif %}>
+                            Activos
+                        </option>
+
+                        <option value="inactivo"
+                        {% if request.args.get('estatus') == 'inactivo' %} selected {% endif %}>
+                            Inactivos
+                        </option>
+
+                    </select>
+
+                    <!-- ORDEN -->
+                    <label class="text-sm text-[#341915] font-semibold">
+                        Ordenar
+                    </label>
+
+                    <select name="orden"
+                            class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
+
+                        <option value="">Sin ordenar</option>
+
+                        <option value="az"
+                        {% if request.args.get('orden') == 'az' %} selected {% endif %}>
+                            Nombre A-Z
+                        </option>
+
+                        <option value="za"
+                        {% if request.args.get('orden') == 'za' %} selected {% endif %}>
+                            Nombre Z-A
+                        </option>
+
+                    </select>
+
+                    <!-- BOTONES -->
+                    <div class="flex gap-2 mt-2">
+
+                        <button type="submit"
+                                class="bg-[#341915] text-white px-3 py-2 rounded hover:bg-[#4a241d] text-sm">
+                            Aplicar
+                        </button>
+
+                        <a href="{{ url_for('categorias.categorias') }}"
+                           class="bg-gray-200 px-3 py-2 rounded text-sm hover:bg-gray-300">
+                            Limpiar
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </details>
+
+
+
+        <!-- BUSCAR -->
+        <form method="GET"
+              action="{{ url_for('categorias.categorias') }}"
+              class="flex">
+
+            <input type="text"
+                   name="buscar"
+                   placeholder="Buscar categoria"
+                   value="{{ request.args.get('buscar','') }}"
+                   class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0] placeholder-[#7a5a4d]" />
+
+            <button type="submit"
+                    class="bg-[#341915] px-4 rounded-r flex items-center justify-center">
+
+                <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}"
+                     class="h-5 w-5">
+
+            </button>
+
+        </form>
+
     </div>
 
 
@@ -40,7 +143,7 @@
             <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
 
                 <tr>
-                    <!-- 🔥 NUEVA COLUMNA -->
+                    <!-- NUEVA COLUMNA -->
                     <th class="px-4 py-2 w-24">Imagen</th>
 
                     <th class="px-4 py-2">Nombre</th>
@@ -58,7 +161,7 @@
 
                 <tr class="border-b hover:bg-gray-50">
 
-                    <!-- 🔥 IMAGEN -->
+                    <!-- IMAGEN -->
                     <td class="px-4 py-2 text-center">
                         {% if cat.imagen %}
                             <img src="{{ url_for('categorias.categoria_imagen', id=cat.id_categoria) }}"

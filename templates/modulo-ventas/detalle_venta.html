@@ -1,0 +1,81 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<section class="bg-[#d8c9b4] py-12 min-h-screen">
+    <div class="max-w-4xl mx-auto px-6">
+
+        <a href="{{ url_for('ventas.historial_ventas') }}"
+           class="inline-flex items-center text-[#6b1f26] font-bold mb-6 hover:underline uppercase text-sm">
+            ← Volver al historial
+        </a>
+
+        <div class="bg-[#d8c9b4] border-4 border-[#6b1f26] rounded-2xl shadow-2xl overflow-hidden">
+
+            <div class="bg-[#6b1f26] p-6 text-[#f3e5d8] text-center">
+                <h2 class="text-2xl font-black uppercase tracking-tighter">Resumen de Pedido</h2>
+                <p class="text-sm opacity-80">Folio: #{{ venta._id }}</p>
+                <span class="px-3 py-1 rounded-full text-xs font-bold mt-2 inline-block
+                    {% if venta.tipo == 'online' %}bg-blue-200 text-blue-800
+                    {% else %}bg-green-200 text-green-800{% endif %}">
+                    {{ venta.tipo | upper }}
+                </span>
+            </div>
+
+            <div class="p-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 border-b-2 border-[#6b1f26]/10 pb-6">
+                    <div>
+                        <p class="text-xs font-black uppercase text-[#6b1f26]">Fecha</p>
+                        <p class="font-bold text-[#2c1b16]">{{ venta.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase text-[#6b1f26]">Cliente</p>
+                        <p class="font-bold text-[#2c1b16]">{{ venta.nombre_cliente }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase text-[#6b1f26]">Sucursal</p>
+                        <p class="font-bold text-[#2c1b16]">{{ venta.nombre_sucursal or 'N/A' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase text-[#6b1f26]">Método de Pago</p>
+                        <p class="font-bold text-[#2c1b16]">{{ venta.metodo_pago }}</p>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-black text-[#2c1b16] mb-4 uppercase">Productos</h3>
+                <div class="space-y-4">
+                    {% for detalle in venta.detalles %}
+                    <div class="flex justify-between items-center bg-white/40 p-4 rounded-xl border-2 border-[#6b1f26]/10">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-[#6b1f26] rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                                {{ detalle.cantidad }}
+                            </div>
+                            <div>
+                                <p class="font-black text-[#2c1b16] uppercase">{{ detalle.nombre_producto }}</p>
+                                <p class="text-xs text-gray-600">Precio unitario: ${{ "%.2f"|format(detalle.precio_unitario) }}</p>
+                            </div>
+                        </div>
+                        <p class="font-black text-[#6b1f26]">${{ "%.2f"|format(detalle.subtotal) }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-10 pt-6 border-t-4 border-[#6b1f26] flex justify-between items-end">
+                    <div>
+                        <p class="text-xs font-black text-[#6b1f26] uppercase">Estado</p>
+                        <span class="px-3 py-1 bg-green-200 text-green-800 rounded-full text-xs font-bold uppercase">
+                            {{ venta.estatus }}
+                        </span>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-[#2c1b16] uppercase">Total</p>
+                        <p class="text-4xl font-black text-[#6b1f26]">${{ "%.2f"|format(venta.total) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white/20 p-4 text-center border-t border-[#6b1f26]/10">
+                <p class="text-xs font-bold text-[#2c1b16] uppercase">¡Gracias por su compra en Dulce Tradición!</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

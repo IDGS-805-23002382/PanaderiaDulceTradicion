@@ -1,0 +1,696 @@
+<!-- templates/modulo-finanzas/modulo-finanzas.html -->
+{% extends 'layoutModulos.html' %}
+{% block container %}
+<div class="w-full" id="dashboard-finanzas">
+
+  <h1 class="text-2xl font-semibold text-center text-[#341915]">Dashboard Financiero</h1>
+  <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-6"></div>
+
+  <!-- FILTROS DE PERIODO -->
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <div class="flex gap-2">
+      {% for p, label in [('semana','Esta semana'), ('mes','Este mes'), ('anio','Este año')] %}
+      <a href="{{ url_for('finanzas.index', periodo=p) }}">
+        <button class="px-4 py-2 rounded-lg text-sm font-medium transition
+          {% if periodo == p %}bg-[#341915] text-[#E8D8C4]{% else %}border border-[#341915] text-[#341915] hover:bg-[#F3E9DB]{% endif %}">
+          {{ label }}
+        </button>
+      </a>
+      {% endfor %}
+    </div>
+    <div class="flex gap-2 items-center">
+      <span class="text-xs text-gray-400">
+        {{ inicio.strftime('%d/%m/%Y') }} — {{ fin.strftime('%d/%m/%Y') }}
+      </span>
+      <a href="{{ url_for('finanzas.gastos') }}">
+        <button class="border border-[#341915] text-[#341915] hover:bg-[#F3E9DB] text-sm font-medium px-3 py-2 rounded-lg transition">
+          + Gasto extra
+        </button>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── TARJETAS RESUMEN ── -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+
+    <div class="bg-white rounded-xl shadow p-5 border-l-4 border-green-500" id="card-ingresos">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-xs text-gray-400 uppercase tracking-wide">Ingresos por ventas</p>
+        <button onclick="imprimirIngresos()" class="text-gray-300 hover:text-[#341915] transition" title="Imprimir">🖨</button>
+      </div>
+      <p class="text-3xl font-bold text-green-700">${{ "%.2f"|format(totales.ingresos) }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ ventas_recientes|length }} ventas en el periodo</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-5 border-l-4 border-orange-400" id="card-compras">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-xs text-gray-400 uppercase tracking-wide">Compras a proveedor</p>
+        <button onclick="imprimirCompras()" class="text-gray-300 hover:text-[#341915] transition" title="Imprimir">🖨</button>
+      </div>
+      <p class="text-3xl font-bold text-orange-600">${{ "%.2f"|format(totales.egresos_compras) }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ compras_recientes|length }} compras en el periodo</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-5 border-l-4 border-blue-400" id="card-nomina">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-xs text-gray-400 uppercase tracking-wide">Nómina pagada</p>
+        <button onclick="imprimirNomina()" class="text-gray-300 hover:text-[#341915] transition" title="Imprimir">🖨</button>
+      </div>
+      <p class="text-3xl font-bold text-blue-700">${{ "%.2f"|format(totales.egresos_nomina) }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ nominas_recientes|length }} pagos en el periodo</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-5 border-l-4 border-purple-400" id="card-gastos">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-xs text-gray-400 uppercase tracking-wide">Gastos extra</p>
+        <button onclick="imprimirGastos()" class="text-gray-300 hover:text-[#341915] transition" title="Imprimir">🖨</button>
+      </div>
+      <p class="text-3xl font-bold text-purple-700">${{ "%.2f"|format(totales.egresos_gastos) }}</p>
+      <p class="text-xs text-gray-400 mt-1">{{ gastos_recientes|length }} gastos en el periodo</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-5 border-l-4 border-red-500" id="card-egresos">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-xs text-gray-400 uppercase tracking-wide">Total egresos</p>
+        <button onclick="imprimirEgresos()" class="text-gray-300 hover:text-[#341915] transition" title="Imprimir">🖨</button>
+      </div>
+      <p class="text-3xl font-bold text-red-600">${{ "%.2f"|format(totales.total_egresos) }}</p>
+      <p class="text-xs text-gray-400 mt-1">Compras + Nómina + Gastos</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-5 border-l-4
+      {% if totales.saldo_neto >= 0 %}border-[#341915]{% else %}border-red-600{% endif %}"
+      id="card-saldo">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-xs text-gray-400 uppercase tracking-wide">Saldo neto</p>
+        <button onclick="imprimirSaldo()" class="text-gray-300 hover:text-[#341915] transition" title="Imprimir">🖨</button>
+      </div>
+      <p class="text-3xl font-bold {% if totales.saldo_neto >= 0 %}text-[#341915]{% else %}text-red-600{% endif %}">
+        ${{ "%.2f"|format(totales.saldo_neto) }}
+      </p>
+      <p class="text-xs text-gray-400 mt-1">Ingresos − Egresos totales</p>
+    </div>
+
+  </div>
+
+  <!-- BOTÓN IMPRIMIR TODO -->
+  <div class="flex justify-end mb-6">
+    <button onclick="imprimirTodo()"
+            class="flex items-center gap-2 bg-[#341915] hover:bg-[#561C24] text-[#E8D8C4] font-medium px-4 py-2 rounded-lg transition text-sm">
+      🖨 Imprimir resumen completo
+    </button>
+  </div>
+
+  <!-- ── TABLAS PANTALLA ── -->
+  <div class="mb-8" id="seccion-ventas">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-semibold text-[#341915]">Detalle de Ventas</h2>
+      <button onclick="imprimirIngresos()" class="text-xs text-gray-400 hover:text-[#341915]">🖨 Imprimir</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm bg-white rounded-xl shadow overflow-hidden">
+        <thead class="bg-[#561C24] text-[#E8D8C4]">
+          <tr>
+            <th class="px-4 py-2 text-left">Fecha</th>
+            <th class="px-4 py-2 text-left">Cliente</th>
+            <th class="px-4 py-2 text-left">Teléfono</th>
+            <th class="px-4 py-2 text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#e8d8c4]">
+          {% for v in ventas_recientes %}
+          <tr class="hover:bg-[#fdf6ee]">
+            <td class="px-4 py-2 text-gray-500 text-xs">{{ v.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td class="px-4 py-2 text-[#341915]">{{ v.cliente_nombre }}</td>
+            <td class="px-4 py-2 text-gray-500">{{ v.cliente_telefono or '—' }}</td>
+            <td class="px-4 py-2 text-right font-semibold text-green-700">${{ "%.2f"|format(v.total) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-center py-4 text-gray-400">Sin ventas en este periodo.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mb-8" id="seccion-compras">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-semibold text-[#341915]">Detalle de Compras</h2>
+      <button onclick="imprimirCompras()" class="text-xs text-gray-400 hover:text-[#341915]">🖨 Imprimir</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm bg-white rounded-xl shadow overflow-hidden">
+        <thead class="bg-[#561C24] text-[#E8D8C4]">
+          <tr>
+            <th class="px-4 py-2 text-left">Fecha</th>
+            <th class="px-4 py-2 text-left">Proveedor</th>
+            <th class="px-4 py-2 text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#e8d8c4]">
+          {% for c in compras_recientes %}
+          <tr class="hover:bg-[#fdf6ee]">
+            <td class="px-4 py-2 text-gray-500 text-xs">{{ c.fecha.strftime('%d/%m/%Y') }}</td>
+            <td class="px-4 py-2 text-[#341915]">{{ c.proveedor.nombre if c.proveedor else '—' }}</td>
+            <td class="px-4 py-2 text-right font-semibold text-orange-600">${{ "%.2f"|format(c.total) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3" class="text-center py-4 text-gray-400">Sin compras en este periodo.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mb-8" id="seccion-nomina">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-semibold text-[#341915]">Detalle de Nómina Pagada</h2>
+      <button onclick="imprimirNomina()" class="text-xs text-gray-400 hover:text-[#341915]">🖨 Imprimir</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm bg-white rounded-xl shadow overflow-hidden">
+        <thead class="bg-[#561C24] text-[#E8D8C4]">
+          <tr>
+            <th class="px-4 py-2 text-left">Fecha pago</th>
+            <th class="px-4 py-2 text-left">Empleado</th>
+            <th class="px-4 py-2 text-left">Puesto</th>
+            <th class="px-4 py-2 text-left">Periodo</th>
+            <th class="px-4 py-2 text-right">Monto</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#e8d8c4]">
+          {% for n in nominas_recientes %}
+          <tr class="hover:bg-[#fdf6ee]">
+            <td class="px-4 py-2 text-gray-500 text-xs">{{ n.fecha_pago.strftime('%d/%m/%Y') }}</td>
+            <td class="px-4 py-2 text-[#341915]">{{ n.empleado.nombre }}</td>
+            <td class="px-4 py-2 text-gray-500">{{ n.puesto or '—' }}</td>
+            <td class="px-4 py-2 text-gray-500 capitalize">{{ n.periodo }}</td>
+            <td class="px-4 py-2 text-right font-semibold text-blue-700">${{ "%.2f"|format(n.monto_pagado) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-center py-4 text-gray-400">Sin nómina pagada en este periodo.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mb-8" id="seccion-gastos">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-semibold text-[#341915]">Detalle de Gastos Extra</h2>
+      <button onclick="imprimirGastos()" class="text-xs text-gray-400 hover:text-[#341915]">🖨 Imprimir</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm bg-white rounded-xl shadow overflow-hidden">
+        <thead class="bg-[#561C24] text-[#E8D8C4]">
+          <tr>
+            <th class="px-4 py-2 text-left">Fecha</th>
+            <th class="px-4 py-2 text-left">Concepto</th>
+            <th class="px-4 py-2 text-left">Categoría</th>
+            <th class="px-4 py-2 text-right">Monto</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#e8d8c4]">
+          {% for g in gastos_recientes %}
+          <tr class="hover:bg-[#fdf6ee]">
+            <td class="px-4 py-2 text-gray-500 text-xs">{{ g.fecha.strftime('%d/%m/%Y') }}</td>
+            <td class="px-4 py-2 text-[#341915]">{{ g.concepto }}</td>
+            <td class="px-4 py-2 text-gray-500">{{ g.categoria or '—' }}</td>
+            <td class="px-4 py-2 text-right font-semibold text-purple-700">${{ "%.2f"|format(g.monto) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-center py-4 text-gray-400">Sin gastos extra en este periodo.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{# ════════════════════════════════════════════════════════════════════════════
+   DATOS PARA IMPRESIÓN
+   ⚠️  NO MOVER ni cambiar la sintaxis {{ }} — son variables de Jinja2
+   ✅  LO QUE SÍ PUEDES EDITAR: HTML dentro de las funciones JS de impresión
+       (etiquetas, textos de columnas, orden de columnas, estilos inline)
+   ════════════════════════════════════════════════════════════════════════════ #}
+<script>
+  // ⚠️ NO TOCAR — variables del servidor
+  const PERIODO_LABEL   = "{{ inicio.strftime('%d/%m/%Y') }} — {{ fin.strftime('%d/%m/%Y') }}";
+  const TOTAL_INGRESOS  = {{ totales.ingresos }};
+  const TOTAL_COMPRAS   = {{ totales.egresos_compras }};
+  const TOTAL_NOMINA    = {{ totales.egresos_nomina }};
+  const TOTAL_GASTOS    = {{ totales.egresos_gastos }};
+  const TOTAL_EGRESOS   = {{ totales.total_egresos }};
+  const SALDO_NETO      = {{ totales.saldo_neto }};
+
+  // ✅ Puedes cambiar el nombre de la empresa
+  const NOMBRE_EMPRESA  = "Panadería Dulce Tradición";
+
+  // ⚠️ NO TOCAR — datos del modelo NominaIndividual
+  const DATOS_NOMINA = [
+    {% for n in nominas_recientes %}
+    {
+      empleado:     "{{ n.empleado.nombre }}",
+      puesto:       "{{ n.puesto or '—' }}",
+      salario_base: "{{ '%.2f'|format(n.salario_base) }}",
+      monto_pagado: "{{ '%.2f'|format(n.monto_pagado) }}",
+      periodo:      "{{ n.periodo|capitalize }}",
+      fecha_inicio: "{{ n.fecha_inicio.strftime('%d/%m/%Y') }}",
+      fecha_fin:    "{{ n.fecha_fin.strftime('%d/%m/%Y') }}",
+      fecha_pago:   "{{ n.fecha_pago.strftime('%d/%m/%Y') if n.fecha_pago else '—' }}",
+      estatus:      "{{ n.estatus|capitalize }}",
+      notas:        "{{ (n.notas or '')|replace('"','\\"')|replace('\n',' ') }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  // ⚠️ NO TOCAR — datos del modelo Compra + DetalleCompra
+  const DATOS_COMPRAS = [
+    {% for c in compras_recientes %}
+    {
+      id_compra: {{ c.id_compra }},
+      fecha:     "{{ c.fecha.strftime('%d/%m/%Y') }}",
+      proveedor: "{{ c.proveedor.nombre if c.proveedor else '—' }}",
+      total:     "{{ '%.2f'|format(c.total) }}",
+      detalles: [
+        {% for d in c.detalles %}
+        {
+          materia:         "{{ d.materia.nombre if d.materia else '—' }}",
+          cantidad:        "{{ d.cantidad }}",
+          unidad:          "{{ d.materia.unidad_medida if d.materia else '' }}",
+          precio_unitario: "{{ '%.2f'|format(d.precio_unitario) if d.precio_unitario else '0.00' }}",
+          subtotal:        "{{ '%.2f'|format(d.subtotal) if d.subtotal else '0.00' }}"
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  // ⚠️ NO TOCAR — datos del modelo GastoExtra
+  const DATOS_GASTOS = [
+    {% for g in gastos_recientes %}
+    {
+      concepto:       "{{ g.concepto }}",
+      monto:          "{{ '%.2f'|format(g.monto) }}",
+      fecha:          "{{ g.fecha.strftime('%d/%m/%Y') }}",
+      categoria:      "{{ g.categoria or '—' }}",
+      notas:          "{{ (g.notas or '')|replace('"','\\"')|replace('\n',' ') }}",
+      fecha_registro: "{{ g.fecha_registro.strftime('%d/%m/%Y %H:%M') }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  // ⚠️ NO TOCAR — datos del modelo Orden
+  const DATOS_VENTAS = [
+    {% for v in ventas_recientes %}
+    {
+      fecha:    "{{ v.fecha.strftime('%d/%m/%Y %H:%M') }}",
+      cliente:  "{{ v.cliente_nombre }}",
+      telefono: "{{ v.cliente_telefono or '—' }}",
+      total:    "{{ '%.2f'|format(v.total) }}",
+      estatus:  "{{ v.estatus|capitalize }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
+</script>
+
+<script>
+  // ════════════════════════════════════════════════════════════════════════════
+  // ESTILOS BASE — ⚠️ NO TOCAR: necesarios para el formato correcto de impresión
+  // ════════════════════════════════════════════════════════════════════════════
+  const BASE_STYLES = `<style>
+    @page { margin: 1.5cm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; color: #1a1a1a; font-size: 12px; background: white; }
+
+    /* Encabezado del documento */
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-start;
+                  border-bottom: 3px solid #341915; padding-bottom: 12px; margin-bottom: 20px; }
+    .doc-header .empresa { font-size: 18px; font-weight: bold; color: #341915; }
+    .doc-header .subtitulo { font-size: 13px; color: #561C24; margin-top: 3px; }
+    .doc-header .meta { text-align: right; font-size: 11px; color: #666; line-height: 1.6; }
+
+    /* Tarjetas de resumen */
+    .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
+    .card { border-left: 4px solid #ccc; background: #fafafa;
+            padding: 10px 14px; border-radius: 4px; }
+    .card.verde   { border-color: #16a34a; }
+    .card.naranja { border-color: #ea580c; }
+    .card.azul    { border-color: #2563eb; }
+    .card.morado  { border-color: #9333ea; }
+    .card.rojo    { border-color: #dc2626; }
+    .card.oscuro  { border-color: #341915; }
+    .card-label   { font-size: 9px; text-transform: uppercase;
+                    letter-spacing: .05em; color: #888; margin-bottom: 4px; }
+    .card-valor   { font-size: 20px; font-weight: bold; }
+    .card-desc    { font-size: 10px; color: #aaa; margin-top: 2px; }
+    .verde  .card-valor { color: #16a34a; }
+    .naranja .card-valor { color: #ea580c; }
+    .azul   .card-valor { color: #2563eb; }
+    .morado .card-valor { color: #9333ea; }
+    .rojo   .card-valor { color: #dc2626; }
+    .oscuro .card-valor { color: #341915; }
+    .negativo .card-valor { color: #dc2626; }
+
+    /* Secciones de detalle */
+    .seccion-titulo { font-size: 13px; font-weight: bold; color: #341915;
+                      border-bottom: 2px solid #341915; padding-bottom: 4px;
+                      margin: 22px 0 10px; }
+
+    /* Tablas */
+    table  { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 11px; }
+    thead tr { background-color: #341915; color: #E8D8C4; }
+    th     { padding: 7px 10px; text-align: left; font-size: 10px; font-weight: bold; }
+    td     { padding: 6px 10px; border-bottom: 1px solid #e8d8c4; }
+    tr:nth-child(even) td { background-color: #fdf6ee; }
+    .tr    { text-align: right; }
+    .tc    { text-align: center; }
+
+    /* Fila de total */
+    .fila-total td { font-weight: bold; background: #F3E9DB !important;
+                     border-top: 2px solid #341915; }
+
+    /* Bloque de compra individual */
+    .bloque-compra { margin-bottom: 18px; }
+    .bloque-header { background: #F3E9DB; padding: 6px 10px; font-weight: bold;
+                     font-size: 11px; color: #341915; border-left: 3px solid #341915;
+                     margin-bottom: 4px; }
+    .sub-table thead tr { background-color: #561C24; }
+    .sub-table th  { font-size: 10px; padding: 5px 8px; }
+    .sub-table td  { font-size: 10px; padding: 5px 8px; }
+
+    /* Notas */
+    .nota { background: #fffbf5; border-left: 3px solid #c9a99f;
+            padding: 5px 10px; font-size: 10px; color: #555;
+            margin: 2px 0 8px; white-space: pre-wrap; }
+
+    /* Pie de página */
+    .pie { text-align: center; font-size: 9px; color: #bbb;
+           margin-top: 30px; border-top: 1px solid #e8d8c4; padding-top: 8px; }
+  </style>`;
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // FUNCIÓN BASE — ⚠️ NO TOCAR
+  // ════════════════════════════════════════════════════════════════════════════
+  function abrirImpresion(subtitulo, cuerpo) {
+    const hoy = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
+    const ventana = window.open('', '_blank', 'width=960,height=750');
+    ventana.document.write(`<!DOCTYPE html><html lang="es"><head>
+      <meta charset="UTF-8"><title>${subtitulo} — ${NOMBRE_EMPRESA}</title>
+      ${BASE_STYLES}</head><body>
+      <div class="doc-header">
+        <div>
+          <div class="empresa">${NOMBRE_EMPRESA}</div>
+          <div class="subtitulo">${subtitulo}</div>
+        </div>
+        <div class="meta">
+          Periodo: ${PERIODO_LABEL}<br>
+          Generado: ${hoy}
+        </div>
+      </div>
+      ${cuerpo}
+      <div class="pie">${NOMBRE_EMPRESA} · ${subtitulo} · Periodo: ${PERIODO_LABEL} · ${hoy}</div>
+    </body></html>`);
+    ventana.document.close();
+    ventana.focus();
+    ventana.print();
+    ventana.close();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // HELPERS — ⚠️ NO TOCAR: construyen HTML de tablas reutilizables
+  // ════════════════════════════════════════════════════════════════════════════
+  function htmlTablaVentas() {
+    const filas = DATOS_VENTAS.map(v => `
+      <tr>
+        <td>${v.fecha}</td>
+        <td>${v.cliente}</td>
+        <td>${v.telefono}</td>
+        <td>${v.estatus}</td>
+        <td class="tr">$${v.total}</td>
+      </tr>`).join('') || '<tr><td colspan="5" class="tc" style="color:#aaa;padding:12px">Sin registros en este periodo</td></tr>';
+    const total = DATOS_VENTAS.reduce((s,v) => s + parseFloat(v.total), 0);
+    return `<table>
+      <thead><tr>
+        <th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Estatus</th><th class="tr">Total</th>
+      </tr></thead>
+      <tbody>${filas}</tbody>
+      <tfoot><tr class="fila-total">
+        <td colspan="4">Total ingresos del periodo</td>
+        <td class="tr" style="color:#16a34a;">$${total.toFixed(2)}</td>
+      </tr></tfoot>
+    </table>`;
+  }
+
+  function htmlTablaNomina() {
+    let filas = '';
+    DATOS_NOMINA.forEach(n => {
+      filas += `<tr>
+        <td>${n.fecha_pago}</td>
+        <td>${n.empleado}</td>
+        <td>${n.puesto}</td>
+        <td>${n.periodo}</td>
+        <td>${n.fecha_inicio} - ${n.fecha_fin}</td>
+        <td class="tr">$${n.salario_base}</td>
+        <td class="tr">$${n.monto_pagado}</td>
+        <td class="tc">${n.estatus}</td>
+      </tr>`;
+      if (n.notas) filas += `<tr><td colspan="8"><div class="nota">📝 ${n.notas}</div></td></tr>`;
+    });
+    if (!filas) filas = '<tr><td colspan="8" class="tc" style="color:#aaa;padding:12px">Sin registros en este periodo</td></tr>';
+    const total = DATOS_NOMINA.reduce((s,n) => s + parseFloat(n.monto_pagado), 0);
+    return `<table>
+      <thead><tr>
+        <th>Fecha pago</th><th>Empleado</th><th>Puesto</th><th>Periodo</th>
+        <th>Fechas</th><th class="tr">Salario base</th><th class="tr">Monto pagado</th><th class="tc">Estatus</th>
+      </tr></thead>
+      <tbody>${filas}</tbody>
+      <tfoot><tr class="fila-total">
+        <td colspan="6">Total nómina pagada en el periodo</td>
+        <td class="tr" style="color:#2563eb;">$${total.toFixed(2)}</td>
+        <td></td>
+      </tr></tfoot>
+    </table>`;
+  }
+
+  function htmlTablaCompras() {
+    if (!DATOS_COMPRAS.length) return '<p style="color:#aaa;text-align:center;padding:16px;">Sin compras en este periodo</p>';
+    let html = '';
+    let totalGlobal = 0;
+    DATOS_COMPRAS.forEach(c => {
+      totalGlobal += parseFloat(c.total);
+      const filasD = c.detalles.map(d => `
+        <tr>
+          <td>${d.materia}</td>
+          <td class="tr">${d.cantidad} ${d.unidad}</td>
+          <td class="tr">$${d.precio_unitario}</td>
+          <td class="tr">$${d.subtotal}</td>
+        </tr>`).join('') || '<tr><td colspan="4" class="tc" style="color:#aaa;">Sin detalle registrado</td></tr>';
+      html += `<div class="bloque-compra">
+        <div class="bloque-header">
+          Compra #${c.id_compra} &nbsp;·&nbsp; Fecha: ${c.fecha} &nbsp;·&nbsp; Proveedor: ${c.proveedor}
+        </div>
+        <table class="sub-table">
+          <thead><tr>
+            <th>Materia prima</th><th class="tr">Cantidad</th>
+            <th class="tr">Precio unitario</th><th class="tr">Subtotal</th>
+          </tr></thead>
+          <tbody>${filasD}</tbody>
+          <tfoot><tr class="fila-total">
+            <td colspan="3">Total compra</td>
+            <td class="tr" style="color:#ea580c;">$${c.total}</td>
+          </tr></tfoot>
+        </table>
+      </div>`;
+    });
+    html += `<table><tfoot><tr class="fila-total">
+      <td>Total compras del periodo</td>
+      <td class="tr" style="color:#ea580c;">$${totalGlobal.toFixed(2)}</td>
+    </tr></tfoot></table>`;
+    return html;
+  }
+
+  function htmlTablaGastos() {
+    let filas = '';
+    DATOS_GASTOS.forEach(g => {
+      filas += `<tr>
+        <td>${g.fecha}</td>
+        <td>${g.concepto}</td>
+        <td>${g.categoria}</td>
+        <td class="tr">$${g.monto}</td>
+        <td>${g.fecha_registro}</td>
+      </tr>`;
+      if (g.notas) filas += `<tr><td colspan="5"><div class="nota">📝 ${g.notas}</div></td></tr>`;
+    });
+    if (!filas) filas = '<tr><td colspan="5" class="tc" style="color:#aaa;padding:12px">Sin registros en este periodo</td></tr>';
+    const total = DATOS_GASTOS.reduce((s,g) => s + parseFloat(g.monto), 0);
+    return `<table>
+      <thead><tr>
+        <th>Fecha</th><th>Concepto</th><th>Categoría</th>
+        <th class="tr">Monto</th><th>Fecha registro</th>
+      </tr></thead>
+      <tbody>${filas}</tbody>
+      <tfoot><tr class="fila-total">
+        <td colspan="3">Total gastos extra del periodo</td>
+        <td class="tr" style="color:#9333ea;">$${total.toFixed(2)}</td>
+        <td></td>
+      </tr></tfoot>
+    </table>`;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // RESUMEN EJECUTIVO (6 tarjetas)
+  // ✅ Puedes editar etiquetas y colores de las tarjetas
+  // ⚠️ NO cambiar las variables TOTAL_* ni SALDO_NETO
+  // ════════════════════════════════════════════════════════════════════════════
+  function htmlResumenEjecutivo() {
+    const saldoClass = SALDO_NETO >= 0 ? 'oscuro' : 'negativo';
+    return `
+      <div class="cards-grid">
+        <div class="card verde">
+          <div class="card-label">Ingresos por ventas</div>
+          <div class="card-valor">$${TOTAL_INGRESOS.toFixed(2)}</div>
+          <div class="card-desc">${DATOS_VENTAS.length} ventas en el periodo</div>
+        </div>
+        <div class="card naranja">
+          <div class="card-label">Compras a proveedor</div>
+          <div class="card-valor">$${TOTAL_COMPRAS.toFixed(2)}</div>
+          <div class="card-desc">${DATOS_COMPRAS.length} compras en el periodo</div>
+        </div>
+        <div class="card azul">
+          <div class="card-label">Nómina pagada</div>
+          <div class="card-valor">$${TOTAL_NOMINA.toFixed(2)}</div>
+          <div class="card-desc">${DATOS_NOMINA.length} pagos en el periodo</div>
+        </div>
+        <div class="card morado">
+          <div class="card-label">Gastos extra</div>
+          <div class="card-valor">$${TOTAL_GASTOS.toFixed(2)}</div>
+          <div class="card-desc">${DATOS_GASTOS.length} gastos en el periodo</div>
+        </div>
+        <div class="card rojo">
+          <div class="card-label">Total egresos</div>
+          <div class="card-valor">$${TOTAL_EGRESOS.toFixed(2)}</div>
+          <div class="card-desc">Compras + Nómina + Gastos</div>
+        </div>
+        <div class="card ${saldoClass}">
+          <div class="card-label">Saldo neto</div>
+          <div class="card-valor">$${SALDO_NETO.toFixed(2)}</div>
+          <div class="card-desc">Ingresos − Egresos totales</div>
+        </div>
+      </div>`;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // FUNCIONES DE IMPRESIÓN POR TARJETA
+  // ✅ Puedes editar los títulos de sección dentro de cada función
+  // ════════════════════════════════════════════════════════════════════════════
+  function imprimirIngresos() {
+    const cuerpo =
+      `<div class="card verde" style="margin-bottom:20px;">
+        <div class="card-label">Ingresos por ventas</div>
+        <div class="card-valor">$${TOTAL_INGRESOS.toFixed(2)}</div>
+        <div class="card-desc">${DATOS_VENTAS.length} ventas en el periodo</div>
+      </div>
+      <div class="seccion-titulo">Detalle de ventas</div>`
+      + htmlTablaVentas();
+    abrirImpresion('Ingresos por Ventas', cuerpo);
+  }
+
+  function imprimirCompras() {
+    const cuerpo =
+      `<div class="card naranja" style="margin-bottom:20px;">
+        <div class="card-label">Compras a proveedor</div>
+        <div class="card-valor">$${TOTAL_COMPRAS.toFixed(2)}</div>
+        <div class="card-desc">${DATOS_COMPRAS.length} compras en el periodo</div>
+      </div>
+      <div class="seccion-titulo">Detalle de compras por proveedor</div>`
+      + htmlTablaCompras();
+    abrirImpresion('Compras a Proveedor', cuerpo);
+  }
+
+  function imprimirNomina() {
+    const cuerpo =
+      `<div class="card azul" style="margin-bottom:20px;">
+        <div class="card-label">Nómina pagada</div>
+        <div class="card-valor">$${TOTAL_NOMINA.toFixed(2)}</div>
+        <div class="card-desc">${DATOS_NOMINA.length} pagos en el periodo</div>
+      </div>
+      <div class="seccion-titulo">Detalle de nómina por empleado</div>`
+      + htmlTablaNomina();
+    abrirImpresion('Nómina Pagada', cuerpo);
+  }
+
+  function imprimirGastos() {
+    const cuerpo =
+      `<div class="card morado" style="margin-bottom:20px;">
+        <div class="card-label">Gastos extra</div>
+        <div class="card-valor">$${TOTAL_GASTOS.toFixed(2)}</div>
+        <div class="card-desc">${DATOS_GASTOS.length} gastos en el periodo</div>
+      </div>
+      <div class="seccion-titulo">Detalle de gastos extra</div>`
+      + htmlTablaGastos();
+    abrirImpresion('Gastos Extra', cuerpo);
+  }
+
+  function imprimirEgresos() {
+    const cuerpo =
+      `<div class="cards-grid" style="margin-bottom:20px;">
+        <div class="card naranja">
+          <div class="card-label">Compras</div>
+          <div class="card-valor">$${TOTAL_COMPRAS.toFixed(2)}</div>
+        </div>
+        <div class="card azul">
+          <div class="card-label">Nómina</div>
+          <div class="card-valor">$${TOTAL_NOMINA.toFixed(2)}</div>
+        </div>
+        <div class="card morado">
+          <div class="card-label">Gastos extra</div>
+          <div class="card-valor">$${TOTAL_GASTOS.toFixed(2)}</div>
+        </div>
+      </div>
+      <div class="card rojo" style="margin-bottom:20px;">
+        <div class="card-label">Total egresos</div>
+        <div class="card-valor">$${TOTAL_EGRESOS.toFixed(2)}</div>
+        <div class="card-desc">Compras + Nómina + Gastos</div>
+      </div>
+      <div class="seccion-titulo">Detalle de compras</div>${htmlTablaCompras()}
+      <div class="seccion-titulo">Detalle de nómina</div>${htmlTablaNomina()}
+      <div class="seccion-titulo">Detalle de gastos extra</div>${htmlTablaGastos()}`;
+    abrirImpresion('Total Egresos', cuerpo);
+  }
+
+  function imprimirSaldo() {
+    const saldoClass = SALDO_NETO >= 0 ? 'oscuro' : 'negativo';
+    const cuerpo =
+      htmlResumenEjecutivo()
+      + `<div class="seccion-titulo">Detalle de ingresos</div>${htmlTablaVentas()}
+         <div class="seccion-titulo">Detalle de egresos — Compras</div>${htmlTablaCompras()}
+         <div class="seccion-titulo">Detalle de egresos — Nómina</div>${htmlTablaNomina()}
+         <div class="seccion-titulo">Detalle de egresos — Gastos extra</div>${htmlTablaGastos()}`;
+    abrirImpresion('Saldo Neto', cuerpo);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // IMPRIMIR RESUMEN COMPLETO
+  // Primero: resumen ejecutivo con las 6 tarjetas
+  // Luego: cada tabla de detalle por sección
+  // ✅ Puedes cambiar el orden de las secciones de detalle
+  // ════════════════════════════════════════════════════════════════════════════
+  function imprimirTodo() {
+    const cuerpo =
+      htmlResumenEjecutivo()
+      + `<div class="seccion-titulo">Detalle de Ingresos por Ventas</div>`
+      + htmlTablaVentas()
+      + `<div class="seccion-titulo">Detalle de Compras a Proveedor</div>`
+      + htmlTablaCompras()
+      + `<div class="seccion-titulo">Detalle de Nómina Pagada</div>`
+      + htmlTablaNomina()
+      + `<div class="seccion-titulo">Detalle de Gastos Extra</div>`
+      + htmlTablaGastos();
+    abrirImpresion('Resumen Financiero Completo', cuerpo);
+  }
+</script>
+
+{% endblock %}

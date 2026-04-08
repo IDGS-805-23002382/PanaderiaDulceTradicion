@@ -1,0 +1,214 @@
+{% extends 'layoutModulos.html' %}
+
+{% block container %}
+
+<div class="relative min-h-screen bg-[#E8D8C4]">
+  
+  <!-- Contenido principal -->
+  <div class="container mx-auto px-4 py-6 lg:py-8">
+    
+    <!-- Breadcrumb mejorado -->
+    <nav class="w-full mb-6" aria-label="Breadcrumb">
+      <div class="flex flex-wrap items-center gap-4">
+        <ol class="flex flex-wrap items-center gap-2">
+          <li class="flex items-center">
+            <a href="vistaEmpleado" class="inline-flex items-center gap-2 py-2 px-4 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 shadow-sm border border-[#C7B7A3]">
+              <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
+              </svg>
+              <span>Panel de Control</span>
+            </a>
+          </li>
+          <li class="flex items-center">
+            <span class="text-[#561C24] mx-1">/</span>
+            <button id="dropdownWebsite" data-dropdown-toggle="dropdown-2" type="button" class="ms-2.5 inline-flex items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
+      <svg class="w-3.5 h-3.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 6c0 1.657-3.134 3-7 3S5 7.657 5 6m14 0c0-1.657-3.134-3-7-3S5 4.343 5 6m14 0v6M5 6v6m0 0c0 1.657 3.134 3 7 3s7-1.343 7-3M5 12v6c0 1.657 3.134 3 7 3s7-1.343 7-3v-6"/></svg>
+      Inventario
+      <svg class="w-3.5 h-3.5 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
+    </button>
+    <div id="dropdown-2" class="z-10 bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-32 block hidden">
+      <ul class="p-2 text-sm text-body font-medium" aria-labelledby="dropdownWebsite">
+        <li>
+          <a href="inventario" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded-md">Inventario Producto</a>
+        </li>
+        <li>
+          <a href="inventario_materia" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded-md">Inventario Materia Prima</a>
+        </li>
+      </ul>
+    </div>
+          </li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- TITULO -->
+    <h1 class="text-2xl font-semibold text-center text-[#341915]">
+        Inventario de Productos Terminados
+    </h1>
+
+    <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-4"></div>
+
+    <!-- CONTROLES -->
+
+           <!-- BOTON AGREGAR -->
+    <div class="flex justify-end mb-4">
+        <a href="{{ url_for('ordenProduccion.agregarOrden') }}"
+           class="flex items-center gap-2 bg-[#E8D8C4] px-4 py-2 rounded hover:bg-[#d6c3a7]">
+
+            <img src="{{ url_for('static', filename='img/iconosModulos/nuevo.png') }}"
+                 class="h-6 w-6">
+
+            <span class="text-[#341915] font-medium">
+                Agregar Orden
+            </span>
+
+        </a>
+    </div>
+    <div class="flex items-center justify-between mb-4">
+    
+
+        <!-- FILTRO POR SUCURSAL -->
+        <form method="GET" action="{{ url_for('productos.verInventario') }}" class="flex gap-2">
+            <select name="sucursal" class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
+                <option value="">Todas las sucursales</option>
+                {% for suc in sucursales %}
+                <option value="{{ suc.id_sucursal }}" {% if sucursal_seleccionada == suc.id_sucursal %}selected{% endif %}>
+                    {{ suc.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="bg-[#341915] text-white px-3 py-2 rounded hover:bg-[#4a241d]">
+                Filtrar
+            </button>
+        </form>
+
+        <!-- BUSCAR -->
+        <form method="GET" action="{{ url_for('productos.verInventario') }}" class="flex">
+            <input type="hidden" name="sucursal" value="{{ sucursal_seleccionada }}">
+            <input type="text"
+                   name="buscar"
+                   placeholder="Buscar producto"
+                   value="{{ request.args.get('buscar','') }}"
+                   class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0] placeholder-[#7a5a4d]" />
+            <button type="submit"
+                    class="bg-[#341915] px-4 rounded-r flex items-center justify-center">
+                <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}" class="h-5 w-5">
+            </button>
+        </form>
+
+    </div>
+
+    <!-- TABLA DE INVENTARIO mejorada -->
+    <div class="overflow-x-auto bg-white rounded-xl shadow-lg border border-[#C7B7A3]">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-[#561C24] text-[#E8D8C4]">
+            <th class="px-4 py-3 text-left rounded-tl-xl">Producto</th>
+            <th class="px-4 py-3 text-left">Sucursal</th>
+            <th class="px-4 py-3 text-center">Stock Actual</th>
+            <th class="px-4 py-3 text-center">Stock Mínimo</th>
+            <th class="px-4 py-3 text-center">Estado</th>
+            <th class="px-4 py-3 text-center rounded-tr-xl">Acciones</th>
+           </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% if inventarios %}
+            {% for item in inventarios %}
+            <tr class="hover:bg-[#E8D8C4] transition-colors">
+              <td class="px-4 py-3 font-semibold text-[#341915]">
+                {{ item.producto.nombre }}
+               </td>
+              <td class="px-4 py-3 text-gray-600">
+                {{ item.sucursal.nombre }}
+               </td>
+              <td class="px-4 py-3 text-center font-bold text-[#341915]">
+                {{ item.stock_actual }} piezas
+               </td>
+              <td class="px-4 py-3 text-center text-gray-500">
+                {{ item.stock_minimo }} piezas
+               </td>
+              <td class="px-4 py-3 text-center">
+                {% set stock_actual_int = item.stock_actual|int %}
+                {% set stock_minimo_int = item.stock_minimo|int %}
+                
+                {% if stock_actual_int <= stock_minimo_int %}
+                  <span class="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full">
+                    <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                    Stock bajo
+                  </span>
+                {% elif stock_actual_int <= stock_minimo_int * 2 %}
+                  <span class="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold text-yellow-700 bg-yellow-100 rounded-full">
+                    <span class="w-2 h-2 bg-yellow-500 rounded-full"></span>
+                    Por agotarse
+                  </span>
+                {% else %}
+                  <span class="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    Normal
+                  </span>
+                {% endif %}
+               </td>
+              <td class="px-4 py-3 text-center">
+                <a href="{{ url_for('productos.historialInventario', id_producto=item.id_producto, id_sucursal=item.id_sucursal) }}"
+                   class="inline-flex items-center gap-1 text-[#561C24] hover:text-[#341915] font-medium transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                  <span>Historial</span>
+                </a>
+               </td>
+             </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" class="px-4 py-12 text-center text-gray-500">
+                <div class="flex flex-col items-center gap-2">
+                  <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                  </svg>
+                  <p>No hay productos en inventario</p>
+                </div>
+               </td>
+             </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RESUMEN mejorado -->
+    <div class="mt-8 p-6 bg-[#C7B7A3] rounded-xl shadow-lg">
+      <h3 class="font-semibold text-[#341915] mb-4 text-lg flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        Resumen del Inventario
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="text-center p-4 bg-white/60 rounded-lg">
+          <p class="text-sm text-[#341915]">Total Productos</p>
+          <p class="text-2xl font-bold text-[#561C24]">{{ inventarios|length }}</p>
+        </div>
+        <div class="text-center p-4 bg-white/60 rounded-lg">
+          <p class="text-sm text-[#341915]">Total Unidades</p>
+          <p class="text-2xl font-bold text-[#561C24]">{{ inventarios|sum(attribute='stock_actual') }}</p>
+        </div>
+        <div class="text-center p-4 bg-white/60 rounded-lg">
+          <p class="text-sm text-[#341915]">Productos con stock bajo</p>
+          <p class="text-2xl font-bold text-red-600">
+            {% set bajo_stock = [] %}
+            {% for item in inventarios %}
+              {% if (item.stock_actual|int) <= (item.stock_minimo|int) %}
+                {% set _ = bajo_stock.append(1) %}
+              {% endif %}
+            {% endfor %}
+            {{ bajo_stock|length }}
+          </p>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+{% endblock %}

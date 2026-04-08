@@ -3,6 +3,7 @@ from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from config import DevelopmentConfig
 from models import Usuario, db, Producto, Categoria
+from flask_pymongo import PyMongo
 
 from blueprints.auth.routesAuth import auth_bp
 from blueprints.empleados.routesEmpleados import empleados_bp
@@ -16,11 +17,17 @@ from blueprints.sucursales.routesSucursales import sucursales_bp
 from blueprints.clientes.routesClientes import clientes_bp
 from blueprints.usuarios.routesUsuarios import usuarios_bp
 from blueprints.roles.routesRoles import roles_bp
+from blueprints.dashboard.routesDashboardMar import dashboard_bp
+from blueprints.ventas.routesVentas import ventas_bp
+from blueprints.ventasSucursal.routesVentasSucursal import ventasSucursal_bp
+
 from flask_migrate import Migrate
 import base64
 
+
 import base64
 
+mongo = PyMongo() 
 
 app = Flask(__name__)
 app.register_blueprint(auth_bp)
@@ -36,15 +43,38 @@ app.register_blueprint(sucursales_bp)
 app.register_blueprint(clientes_bp)
 app.register_blueprint(usuarios_bp)
 app.register_blueprint(roles_bp)
+app.register_blueprint(dashboard_bp)
+app.register_blueprint(ventas_bp)
+app.register_blueprint(ventasSucursal_bp)
 
+mongo.init_app(app) 
+app.mongo = mongo
 db.init_app(app)
 migrate = Migrate(app, db)
 csrf = CSRFProtect(app)
 
 login_manager = LoginManager(app)                            
 login_manager.login_view = 'auth.login'                     
-login_manager.login_message_category = 'warning'            
+login_manager.login_message_category = 'warning'   
 
+
+@app.route("/gestion")
+def gestion():
+    return render_template("vista-empleado/gestion/gestion.html")         
+
+@app.route("/vistaEmpleado")
+def vistaEmpleado():
+    return render_template("vista-empleado/vistaEmpleado.html")    
+
+@app.route("/inventarios")
+def inventarios():
+    return render_template("vista-empleado/inventarios/inventarios.html")     
+
+@app.route("/ordenProduccion")
+def ordenProduccion():
+    return render_template("vista-empleado/ordenProduccion/ordenProduccion.html")  
+
+app.mongo = mongo
 @login_manager.user_loader                                  
 def load_user(user_id):                                     
     return Usuario.query.get(int(user_id))
@@ -67,7 +97,7 @@ def home():
 
     categorias = Categoria.query.filter_by(estatus="activo").all()
 
-    print("CATEGORIAS:", categorias)  # 👈 DEBUG
+    print("CATEGORIAS:", categorias)  
 
     return render_template(
         "home.html",
