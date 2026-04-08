@@ -241,42 +241,122 @@ class SucursalForm(FlaskForm):
     ciudad = StringField("Ciudad")
 
 
-class EmpleadoForm(FlaskForm):
-    id_empleado        = IntegerField("ID")
-    nombre             = StringField("Nombre", [DataRequired(), Length(min=3, max=100)])
-    telefono           = StringField("Teléfono", [Optional(), Length(max=20)])
-    email              = EmailField("Correo", [Optional(), Email()])
-    direccion          = StringField("Dirección", [Optional(), Length(max=200)])
-    puesto             = StringField("Puesto", [Optional(), Length(max=80)])
-    salario            = DecimalField("Salario", [Optional()])
-    fecha_nacimiento   = DateField("Fecha de nacimiento", [Optional()], format='%Y-%m-%d')
-    fecha_contratacion = DateField("Fecha de contratación", [Optional()], format='%Y-%m-%d')
-    id_rol             = SelectField("Rol", coerce=int)
-    estatus            = SelectField("Estatus", choices=[("activo","Activo"),("inactivo","Inactivo")])
+from flask_wtf import FlaskForm
+from wtforms import StringField, IntegerField, EmailField, DecimalField, DateField, SelectField
+from wtforms.validators import DataRequired, Length, Optional, Email, Regexp, NumberRange, ValidationError
+from datetime import date
 
+class EmpleadoForm(FlaskForm):
+    id_empleado = IntegerField("ID")
+    nombre = StringField("Nombre", [
+        DataRequired(message="El nombre es obligatorio"),
+        Length(min=3, max=100, message="El nombre debe tener entre 3 y 100 caracteres"),
+        Regexp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', 
+               message="El nombre solo debe contener letras y espacios")
+    ])
+
+    telefono = StringField("Teléfono", [
+        Optional(),
+        Regexp(r'^\d{10,15}$', message="El teléfono debe tener entre 10 y 15 dígitos numéricos")
+    ])
+    email = EmailField("Correo", [
+        DataRequired(message="El correo es necesario para el acceso"),
+        Email(message="Ingresa un correo electrónico válido")
+    ])
+
+    direccion = StringField("Dirección", [Optional(), Length(max=200)])
+    puesto = StringField("Puesto", [DataRequired(message="Define el puesto del empleado"), Length(max=80)])
+
+    salario = DecimalField("Salario", [
+        DataRequired(message="El salario es obligatorio"),
+        NumberRange(min=0, message="El salario no puede ser un número negativo")
+    ])
+
+    fecha_nacimiento = DateField("Fecha de nacimiento", [DataRequired()], format='%Y-%m-%d')
+    fecha_contratacion = DateField("Fecha de contratación", [DataRequired()], format='%Y-%m-%d')
+    
+    id_rol = SelectField("Rol", coerce=int)
+    estatus = SelectField("Estatus", choices=[("activo","Activo"),("inactivo","Inactivo")])
+
+    def validate_fecha_nacimiento(self, field):
+        today = date.today()
+        edad = today.year - field.data.year - ((today.month, today.day) < (field.data.month, field.data.day))
+        if edad < 18:
+            raise ValidationError("El empleado debe ser mayor de 18 años.")
+    def validate_fecha_contratacion(self, field):
+        if self.fecha_nacimiento.data and field.data < self.fecha_nacimiento.data:
+            raise ValidationError("La fecha de contratación no puede ser anterior a la de nacimiento.")
 
 class ClienteForm(FlaskForm):
     id_cliente = IntegerField("ID")
-    nombre     = StringField("Nombre", [DataRequired(), Length(min=3, max=100)])
-    telefono   = StringField("Teléfono", [Optional(), Length(max=20)])
-    email      = EmailField("Correo", [Optional(), Email()])
-    direccion  = StringField("Dirección", [Optional(), Length(max=200)])
-    estatus    = SelectField("Estatus", choices=[("activo","Activo"),("inactivo","Inactivo")])
 
+    nombre = StringField("Nombre", [
+        DataRequired(message="El nombre del cliente es obligatorio"),
+        Length(min=3, max=100, message="El nombre debe tener entre 3 y 100 caracteres"),
+        Regexp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', 
+               message="El nombre no puede contener números ni símbolos")
+    ])
+    telefono = StringField("Teléfono", [
+        Optional(),
+        Regexp(r'^\d{10,13}$', message="El teléfono debe tener entre 10 y 13 números")
+    ])
+    email = EmailField("Correo", [
+        Optional(),
+        Email(message="Formato de correo electrónico inválido")
+    ])
+
+    direccion = StringField("Dirección", [
+        Optional(), 
+        Length(max=200, message="La dirección es demasiado larga")
+    ])
+
+    estatus = SelectField("Estatus", choices=[
+        ("activo","Activo"),
+        ("inactivo","Inactivo")
+    ])
 
 class RolForm(FlaskForm):
-    id_rol      = IntegerField("ID")
-    nombre      = StringField("Nombre del rol", [DataRequired(), Length(min=2, max=50)])
-    descripcion = StringField("Descripción", [Optional(), Length(max=150)])
+    id_rol = IntegerField("ID")
+    nombre = StringField("Nombre del rol", [
+        DataRequired(message="El nombre del rol es obligatorio."),
+        Length(min=3, max=50, message="El nombre debe tener entre 3 y 50 caracteres."),
+        Regexp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', 
+               message="El nombre del rol solo puede contener letras y espacios.")
+    ])
+    descripcion = StringField("Descripción", [
+        Optional(),
+        Length(max=150, message="La descripción es demasiado larga (máximo 150 caracteres).")
+    ])
 
 
 class UsuarioForm(FlaskForm):
     id_usuario = IntegerField("ID")
-    nombre     = StringField("Nombre completo", [DataRequired(), Length(min=3, max=100)])
-    email      = EmailField("Correo", [DataRequired(), Email()])
-    password   = PasswordField("Contraseña", [Optional(), Length(min=6)])
-    id_rol     = SelectField("Rol", coerce=int)
-    activo     = SelectField("Estatus", choices=[("1","Activo"),("0","Inactivo")], coerce=str)
+
+    nombre = StringField("Nombre completo", [
+        DataRequired(message="El nombre es obligatorio"),
+        Length(min=3, max=100),
+        Regexp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', 
+               message="El nombre no debe contener números ni caracteres especiales")
+    ])
+
+    email = EmailField("Correo", [
+        DataRequired(message="El correo es obligatorio"),
+        Email(message="Ingresa un correo electrónico válido")
+    ])
+
+    password = PasswordField("Contraseña", [
+        Optional(), # Permite que sea opcional al editar
+        Length(min=6, message="La contraseña debe tener al menos 6 caracteres")
+    ])
+
+    id_rol = SelectField("Rol", coerce=int, validators=[
+        DataRequired(message="Debes seleccionar un rol")
+    ])
+
+    activo = SelectField("Estatus", 
+                         choices=[("1","Activo"), ("0","Inactivo")], 
+                         coerce=str,
+                         validators=[DataRequired(message="El estatus es obligatorio")])
 
 class LoginForm(FlaskForm):
     email    = EmailField('Correo Electrónico', [DataRequired(), Email()])
@@ -285,12 +365,32 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
-    nombre    = StringField('Nombre Completo', [DataRequired(), Length(min=2, max=100)])
-    email     = EmailField('Correo Electrónico', [DataRequired(), Email()])
-    password  = PasswordField('Contraseña', [DataRequired(), Length(min=6)])
-    password2 = PasswordField('Repite la Contraseña', [DataRequired(), EqualTo('password', message='Las contraseñas deben coincidir')])
+    # 1. NOMBRE: Sin números, símbolos y con mensajes claros
+    nombre = StringField('Nombre Completo', [
+        DataRequired(message='Tu nombre es indispensable.'),
+        Length(min=2, max=100, message='El nombre es demasiado corto o largo.'),
+        Regexp(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', 
+               message='El nombre solo puede contener letras y espacios.')
+    ])
+
+    email = EmailField('Correo Electrónico', [
+        DataRequired(message='El correo es obligatorio para crear tu cuenta.'),
+        Email(message='Ingresa un formato de correo válido (ejemplo@correo.com).')
+    ])
+
+    password = PasswordField('Contraseña', [
+        DataRequired(message='Debes definir una contraseña.'),
+        Length(min=6, message='Por seguridad, usa al menos 6 caracteres.')
+    ])
+
+    password2 = PasswordField('Repite la Contraseña', [
+        DataRequired(message='Confirma tu contraseña para continuar.'),
+        EqualTo('password', message='Las contraseñas no coinciden. Inténtalo de nuevo.')
+    ])
+
 
     def validate_email(self, email):
         from models import Usuario
+        # Buscamos si el correo ya existe para evitar duplicados
         if Usuario.query.filter_by(email=email.data).first():
-            raise ValidationError('Este correo ya está registrado.')
+            raise ValidationError('Este correo ya está registrado. Intenta iniciar sesión.')

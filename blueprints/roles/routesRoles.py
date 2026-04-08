@@ -19,7 +19,6 @@ def index():
 @roles_bp.route('/roles/agregar', methods=['GET', 'POST'])
 @login_required
 @gerente_or_admin_required
-@empleado_required
 def agregar():
     form = RolForm()
     if form.validate_on_submit():
@@ -37,7 +36,6 @@ def agregar():
 @roles_bp.route('/roles/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
 @gerente_or_admin_required
-@empleado_required
 def editar(id):
     rol = Rol.query.get_or_404(id)
     form = RolForm(obj=rol)
@@ -53,7 +51,6 @@ def editar(id):
 @roles_bp.route('/roles/eliminar/<int:id>')
 @login_required
 @gerente_or_admin_required
-@empleado_required
 def eliminar(id):
     rol = Rol.query.get_or_404(id)
     db.session.delete(rol)

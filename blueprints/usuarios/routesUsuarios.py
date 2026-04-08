@@ -5,17 +5,20 @@ from werkzeug.security import generate_password_hash
 from models import db, Usuario, Rol
 from forms import UsuarioForm
 from . import usuarios_bp
+from utils.decorators import empleado_required, gerente_or_admin_required
 
-
-@usuarios_bp.route('/usuarios')
-# @login_required
+@usuarios_bp.route('/usuarios') 
+@login_required
+@gerente_or_admin_required
+@empleado_required
 def index():
     usuarios = Usuario.query.all()
     return render_template('modulo-usuarios/modulo-usuarios.html', usuarios=usuarios)
 
 
 @usuarios_bp.route('/usuarios/agregar', methods=['GET', 'POST'])
-# @login_required
+@login_required
+@gerente_or_admin_required
 def agregar():
     form = UsuarioForm()
     form.id_rol.choices = [(r.id_rol, r.nombre) for r in Rol.query.all()]
@@ -35,7 +38,8 @@ def agregar():
 
 
 @usuarios_bp.route('/usuarios/editar/<int:id>', methods=['GET', 'POST'])
-# @login_required
+@login_required
+@gerente_or_admin_required
 def editar(id):
     usuario = Usuario.query.get_or_404(id)
     form = UsuarioForm(obj=usuario)
@@ -58,7 +62,8 @@ def editar(id):
     return render_template('modulo-usuarios/form-usuarios.html', form=form, accion='Editar')
 
 @usuarios_bp.route('/usuarios/eliminar/<int:id>')
-# @login_required
+@login_required
+@gerente_or_admin_required
 def eliminar(id):
     usuario = Usuario.query.get_or_404(id)
     db.session.delete(usuario)

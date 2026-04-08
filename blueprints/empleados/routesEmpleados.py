@@ -37,7 +37,6 @@ def index():
 @empleados_bp.route("/empleados/agregar", methods=['GET', 'POST'])
 @login_required
 @gerente_or_admin_required
-@empleado_required
 def agregar():
     form = EmpleadoForm()
     form.id_rol.choices = [(r.id_rol, r.nombre) for r in Rol.query.all()]
@@ -64,7 +63,6 @@ def agregar():
 @empleados_bp.route("/empleados/editar/<int:id>", methods=['GET', 'POST'])
 @login_required
 @gerente_or_admin_required
-@empleado_required
 def editar(id):
     empleado = Empleado.query.get_or_404(id)
     form = EmpleadoForm(obj=empleado)
@@ -89,7 +87,6 @@ def editar(id):
 @empleados_bp.route("/empleados/eliminar/<int:id>", methods=['GET', 'POST'])
 @login_required
 @gerente_or_admin_required
-@empleado_required
 def eliminar(id):
     empleado = Empleado.query.get_or_404(id)
     if request.method == 'POST':
