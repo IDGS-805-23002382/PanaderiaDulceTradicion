@@ -27,3 +27,7 @@ class RegisterForm(FlaskForm):
         user = Usuario.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('Este correo ya está registrado. Usa otro o inicia sesión.')
+        
+class ResetPasswordForm(FlaskForm):
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    submit = SubmitField('Enviar instrucciones')

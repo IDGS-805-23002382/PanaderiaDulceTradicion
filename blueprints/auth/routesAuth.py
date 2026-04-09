@@ -2,6 +2,7 @@
 from flask import render_template, redirect, url_for, flash, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required
+from blueprints.auth.forms import ResetPasswordForm
 from models import db, Usuario, Rol
 from forms import LoginForm, RegisterForm
 from . import auth_bp
@@ -49,3 +50,13 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
+
+
+@auth_bp.route('/reset', methods=['GET', 'POST'])
+def reset():
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        # aquí irá la lógica de recuperación cuando la implementes
+        flash('Si ese correo existe, recibirás instrucciones pronto.', 'info')
+        return redirect(url_for('auth.login'))
+    return render_template('auth/reset.html', form=form)  # ← faltaba pasar form=form
