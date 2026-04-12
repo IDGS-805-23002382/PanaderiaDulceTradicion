@@ -20,7 +20,10 @@ from blueprints.roles.routesRoles import roles_bp
 from blueprints.dashboard.routesDashboardMar import dashboard_bp
 from blueprints.ventas.routesVentas import ventas_bp
 from blueprints.ventasSucursal.routesVentasSucursal import ventasSucursal_bp
+from blueprints.finanzas.routesFinanzas import finanzas_bp
+from blueprints.nomina.routesNomina import nomina_bp
 
+from flask_mail import Mail
 from flask_migrate import Migrate
 import base64
 
@@ -30,6 +33,16 @@ import base64
 mongo = PyMongo() 
 
 app = Flask(__name__)
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'dulcetradicion1970@gmail.com'
+app.config['MAIL_PASSWORD'] = 'ClaveSecreta'
+app.config['MAIL_DEFAULT_SENDER'] = 'dulcetradicion1970@gmail.com'
+
+
+
 app.register_blueprint(auth_bp)
 app.config.from_object(DevelopmentConfig)
 app.register_blueprint(empleados_bp)
@@ -46,7 +59,11 @@ app.register_blueprint(roles_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(ventas_bp)
 app.register_blueprint(ventasSucursal_bp)
+app.register_blueprint(finanzas_bp)
+app.register_blueprint(nomina_bp)
 
+
+mail = Mail(app)
 mongo.init_app(app) 
 app.mongo = mongo
 db.init_app(app)

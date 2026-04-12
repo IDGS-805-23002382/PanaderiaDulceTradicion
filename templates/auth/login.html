@@ -17,7 +17,6 @@
     <div class="px-8 py-8">
       <form method="POST">
         {{ form.hidden_tag() }}
-
         <!-- EMAIL -->
         <div class="mb-5">
           <label class="flex items-center gap-2 text-sm font-medium text-[#341915] mb-1">
@@ -32,7 +31,6 @@
             <p class="text-red-500 text-xs mt-1">{{ error }}</p>
           {% endfor %}
         </div>
-
         <!-- CONTRASEÑA -->
         <div class="mb-5">
           <label class="flex items-center gap-2 text-sm font-medium text-[#341915] mb-1">
@@ -47,7 +45,6 @@
             <p class="text-red-500 text-xs mt-1">{{ error }}</p>
           {% endfor %}
         </div>
-
         <!-- RECUÉRDAME -->
         <div class="mb-6">
           <label class="flex items-center gap-2 text-sm text-[#341915] cursor-pointer">
@@ -55,19 +52,18 @@
             <span>{{ form.remember.label.text }}</span>
           </label>
         </div>
-
         <!-- BOTÓN -->
         <button type="submit"
                 class="w-full bg-[#341915] hover:bg-[#561C24] text-[#E8D8C4] font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
-          <img src="{{ url_for('static', filename='img/iconosModulos/dashboard.png') }}" class="h-5 w-5">
           Iniciar Sesión
         </button>
-
       </form>
-
       <p class="text-center text-[#7a5a4d] text-sm mt-6">
         ¿No tienes cuenta?
+        <br>
         <a href="{{ url_for('auth.register') }}" class="text-[#561C24] font-medium hover:underline">Regístrate aquí</a>
+        <br>
+        <a href="{{ url_for('auth.reset') }}" class="text-[#561C24] font-medium hover:underline">¿Olvidaste tu contraseña?</a>
       </p>
     </div>
 

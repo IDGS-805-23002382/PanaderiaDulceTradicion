@@ -32,7 +32,7 @@ def _totales(inicio, fin):
     """Calcula todos los totales financieros para el rango dado."""
 
     # INGRESOS — ordenes completadas
-    ingresos = db.session.query(db.func.sum(Orden.total))\
+    ingresos = db.session.query(db.func.sum(Orden.costo_total_estimado))\
         .filter(
             Orden.estatus == 'completada',
             db.func.date(Orden.fecha) >= inicio,
@@ -42,8 +42,8 @@ def _totales(inicio, fin):
     # EGRESOS — compras a proveedor
     egresos_compras = db.session.query(db.func.sum(Compra.total))\
         .filter(
-            db.func.date(Compra.fecha) >= inicio,
-            db.func.date(Compra.fecha) <= fin
+            db.func.date(Compra.fecha_orden) >= inicio,
+            db.func.date(Compra.fecha_entrega) <= fin
         ).scalar() or Decimal('0')
 
     # EGRESOS — nómina pagada
