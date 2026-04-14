@@ -17,7 +17,7 @@ from blueprints.sucursales.routesSucursales import sucursales_bp
 from blueprints.clientes.routesClientes import clientes_bp
 from blueprints.usuarios.routesUsuarios import usuarios_bp
 from blueprints.roles.routesRoles import roles_bp
-from blueprints.dashboard.routesDashboardMar import dashboard_bp
+from blueprints.dashboard.routesDashboard import dashboard_bp
 from blueprints.ventas.routesVentas import ventas_bp
 from blueprints.ventasSucursal.routesVentasSucursal import ventasSucursal_bp
 from blueprints.finanzas.routesFinanzas import finanzas_bp
