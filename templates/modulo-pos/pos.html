@@ -16,61 +16,55 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-      <!-- PRODUCTOS -->
       <div class="lg:col-span-2">
         <input type="text" id="buscarProducto" placeholder="Buscar producto..."
                class="w-full mb-4 p-3 rounded-xl border-2 border-[#6b1f26] bg-white font-bold text-[#2c1b16] outline-none">
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="listaProductos">
           {% for producto in productos %}
-          <form action="{{ url_for('ventasSucursal.pos_agregar') }}" method="POST">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
-
-            <div class="bg-white border-2 border-[#6b1f26] rounded-xl overflow-hidden hover:shadow-lg transition producto-card">
-
-              <div class="w-full h-28 bg-[#d8c9b4]">
+          <div class="producto-card">
+            <div class="bg-white border-2 border-[#6b1f26] rounded-xl p-4 flex flex-col h-full shadow-sm hover:shadow-md transition">
+              <div class="mb-2">
+                <h3 class="font-black text-[#2c1b16] uppercase text-sm nombre-producto line-clamp-1">{{ producto.nombre }}</h3>
+                <p class="text-[#6b1f26] font-bold">${{ "%.2f"|format(producto.precio_venta) }}</p>
+              </div>
+                            <div class="w-full h-28 bg-[#d8c9b4]">
                 {% if producto.imagen_url %}
-                  <img src="{{ url_for('ventas.producto_imagen', id=producto.id_producto) }}"
+                  <img src="{{ url_for('productos.producto_imagen', id=producto.id_producto) }}"
                        class="w-full h-full object-cover">
                 {% else %}
-                  <div class="w-full h-full flex items-center justify-center text-3xl">🍞</div>
+                  <div class="w-full h-full flex items-center justify-center text-3xl"></div>
                 {% endif %}
               </div>
-
-              <div class="p-2">
-                <p class="font-black text-[#2c1b16] uppercase text-xs nombre-producto text-center leading-tight mb-1 truncate">
-                  {{ producto.nombre }}
-                </p>
-                <p class="font-black text-[#6b1f26] text-base text-center mb-2">
-                  ${{ "%.2f"|format(producto.precio_venta) }}
-                </p>
-
-                <div class="flex items-center justify-center border border-[#6b1f26] rounded-lg overflow-hidden mb-2">
-                  <button type="button" onclick="decrementar(this)"
-                          class="px-2 py-1 bg-[#6b1f26] text-white font-black text-xs hover:bg-[#4b1e1e] transition">−</button>
-                  <input type="number" name="cantidad" value="1" min="1"
-                         class="w-8 text-center text-xs font-black text-[#2c1b16] outline-none">
-                  <button type="button" onclick="incrementar(this)"
-                          class="px-2 py-1 bg-[#6b1f26] text-white font-black text-xs hover:bg-[#4b1e1e] transition">+</button>
-                </div>
-
-                <button type="submit"
-                        class="w-full bg-[#6b1f26] text-white py-1.5 rounded-lg font-black uppercase text-xs tracking-wide hover:bg-[#4b1e1e] transition">
-                  + Agregar
-                </button>
+              <form action="{{ url_for('ventasSucursal.pos_agregar') }}" method="POST" class="mt-auto">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+                
+              <div class="flex items-center justify-between bg-gray-200 rounded-lg p-1 mb-3">
+                <button type="button" onclick="restar(this)" 
+                        class="w-8 h-8 flex items-center justify-center bg-white rounded-md shadow-sm text-[#6b1f26] font-black hover:bg-gray-50">-</button>
+                
+                <input type="number" name="cantidad" value="1" min="1" 
+                      class="w-20 bg-white mx-1 text-center font-black text-[#6b1f26] rounded-md border border-gray-400 focus:outline-none">
+                
+                <button type="button" onclick="sumar(this)" 
+                        class="w-8 h-8 flex items-center justify-center bg-white rounded-md shadow-sm text-[#6b1f26] font-black hover:bg-gray-50">+</button>
               </div>
+
+                <button type="submit" class="w-full bg-[#6b1f26] text-white py-2 rounded-lg text-xs font-black uppercase hover:bg-[#2c1b16] transition">
+                  Añadir
+                </button>
+              </form>
             </div>
-          </form>
+          </div>
           {% endfor %}
         </div>
       </div>
 
-      <!-- CARRITO -->
       <div class="bg-white rounded-2xl border-t-8 border-[#6b1f26] p-6 shadow-xl h-fit sticky top-4">
         <h2 class="text-lg font-black text-[#6b1f26] uppercase mb-4">Venta Actual</h2>
 
-        <div class="space-y-3 max-h-64 overflow-y-auto mb-4">
+        <div class="space-y-3 max-h-64 overflow-y-auto mb-4 pr-2 custom-scrollbar">
           {% if carrito_pos %}
             {% for id, item in carrito_pos.items() %}
             <div class="flex justify-between items-center border-b border-[#6b1f26]/10 pb-2">
@@ -86,7 +80,7 @@
             </div>
             {% endfor %}
           {% else %}
-            <p class="text-center text-[#6b1f26] font-bold uppercase text-sm py-6">Sin productos</p>
+            <p class="text-center text-[#6b1f26] font-bold uppercase text-sm py-6">Sin productos en la lista</p>
           {% endif %}
         </div>
 
@@ -103,8 +97,8 @@
 
           <div>
             <label class="block text-xs font-black text-[#6b1f26] uppercase mb-1">Nombre del Cliente</label>
-            <input type="text" name="nombre_cliente" placeholder="Cliente general"
-                   class="w-full border-2 border-[#6b1f26] rounded-xl px-3 py-2 text-sm font-bold text-[#2c1b16] outline-none">
+            <input type="text" name="nombre_cliente" placeholder="Cliente General"
+                   class="w-full border-2 border-[#6b1f26] rounded-xl px-3 py-2 text-sm font-bold text-[#2c1b16] outline-none focus:ring-2 focus:ring-[#6b1f26]/20">
           </div>
 
           <div>
@@ -118,8 +112,8 @@
           </div>
 
           <button type="submit"
-                  class="w-full bg-[#6b1f26] text-white py-3 rounded-xl font-black uppercase tracking-widest hover:bg-[#4b1e1e] transition text-sm">
-            Cobrar ${{ "%.2f"|format(total) }}
+                  class="w-full bg-[#6b1f26] text-white py-3 rounded-xl font-black uppercase tracking-widest hover:bg-[#4b1e1e] transition text-sm shadow-lg">
+            Finalizar y Cobrar
           </button>
         </form>
         {% endif %}
@@ -129,23 +123,35 @@
   </div>
 </section>
 
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b1f26; border-radius: 10px; }
+</style>
+
 <script>
+  // Función para aumentar cantidad en la tarjeta
+  function sumar(btn) {
+      let input = btn.parentNode.querySelector('input');
+      input.value = parseInt(input.value) + 1;
+  }
+
+  // Función para disminuir cantidad en la tarjeta
+  function restar(btn) {
+      let input = btn.parentNode.querySelector('input');
+      if(parseInt(input.value) > 1) {
+          input.value = parseInt(input.value) - 1;
+      }
+  }
+
+  // Buscador en tiempo real
   document.getElementById('buscarProducto').addEventListener('input', function() {
     const busqueda = this.value.toLowerCase();
     document.querySelectorAll('.producto-card').forEach(card => {
       const nombre = card.querySelector('.nombre-producto').textContent.toLowerCase();
-      card.closest('form').style.display = nombre.includes(busqueda) ? '' : 'none';
+      // Ocultar o mostrar el contenedor de la tarjeta
+      card.style.display = nombre.includes(busqueda) ? '' : 'none';
     });
   });
-
-  function incrementar(btn) {
-    const input = btn.previousElementSibling;
-    input.value = parseInt(input.value) + 1;
-  }
-
-  function decrementar(btn) {
-    const input = btn.nextElementSibling;
-    if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
-  }
 </script>
 {% endblock %}

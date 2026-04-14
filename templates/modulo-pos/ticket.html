@@ -1,62 +1,124 @@
 {% extends 'layoutModulos.html' %}
 {% block container %}
-<section class="bg-[#d8c9b4] min-h-screen py-12">
-  <div class="max-w-md mx-auto">
-    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border-t-8 border-[#6b1f26]">
+<section class="bg-[#d8c9b4] min-h-screen py-12 px-4">
+    <div class="max-w-md mx-auto">
+        <div id="printable-ticket" class="bg-white shadow-2xl overflow-hidden relative" style="border-radius: 4px;">
+            
+            <div class="h-2 bg-[#6b1f26] w-full"></div>
 
-      <div class="bg-[#6b1f26] p-6 text-center text-white">
-        <h2 class="text-xl font-black uppercase">¡Venta Exitosa!</h2>
-        <p class="text-sm opacity-80">Folio #{{ venta._id }}</p>
-      </div>
+            <div class="p-8 text-center border-b-2 border-dashed border-gray-200">
+                <h1 class="text-3xl font-black text-[#6b1f26] uppercase tracking-tighter mb-1">Dulce Tradición</h1>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Panadería & Repostería</p>
+                
+                <div class="inline-block bg-[#6b1f26] text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                    Venta Exitosa
+                </div>
+            </div>
 
-      <div class="p-6">
-        <div class="grid grid-cols-2 gap-4 mb-6 text-sm border-b pb-4">
-          <div>
-            <p class="text-xs font-black text-[#6b1f26] uppercase">Fecha</p>
-            <p class="font-bold">{{ venta.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
-          </div>
-          <div>
-            <p class="text-xs font-black text-[#6b1f26] uppercase">Sucursal</p>
-            <p class="font-bold">{{ venta.nombre_sucursal or 'N/A' }}</p>
-          </div>
-          <div>
-            <p class="text-xs font-black text-[#6b1f26] uppercase">Cliente</p>
-            <p class="font-bold">{{ venta.nombre_cliente }}</p>
-          </div>
-          <div>
-            <p class="text-xs font-black text-[#6b1f26] uppercase">Método de Pago</p>
-            <p class="font-bold uppercase">{{ venta.metodo_pago }}</p>
-          </div>
+            <div class="px-8 py-6 grid grid-cols-2 gap-y-4 text-sm border-b border-gray-100">
+                <div>
+                    <p class="text-[10px] font-black text-[#6b1f26] uppercase opacity-60">Folio de Venta</p>
+                    <p class="font-bold text-[#2c1b16]">#{{ venta._id }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-black text-[#6b1f26] uppercase opacity-60">Fecha y Hora</p>
+                    <p class="font-bold text-[#2c1b16]">{{ venta.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-[#6b1f26] uppercase opacity-60">Sucursal</p>
+                    <p class="font-bold text-[#2c1b16]">{{ venta.nombre_sucursal or 'Principal' }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-black text-[#6b1f26] uppercase opacity-60">Atendió</p>
+                    <p class="font-bold text-[#2c1b16]">{{ current_user.nombre }}</p>
+                </div>
+            </div>
+
+            <div class="px-8 py-6">
+                <p class="text-[10px] font-black text-[#6b1f26] uppercase mb-4 tracking-widest">Detalle de Productos</p>
+                
+                <div class="space-y-4">
+                    {% for detalle in venta.detalles %}
+                    <div class="flex justify-between items-start">
+                        <div class="max-w-[70%]">
+                            <p class="font-bold text-[#2c1b16] uppercase text-xs leading-tight">{{ detalle.nombre_producto }}</p>
+                            <p class="text-[10px] text-gray-500">{{ detalle.cantidad }} x ${{ "%.2f"|format(detalle.precio_unitario) }}</p>
+                        </div>
+                        <span class="font-black text-[#2c1b16] text-sm">${{ "%.2f"|format(detalle.subtotal) }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="px-8 py-6 bg-gray-50 border-t-2 border-dashed border-gray-200">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold text-gray-500 uppercase">Método de Pago</span>
+                    <span class="text-xs font-black text-[#2c1b16] uppercase">{{ venta.metodo_pago }}</span>
+                </div>
+                <div class="flex justify-between items-end pt-2">
+                    <span class="text-lg font-black text-[#2c1b16] uppercase leading-none">Total</span>
+                    <span class="text-3xl font-black text-[#6b1f26] leading-none">${{ "%.2f"|format(venta.total) }}</span>
+                </div>
+            </div>
+
+            <div class="p-8 text-center italic text-gray-400 text-xs relative">
+                <p>¡Gracias por preferir Dulce Tradición!</p>
+                <p class="mt-1">Conserve este ticket para cualquier aclaración.</p>
+                
+                <div class="absolute bottom-0 left-0 w-full h-2 flex overflow-hidden">
+                    {% for i in range(20) %}
+                    <div class="min-w-[20px] h-4 bg-[#d8c9b4] transform rotate-45 -translate-y-2 translate-x-1"></div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
-        <div class="space-y-2 mb-6">
-          {% for detalle in venta.detalles %}
-          <div class="flex justify-between text-sm">
-            <span class="font-bold text-[#2c1b16] uppercase">
-              {{ detalle.nombre_producto }} x{{ detalle.cantidad }}
-            </span>
-            <span class="font-black text-[#6b1f26]">${{ "%.2f"|format(detalle.subtotal) }}</span>
-          </div>
-          {% endfor %}
+        <div class="mt-8 flex flex-col gap-3 no-print">
+            <button onclick="window.print()" 
+                    class="w-full bg-[#2c1b16] text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-black transition shadow-lg flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                Imprimir Comprobante
+            </button>
+            
+            <a href="{{ url_for('ventasSucursal.pos') }}" 
+               class="w-full bg-[#6b1f26] text-white py-4 rounded-xl font-black uppercase tracking-widest text-center hover:bg-[#4b1e1e] transition">
+                Nueva Venta
+            </a>
         </div>
-
-        <div class="border-t-4 border-[#6b1f26] pt-4 flex justify-between items-center mb-6">
-          <span class="font-black text-[#2c1b16] uppercase">Total</span>
-          <span class="text-3xl font-black text-[#6b1f26]">${{ "%.2f"|format(venta.total) }}</span>
-        </div>
-
-        <div class="flex gap-3">
-          <a href="{{ url_for('ventasSucursal.pos') }}"
-             class="flex-1 bg-[#6b1f26] text-white py-3 rounded-xl font-black uppercase text-center text-sm hover:bg-[#4b1e1e] transition">
-            Nueva Venta
-          </a>
-          <button onclick="window.print()"
-                  class="flex-1 border-2 border-[#6b1f26] text-[#6b1f26] py-3 rounded-xl font-black uppercase text-sm hover:bg-[#6b1f26] hover:text-white transition">
-            Imprimir
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
 </section>
+
+<style>
+    /* Corrección de sintaxis CSS */
+    @media print {
+        body * { 
+            visibility: hidden; 
+        }
+        .no-print { 
+            display: none !important; 
+        }
+        #printable-ticket, #printable-ticket * { 
+            visibility: visible; 
+        }
+        #printable-ticket { 
+            position: absolute; 
+            left: 0; 
+            top: 0; 
+            width: 100%;
+            box-shadow: none !important;
+            border: none !important;
+        }
+    }
+
+    .max-w-md {
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
 {% endblock %}

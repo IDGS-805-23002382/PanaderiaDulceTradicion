@@ -60,7 +60,7 @@
     {% if productos_stock_bajo or materias_criticas %}
     <div class="mb-8 animate-pulse">
       <div class="bg-red-50 border-l-8 border-red-600 p-4 rounded-xl flex items-center gap-4 shadow-sm">
-        <span class="text-3xl">⚠️</span>
+        <span class="text-3xl"></span>
         <div>
           <h3 class="text-red-800 font-black uppercase text-sm tracking-tight">Atención Inmediata Requerida</h3>
           <p class="text-red-700 text-[11px] font-bold uppercase">Hay insumos o productos por debajo del límite mínimo de seguridad.</p>
@@ -117,13 +117,65 @@
       </div>
     </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+
+  <!-- PRODUCTOS CON STOCK BAJO -->
+  <div class="bg-white rounded-3xl p-8 shadow-sm border border-red-100">
+    <h2 class="text-base font-black text-red-600 uppercase mb-6">
+       Productos con Bajo Stock
+    </h2>
+
+    {% if productos_stock_bajo %}
+      <div class="space-y-3">
+        {% for p in productos_stock_bajo %}
+          <div class="flex justify-between items-center bg-red-50 p-3 rounded-xl">
+            <span class="font-bold text-[#2c1b16]">
+              {{ p.producto.nombre if p.producto else 'Producto' }}
+            </span>
+            <span class="font-black text-red-600">
+              {{ p.stock_actual }}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-400 font-bold">Todo en buen nivel</p>
+    {% endif %}
+  </div>
+
+  <!-- MATERIAS PRIMAS CRÍTICAS -->
+  <div class="bg-white rounded-3xl p-8 shadow-sm border border-orange-100">
+    <h2 class="text-base font-black text-orange-600 uppercase mb-6">
+       Materias Primas Críticas
+    </h2>
+
+    {% if materias_criticas %}
+      <div class="space-y-3">
+        {% for m in materias_criticas %}
+          <div class="flex justify-between items-center bg-orange-50 p-3 rounded-xl">
+            <span class="font-bold text-[#2c1b16]">
+              {{ m.materia_prima.nombre if m.materia_prima else 'Materia' }}
+            </span>
+            <span class="font-black text-orange-600">
+              {{ m.stock_actual }}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-400 font-bold">Sin alertas</p>
+    {% endif %}
+  </div>
+
+</div>
+
     <div class="bg-white rounded-3xl p-6 border-l-8 border-indigo-500 shadow-sm mb-8 hover:shadow-md transition-all">
       <div class="flex justify-between items-center">
         <div>
           <p class="text-[10px] font-black text-gray-400 uppercase mb-1 tracking-widest">Base de Datos</p>
           <p class="text-3xl font-black text-indigo-600">{{ total_clientes }} Clientes Registrados</p>
         </div>
-        <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-2xl">👥</div>
+        <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-2xl"></div>
       </div>
     </div>
 
@@ -139,7 +191,7 @@
             <span class="px-3 py-1 bg-red-600 text-white text-xs font-black rounded-lg">{{ p.stock_actual }} pz</span>
           </div>
           {% else %}
-          <p class="text-gray-400 font-bold text-center py-4 uppercase text-[10px]">✅ Inventario Óptimo</p>
+          <p class="text-gray-400 font-bold text-center py-4 uppercase text-[10px]"> Inventario Óptimo</p>
           {% endfor %}
         </div>
       </div>
@@ -155,7 +207,7 @@
             <span class="px-3 py-1 bg-orange-600 text-white text-xs font-black rounded-lg">{{ m.stock_actual }} uds</span>
           </div>
           {% else %}
-          <p class="text-gray-400 font-bold text-center py-4 uppercase text-[10px]">✅ Materias Abastecidas</p>
+          <p class="text-gray-400 font-bold text-center py-4 uppercase text-[10px]"> Materias Abastecidas</p>
           {% endfor %}
         </div>
       </div>

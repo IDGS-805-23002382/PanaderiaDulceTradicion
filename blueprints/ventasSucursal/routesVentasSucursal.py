@@ -1,7 +1,7 @@
 from datetime import datetime
 from bson.objectid import ObjectId
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, Response, current_app
-from models import Producto, Sucursal
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, Response, current_app, jsonify
+from models import Producto, Sucursal, InventarioProducto, MovimientoInventarioProducto, db
 from flask_login import current_user, login_required
 
 ventasSucursal_bp = Blueprint('ventasSucursal', __name__)
@@ -92,8 +92,50 @@ def pos_registrar():
     nombre_cliente = request.form.get('nombre_cliente', 'Cliente general')
     total = sum(item['cantidad'] * item['precio'] for item in carrito_pos.values())
 
-    sucursal_obj = Sucursal.query.get(id_sucursal) if id_sucursal else None
+    # --- VALIDACIÓN, DESCUENTO Y REGISTRO DE MOVIMIENTOS ---
+    try:
+        for id_p, item in carrito_pos.items(): 
+            producto_id = int(id_p) 
+            cantidad_a_vender = int(item['cantidad'])
+            
+            # Buscamos el inventario específico de esta sucursal
+            inventario = InventarioProducto.query.filter_by(
+                id_producto=producto_id, 
+                id_sucursal=id_sucursal
+            ).first()
+
+            if not inventario:
+                flash(f"Error: El producto {item['nombre']} no tiene inventario en esta sucursal.", "danger")
+                return redirect(url_for('ventasSucursal.pos'))
+            
+            if inventario.stock_actual < cantidad_a_vender:
+                flash(f"Error: Stock insuficiente para {item['nombre']}. Solo quedan {inventario.stock_actual} unidades.", "danger")
+                return redirect(url_for('ventasSucursal.pos'))
+            
+            # 1. Descontar del stock actual
+            inventario.stock_actual -= cantidad_a_vender
+
+            # 2. Crear el registro del movimiento de inventario
+            movimiento = MovimientoInventarioProducto(
+                id_producto=producto_id,
+                id_sucursal=id_sucursal,
+                tipo='salida_venta',
+                cantidad=cantidad_a_vender,
+                referencia=f'Venta POS - {nombre_cliente}',
+                fecha=datetime.now()
+            )
+            db.session.add(movimiento)
+
+        # Guardamos todos los cambios de stock y movimientos en MySQL
+        db.session.commit()
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error al actualizar inventario: {str(e)}", "danger")
+        return redirect(url_for('ventasSucursal.pos'))
     
+    # --- PREPARACIÓN DE DOCUMENTO PARA MONGODB ---
+    sucursal_obj = Sucursal.query.get(id_sucursal) if id_sucursal else None
     detalles = []
     for id_producto, datos in carrito_pos.items():
             producto = Producto.query.get(int(id_producto))
@@ -118,6 +160,7 @@ def pos_registrar():
             'estatus': 'completada',
             'detalles': detalles
         }
+
     try:
         mongo = current_app.mongo
         resultado = mongo.db.ventas.insert_one(venta_doc)
@@ -125,7 +168,7 @@ def pos_registrar():
         flash("Venta registrada exitosamente", "success")
         return redirect(url_for('ventasSucursal.pos_ticket', id_venta=str(resultado.inserted_id)))
     except Exception as e:
-            flash(f"Error: {str(e)}" , "danger")
+            flash(f"Error al registrar en MongoDB: {str(e)}" , "danger")
             return redirect(url_for('ventasSucursal.pos'))    
 
 

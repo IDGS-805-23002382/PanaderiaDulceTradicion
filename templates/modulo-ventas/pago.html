@@ -1,162 +1,149 @@
 {% extends 'layoutModulos.html' %}
 {% block container %}
-<section class="relative w-full h-[200px]">
-        <br>
-        <div class="absolute inset-0 flex items-center justify-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-[#121212] tracking-widest uppercase">Finalizar Compra</h1>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="mb-6 p-4 rounded-xl font-bold uppercase text-sm shadow-lg border-l-8 
+        {% if category == 'danger' %} bg-red-100 border-red-600 text-red-800 
+        {% else %} bg-green-100 border-green-600 text-green-800 {% endif %}">
+        <div class="flex items-center">
+            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+            </svg>
+            {{ message }}
         </div>
-    </div>
-</section>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<section class="bg-[#d8c9b4] min-h-screen py-8">
+    <div class="max-w-7xl mx-auto px-6">
+        
+        <div class="bg-[#6b1f26] rounded-2xl p-6 mb-8 flex justify-between items-center shadow-xl border-b-4 border-[#2c1b16]">
+            <div>
+                <h1 class="text-3xl font-black text-[#f3e5d8] uppercase tracking-tighter">Terminal de Ventas</h1>
+                <p class="text-[#f3e5d8]/80 font-bold uppercase text-xs tracking-widest">
+                    Sucursal: <span class="text-white">{{ sucursal.nombre }}</span>
+                </p>
+            </div>
+            <a href="{{ url_for('ventasSucursal.cambiar_sucursal') }}" 
+               class="bg-[#f3e5d8] text-[#6b1f26] px-4 py-2 rounded-xl font-black text-xs hover:bg-white transition-all uppercase">
+                Cambiar Sucursal
+            </a>
+        </div>
 
-<section class="bg-[#d8c9b4] py-12 min-h-screen">
-    <div class="max-w-6xl mx-auto px-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-
-            <div class="bg-[#d8c9b4] border-4 border-[#6b1f26] rounded-2xl p-8 shadow-xl">
-                <h2 class="text-2xl font-bold text-[#2c1b16] mb-6 uppercase tracking-wider border-b-2 border-[#6b1f26]/20 pb-2">Mi Pedido</h2>
-                <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-                    {% if carrito %}
-                        {% for id, item in carrito.items() %}
-                        <div class="flex items-center justify-between bg-white/40 p-4 rounded-xl border border-[#6b1f26]/10">
-                            <div class="flex items-center gap-4">
-                                <div class="w-16 h-16 bg-white rounded-lg border-2 border-[#6b1f26] overflow-hidden">
-                                    {% if item.imagen_url %}
-                                        <img src="{{ url_for('ventas.producto_imagen', id=item.id_producto) }}"
-                                             class="w-full h-full object-cover">
-                                    {% else %}
-                                        <img src="{{ url_for('static', filename='img/productos/default.png') }}"
-                                             class="w-full h-full object-cover">
-                                    {% endif %}
-                                </div>
-                                <div>
-                                    <h3 class="font-bold text-[#6b1f26] uppercase text-sm">{{ item.nombre }}</h3>
-                                    <div>
-                                        <label class="text-[10px] font-bold text-[#6b1f26]">Cantidad:</label>
-                                        <input type="number" 
-                                               name="cantidad_{{ item.id_producto }}" 
-                                               value="{{ item.cantidad }}" 
-                                               min="1" 
-                                               class="w-16 text-center border rounded"
-                                               data-precio-unitario="{{ item.precio }}"
-                                               data-producto-id="{{ item.id_producto }}"
-                                               onchange="actualizarCantidad(this)">
-                                    </div>
-                                </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white/40 backdrop-blur-md border-4 border-[#6b1f26] rounded-2xl p-6 shadow-lg">
+                    <h2 class="text-xl font-black text-[#2c1b16] mb-6 uppercase border-b-2 border-[#6b1f26]/20 pb-2">Catálogo Disponible</h2>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {% for producto in productos %}
+                        <div class="bg-[#f3e5d8] border-2 border-[#6b1f26]/10 rounded-xl p-4 flex flex-col items-center text-center hover:border-[#6b1f26] transition-all group">
+                            <div class="w-16 h-16 bg-[#6b1f26] rounded-full mb-3 flex items-center justify-center text-[#f3e5d8] font-bold text-xl uppercase">
+                                {{ producto.nombre[:1] }}
                             </div>
-                            <div class="text-right">
-                                <p class="font-black text-[#6b1f26]" id="subtotal-{{ item.id_producto }}">${{ "%.2f"|format(item.precio * item.cantidad) }}</p>
-                                <p class="text-[10px] text-gray-600">${{ "%.2f"|format(item.precio) }} c/u</p>
-                                <a href="{{ url_for('ventas.eliminar_del_carrito', id_producto=item.id_producto) }}"
-                                   class="mt-2 text-xs text-red-600 hover:text-red-800 font-bold uppercase"
-                                   onclick="return confirm('¿Eliminar este producto del carrito?')">
-                                     Eliminar
+                            <h3 class="font-black text-[#2c1b16] text-sm uppercase leading-tight h-10">{{ producto.nombre }}</h3>
+                            <p class="text-[#6b1f26] font-black text-lg mb-3">${{ "%.2f"|format(producto.precio_venta) }}</p>
+                            
+                            <form action="{{ url_for('ventasSucursal.pos_agregar') }}" method="POST" class="w-full">
+                                <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+                                <input type="number" name="cantidad" value="1" min="1" class="w-full mb-2 p-1 rounded-lg border-2 border-[#6b1f26]/20 text-center font-bold">
+                                <button type="submit" class="w-full bg-[#6b1f26] text-white py-2 rounded-lg font-black text-[10px] uppercase hover:bg-[#2c1b16] transition-colors">
+                                    Agregar
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="bg-[#2c1b16] rounded-2xl p-6 shadow-2xl sticky top-8 border-t-8 border-[#6b1f26]">
+                    <h2 class="text-[#f3e5d8] font-black text-xl uppercase mb-6 tracking-widest border-b border-[#f3e5d8]/20 pb-4">Detalle de Venta</h2>
+                    
+                    <div class="space-y-3 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                        {% for id, item in carrito.items() %}
+                        <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/10">
+                            <div class="text-[#f3e5d8]">
+                                <p class="font-bold text-xs uppercase">{{ item.nombre }}</p>
+                                <p class="text-[10px] opacity-60">{{ item.cantidad }} x ${{ "%.2f"|format(item.precio) }}</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <p class="font-black text-[#f3e5d8] text-sm">${{ "%.2f"|format(item.cantidad * item.precio) }}</p>
+                                <a href="{{ url_for('ventasSucursal.pos_eliminar', id_producto=id) }}" class="text-red-400 hover:text-red-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                 </a>
                             </div>
                         </div>
                         {% endfor %}
-                    {% else %}
-                        <p class="text-center py-10 font-bold text-[#6b1f26] uppercase">El carrito está vacío</p>
-                    {% endif %}
+                    </div>
+
+                    <form action="{{ url_for('ventasSucursal.pos_registrar') }}" method="POST" class="space-y-4">
+                        <div>
+                            <label class="block text-[#f3e5d8] text-[10px] font-black uppercase mb-1">Nombre del Cliente</label>
+                            <input type="text" name="nombre_cliente" placeholder="Cliente General" 
+                                   class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-white/30 font-bold focus:outline-none focus:border-[#6b1f26]">
+                        </div>
+
+                            <div class="mb-6">
+                                <label class="block text-[#2c1b16] font-black uppercase text-xs mb-4">Método de Pago</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="metodo_pago" value="Efectivo" class="peer hidden" checked onchange="toggleTarjeta(false)">
+                                        <div class="p-4 border-2 border-[#6b1f26]/20 rounded-xl peer-checked:border-[#6b1f26] peer-checked:bg-[#6b1f26]/5 transition-all text-center font-bold uppercase text-xs">
+                                            Efectivo / Transferencia
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="metodo_pago" value="Tarjeta" class="peer hidden" onchange="toggleTarjeta(true)">
+                                        <div class="p-4 border-2 border-[#6b1f26]/20 rounded-xl peer-checked:border-[#6b1f26] peer-checked:bg-[#6b1f26]/5 transition-all text-center font-bold uppercase text-xs">
+                                            Tarjeta
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="form-tarjeta" class="hidden space-y-4 bg-white/30 p-4 rounded-xl border border-[#6b1f26]/10 mb-6">
+                                <input type="text" placeholder="Número de Tarjeta (16 dígitos)" class="w-full p-3 rounded-lg border-2 border-[#6b1f26]/20 font-mono text-sm">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input type="text" placeholder="MM/AA" class="p-3 rounded-lg border-2 border-[#6b1f26]/20 text-sm">
+                                    <input type="text" placeholder="CVV" class="p-3 rounded-lg border-2 border-[#6b1f26]/20 text-sm">
+                                </div>
+                            </div>
+
+                            <script>
+                            function toggleTarjeta(show) {
+                                const form = document.getElementById('form-tarjeta');
+                                if(show) form.classList.remove('hidden');
+                                else form.classList.add('hidden');
+                            }
+                            </script>
+
+                        <div class="pt-6 border-t border-white/10 flex justify-between items-end">
+                            <p class="text-[#f3e5d8] font-black uppercase text-sm">Total a Pagar</p>
+                            <p class="text-3xl font-black text-white">${{ "%.2f"|format(total) }}</p>
+                        </div>
+
+                        <button type="submit" {% if not carrito_pos %}disabled{% endif %}
+                                class="w-full py-4 rounded-xl font-black uppercase tracking-widest transition-all
+                                {% if carrito_pos %}bg-[#6b1f26] text-white hover:bg-[#8e2a33] shadow-lg
+                                {% else %}bg-gray-600 text-gray-400 cursor-not-allowed{% endif %}">
+                            Finalizar Venta
+                        </button>
+                    </form>
                 </div>
-                <div class="mt-8 pt-6 border-t-4 border-[#6b1f26] flex justify-between items-center">
-                    <span class="text-xl font-black text-[#2c1b16] uppercase">Total a Pagar:</span>
-                    <span class="text-3xl font-black text-[#6b1f26]">${{ "%.2f"|format(total if total else 0) }}</span>
-                </div>
-            </div>
-
-            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border-t-8 border-[#6b1f26]">
-                <form action="{{ url_for('ventas.registrar_venta') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-                    <div>
-                        <label class="block text-xs font-black text-[#6b1f26] uppercase mb-2">Nombre del Cliente</label>
-                        <input type="text" name="nombre_cliente" value="{{ current_user.nombre }}" readonly
-                               class="w-full bg-[#d8c9b4]/30 border-2 border-[#6b1f26]/20 rounded-xl px-4 py-3 font-bold text-[#2c1b16]">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-black text-[#6b1f26] uppercase mb-2">Sucursal de Origen</label>
-                        <select name="id_sucursal" required
-                                class="w-full bg-white border-2 border-[#6b1f26] rounded-xl px-4 py-3 font-bold text-[#6b1f26] outline-none">
-                            {% for s in sucursales %}
-                            <option value="{{ s.id_sucursal }}">{{ s.nombre }} - {{ s.ciudad }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-black text-[#6b1f26] uppercase mb-2">Método de Pago</label>
-                        <select id="metodo_pago" name="metodo_pago" required
-                                class="w-full bg-white border-2 border-[#6b1f26] rounded-xl px-4 py-3 font-bold text-[#6b1f26] outline-none">
-                            <option value="efectivo">Efectivo</option>
-                            <option value="transferencia">Transferencia Bancaria</option>
-                        </select>
-                    </div>
-
-                    <div id="info_transferencia" class="hidden bg-[#d8c9b4]/50 p-5 rounded-xl border-2 border-dashed border-[#6b1f26]">
-                        <p class="text-[10px] font-black text-[#6b1f26] uppercase mb-2">Datos de Depósito</p>
-                        <p class="text-sm font-bold text-[#2c1b16]">Banco: <span class="font-normal uppercase text-xs text-black">BBVA Bancomer</span></p>
-                        <p class="text-sm font-bold text-[#2c1b16]">CLABE: <span class="font-normal text-xs text-black">0123 4567 8901 2345 67</span></p>
-                        <p class="text-sm font-bold text-[#2c1b16] mb-4">Concepto: <span class="font-normal text-xs text-black">Pana-{{ current_user.nombre[:5] }}</span></p>
-                        <label class="block text-[10px] font-black text-[#6b1f26] uppercase mb-1">Subir Comprobante</label>
-                        <input type="file" name="comprobante" class="text-xs font-bold">
-                    </div>
-
-                    <button type="submit"
-                            class="w-full bg-[#6b1f26] text-white py-4 rounded-xl font-black text-xl uppercase tracking-widest hover:bg-[#4b1e1e] transition-all transform hover:scale-[1.02] shadow-lg">
-                        Confirmar Pedido
-                    </button>
-
-                    <a href="{{ url_for('catalogo') }}" class="block text-center text-xs font-bold text-[#6b1f26] uppercase hover:underline mt-4">
-                        ← Seguir Comprando
-                    </a>
-                </form>
             </div>
         </div>
     </div>
 </section>
 
-<script>
-    const selectPago = document.getElementById('metodo_pago');
-    const infoTrans  = document.getElementById('info_transferencia');
-    selectPago.addEventListener('change', function() {
-        infoTrans.classList.toggle('hidden', this.value !== 'transferencia');
-    });
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b1f26; border-radius: 10px; }
+</style>
 
-    // Función para actualizar cantidad y precios dinámicamente
-    function actualizarCantidad(input) {
-        const cantidad = parseInt(input.value) || 1;
-        const precioUnitario = parseFloat(input.dataset.precioUnitario);
-        const productoId = input.dataset.productoId;
-        
-        // Calcular nuevo subtotal para este producto
-        const nuevoSubtotal = cantidad * precioUnitario;
-        
-        // Actualizar el subtotal mostrado
-        const subtotalElement = document.getElementById(`subtotal-${productoId}`);
-        if (subtotalElement) {
-            subtotalElement.textContent = `$${nuevoSubtotal.toFixed(2)}`;
-        }
-        
-        // Recalcular el total general del carrito
-        actualizarTotalGeneral();
-    }
-
-    // Función para recalcular el total general
-    function actualizarTotalGeneral() {
-        let totalGeneral = 0;
-        
-        // Sumar todos los subtotales
-        document.querySelectorAll('[id^="subtotal-"]').forEach(element => {
-            const precioText = element.textContent.replace('$', '');
-            totalGeneral += parseFloat(precioText) || 0;
-        });
-        
-        // Actualizar el total mostrado
-        const totalElement = document.querySelector('.text-3xl.font-black.text-\\[\\#6b1f26\\]');
-        if (totalElement) {
-            totalElement.textContent = `$${totalGeneral.toFixed(2)}`;
-        }
-    }
-</script>
 {% endblock %}
