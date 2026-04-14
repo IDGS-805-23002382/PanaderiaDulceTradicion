@@ -34,3 +34,9 @@ desktop.ini
 
 # Logs
 *.log
+app.py
+blueprints/dashboard/__init__.py
+blueprints/dashboard/routesDashboard.py
+blueprints/dashboard/routesDashboardMar.py
+blueprints/ventas/routesVentas.py
+templates/modulo-dashboard/dashboard.html
