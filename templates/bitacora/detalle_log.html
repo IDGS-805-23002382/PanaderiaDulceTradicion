@@ -1,0 +1,69 @@
+{% extends "layoutModulos.html" %}
+{% block container %}
+
+<div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Botón volver -->
+        <div class="mb-6">
+            <a href="{{ url_for('bitacora.ver_bitacora') }}" 
+               class="inline-flex items-center text-[#341915] hover:text-[#4a241d]">
+                ← Volver a bitácora
+            </a>
+        </div>
+
+        <!-- Detalle -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-[#341915] px-6 py-4">
+                <h2 class="text-xl font-bold text-white">Detalle de registro</h2>
+                <p class="text-amber-100">ID: {{ log.id_bitacora }}</p>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-600">Fecha y hora</label>
+                        <p class="text-lg">{{ log.fecha_hora.strftime('%Y-%m-%d %H:%M:%S') if log.fecha_hora else 'N/A' }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-600">Usuario</label>
+                        <p class="text-lg">{{ log.usuario_nombre or 'sistema' }}</p>
+                        {% if log.usuario_id %}
+                        <p class="text-xs text-gray-400">ID Usuario: {{ log.usuario_id }}</p>
+                        {% endif %}
+                        {% if log.ip_usuario %}
+                        <p class="text-xs text-gray-400">IP: {{ log.ip_usuario }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-600">Acción</label>
+                        <p>
+                            {% if log.accion == 'INSERT' %}
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full">CREAR</span>
+                            {% elif log.accion == 'UPDATE' %}
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">EDITAR</span>
+                            {% elif log.accion == 'DELETE' %}
+                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full">ELIMINAR</span>
+                            {% else %}
+                                {{ log.accion }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-600">Tabla afectada</label>
+                        <p class="font-mono">{{ log.tabla }}</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-600">Descripción detallada</label>
+                    <div class="mt-2 p-4 bg-gray-50 rounded-lg border">
+                        <pre class="whitespace-pre-wrap font-sans text-gray-700">{{ log.descripcion }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

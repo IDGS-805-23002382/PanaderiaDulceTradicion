@@ -1,0 +1,187 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+
+<div class="min-h-screen bg-[#E8D8C4] p-6">
+  <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
+    
+    <div class="bg-gradient-to-r from-[#341915] to-[#561C24] px-6 py-5">
+      <h2 class="text-2xl font-bold text-white">Registrar Merma</h2>
+      <p class="text-[#C7B7A3] text-sm mt-1">
+        <span class="font-semibold text-white">{{ materia.nombre }}</span> | {{ sucursal.nombre }}
+      </p>
+    </div>
+
+    <div class="p-6">
+      <div class="bg-yellow-50 rounded-xl p-4 mb-6 border-l-4 border-yellow-500 shadow-sm">
+        <p class="text-xs text-yellow-700 uppercase font-bold tracking-wider">Stock Total Disponible</p>
+        <p class="text-2xl font-black text-yellow-900" id="stockActualDisplay">
+          {{ inventario.stock_actual | float | round(0) }} <span class="text-sm font-normal">{{ materia.unidad_base }}</span>
+        </p>
+      </div>
+
+      <form method="POST" action="" id="mermaForm" onsubmit="return validarFormulario()">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="space-y-5">
+          
+          <div>
+            <label class="block text-sm font-bold text-[#341915] mb-2">1. Seleccionar Lote</label>
+            <select name="lote" id="loteSelect" 
+                    class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-3 bg-white focus:border-[#561C24] outline-none transition-all shadow-sm" 
+                    required>
+              <option value="" data-fecha="" data-stock="{{ inventario.stock_actual }}">-- Seleccione el lote --</option>
+              
+              {# Lógica para ajustar lotes al stock real #}
+              {% set ns = namespace(suma=0) %}
+              {% for lote_key, lote_info in lotes.items() %}
+                {% if ns.suma < inventario.stock_actual %}
+                  
+                  {% set stock_restante_real = inventario.stock_actual - ns.suma %}
+                  
+                  {# Determinamos cuánto de este lote es "real" #}
+                  {% if lote_info.stock < stock_restante_real %}
+                      {% set stock_a_mostrar = lote_info.stock %}
+                  {% else %}
+                      {% set stock_a_mostrar = stock_restante_real %}
+                  {% endif %}
+
+                  {% if stock_a_mostrar > 0 %}
+                    <option value="{{ lote_info.lote }}" 
+                            data-fecha="{{ lote_info.fecha_caducidad.strftime('%Y-%m-%d') if lote_info.fecha_caducidad else '' }}"
+                            data-stock="{{ stock_a_mostrar | float | round(0) }}">
+                      📦 Lote: {{ lote_info.lote }} (Disponible: {{ stock_a_mostrar | float | round(0) }} {{ materia.unidad_base }})
+                    </option>
+                    {% set ns.suma = ns.suma + stock_a_mostrar %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            </select>
+            <p class="text-[10px] text-[#561C24] mt-2 font-semibold italic">
+              * Mostrando solo lotes que completan el stock físico real.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-bold text-[#341915] mb-2">2. Cantidad (Solo enteros)</label>
+              <div class="relative">
+                <input type="number" name="cantidad" id="cantidadInput" 
+                       min="1" step="1" 
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                       class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-3 focus:border-[#561C24] outline-none transition-all" 
+                       placeholder="0" required>
+                <span class="absolute right-4 top-3 text-gray-400 text-sm">{{ materia.unidad_base }}</span>
+              </div>
+              <p class="text-[10px] text-gray-500 mt-1 uppercase">Máximo en este lote: <span id="maxStock" class="font-bold">--</span></p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-bold text-[#341915] mb-2">Fecha de Caducidad</label>
+              <input type="date" name="fecha_caducidad" id="fechaCaducidadInput" 
+                     class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-3 bg-gray-50 text-gray-600 cursor-not-allowed" 
+                     readonly>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-[#341915] mb-2">3. Motivo de la merma</label>
+            <select name="motivo" id="motivoSelect" class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-3 bg-white focus:border-[#561C24] outline-none transition-all" required>
+              <option value="">-- Seleccione la razón --</option>
+              <option value="Caducidad">Producto Caducado</option>
+              <option value="Daño físico"> Daño o Rotura</option>
+              <option value="Mala calidad">Defecto de Calidad</option>
+              <option value="Derrame"> Derrame / Pérdida</option>
+              <option value="Robo"> Robo o Extravío</option>
+              <option value="Otro"> Otro Motivo</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3 pt-4">
+            <button type="submit" class="flex-1 bg-[#561C24] hover:bg-[#341915] text-white px-6 py-4 rounded-xl font-bold transition-all shadow-lg active:scale-95">
+              Registrar Movimiento
+            </button>
+            <a href="{{ url_for('proveedores.movimientosMateria', id_materia=materia.id_materia, id_sucursal=sucursal.id_sucursal) }}" 
+               class="flex-1 bg-white border-2 border-gray-300 text-gray-600 px-6 py-4 rounded-xl font-bold text-center hover:bg-gray-50 transition-all">
+              Cancelar y Volver
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loteSelect = document.getElementById('loteSelect');
+    const fechaInput = document.getElementById('fechaCaducidadInput');
+    const cantidadInput = document.getElementById('cantidadInput');
+    const maxStockSpan = document.getElementById('maxStock');
+    const stockDisplay = document.getElementById('stockActualDisplay');
+    const motivoSelect = document.getElementById('motivoSelect');
+
+    const stockGeneral = Math.floor(parseFloat("{{ inventario.stock_actual }}"));
+
+    loteSelect.addEventListener('change', function() {
+        const option = this.options[this.selectedIndex];
+        const fecha = option.getAttribute('data-fecha');
+        const stockLote = option.getAttribute('data-stock');
+
+        if (this.value !== "") {
+            fechaInput.value = fecha || "";
+            maxStockSpan.textContent = stockLote + " {{ materia.unidad_base }}";
+            cantidadInput.max = stockLote;
+            
+            // Sincronizar banner con lote
+            stockDisplay.innerHTML = `${stockLote} <span class="text-sm font-normal">{{ materia.unidad_base }} (Lote: ${this.value})</span>`;
+
+            if (fecha) {
+                const hoy = new Date().toISOString().split('T')[0];
+                if (fecha < hoy) {
+                    motivoSelect.value = "Caducidad";
+                    fechaInput.classList.add('text-red-700', 'bg-red-50');
+                } else {
+                    fechaInput.classList.remove('text-red-700', 'bg-red-50');
+                }
+            }
+        } else {
+            fechaInput.value = "";
+            maxStockSpan.textContent = "--";
+            stockDisplay.innerHTML = `${stockGeneral} <span class="text-sm font-normal">{{ materia.unidad_base }}</span>`;
+        }
+    });
+});
+
+function validarFormulario() {
+    const cantidadStr = document.getElementById('cantidadInput').value;
+    const qty = parseInt(cantidadStr);
+    const max = parseInt(document.getElementById('cantidadInput').max);
+    
+    if (cantidadStr.includes('.') || cantidadStr.includes(',')) {
+        alert("No se permiten decimales.");
+        return false;
+    }
+
+    if (isNaN(qty) || qty <= 0) {
+        alert("Cantidad inválida.");
+        return false;
+    }
+
+    if (qty > max) {
+        alert(`Stock insuficiente en este lote (Máximo: ${max}).`);
+        return false;
+    }
+    
+    return true; // Envío directo sin confirmación JS
+}
+</script>
+
+<style>
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; margin: 0; 
+  }
+  input[type=number] { -moz-appearance: textfield; }
+</style>
+
+{% endblock %}

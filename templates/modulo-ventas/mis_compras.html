@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+{% block container %}
+<section class="bg-[#d8c9b4] py-12 min-h-screen">
+    <div class="max-w-5xl mx-auto px-6">
+        <div class="bg-white/80 backdrop-blur-sm border-4 border-[#6b1f26] rounded-2xl p-8 shadow-2xl">
+            <div class="flex items-center justify-between mb-8 border-b-4 border-[#6b1f26] pb-4">
+                <h2 class="text-3xl font-black text-[#2c1b16] uppercase tracking-widest">
+                    Mis Pedidos en Línea
+                </h2>
+                <img src="{{ url_for('static', filename='img/logos/logo.png') }}" class="h-16 w-16 rounded-full bg-[#6b1f26] p-1">
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-[#6b1f26] text-[#f3e5d8] uppercase text-sm">
+                            <th class="p-4 rounded-tl-lg">Fecha</th>
+                            <th class="p-4">Folio</th>
+                            <th class="p-4">Método de Pago</th>
+                            <th class="p-4">Total</th>
+                            <th class="p-4 rounded-tr-lg text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#6b1f26]/20">
+                        {% for venta in ventas %}
+                        <tr class="hover:bg-[#6b1f26]/5 transition-colors">
+                            <td class="p-4 text-xs font-bold text-gray-600">
+                                {{ venta.fecha.strftime('%d/%m/%Y %H:%M') if venta.fecha else 'S/F' }}
+                            </td>
+                            <td class="p-4 text-xs font-mono text-[#6b1f26]">#{{ venta._id|string }}</td>
+                            <td class="p-4">
+                                <span class="text-[10px] font-black uppercase bg-gray-200 px-2 py-1 rounded text-gray-700">
+                                    {{ venta.metodo_pago }}
+                                </span>
+                            </td>
+                            <td class="p-4 font-black text-[#2c1b16]">${{ "%.2f"|format(venta.total) }}</td>
+                            <td class="p-4 text-center">
+                                <a href="{{ url_for('ventas.ticket_cliente', id_venta=venta._id|string) }}" 
+                                   class="bg-[#6b1f26] text-white px-4 py-2 rounded-lg text-[10px] font-black hover:bg-black transition uppercase">
+                                    Ver Ticket
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="p-20 text-center">
+                                <p class="text-[#6b1f26] font-black uppercase text-lg">Aún no has realizado compras</p>
+                                <a href="{{ url_for('catalogo') }}" class="text-sm underline font-bold text-[#2c1b16] hover:text-[#6b1f26]">Ir al catálogo ahora</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

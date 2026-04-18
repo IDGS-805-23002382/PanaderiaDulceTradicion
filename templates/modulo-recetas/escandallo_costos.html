@@ -1,0 +1,299 @@
+{% extends 'layoutModulos.html' %}
+{% block container %}
+
+<div class="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- Encabezado -->
+        <div class="bg-white rounded-3xl shadow-sm p-6 mb-8 border border-gray-100">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-[#F3E9DB] rounded-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#341915]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-[#341915]">📊 Escandallo de Costos</h1>
+                        <p class="text-gray-500">{{ producto.nombre }}</p>
+                        <p class="text-xs text-gray-400 mt-1">
+                            Precios basados en última compra registrada automáticamente
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-[#341915] text-[#E8D8C4] px-6 py-3 rounded-2xl font-bold">
+                    🎂 Rendimiento: {{ rendimiento }} Unidades
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjetas de resumen -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">💰 Materia Prima</p>
+                <p class="text-2xl font-black text-gray-800">${{ "%.2f"|format(total_costo_receta) }}</p>
+                <p class="text-xs text-gray-400 mt-1">Total insumos por lote</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-500">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">👥 Mano de Obra</p>
+                <p class="text-2xl font-black text-gray-800">${{ "%.2f"|format(mano_obra) }}</p>
+                <p class="text-xs text-gray-400 mt-1">Por lote de producción</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-purple-500">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">⚡ Gastos Operativos</p>
+                <p class="text-2xl font-black text-gray-800">${{ "%.2f"|format(gastos) }}</p>
+                <p class="text-xs text-gray-400 mt-1">Electricidad, agua, gas, etc.</p>
+            </div>
+            
+            <div class="bg-[#561C24] p-6 rounded-2xl shadow-xl border-l-4 border-red-500">
+                <p class="text-xs font-bold text-red-200 uppercase tracking-widest mb-1">📦 Costo Unitario</p>
+                <p class="text-2xl font-black text-white">${{ "%.2f"|format(costo_por_pieza) }}</p>
+                <p class="text-xs text-red-200 mt-1">Por pieza/unidad (sin IVA)</p>
+            </div>
+
+            <div class="bg-[#1e3a5f] p-6 rounded-2xl shadow-xl border-l-4 border-blue-400">
+                <p class="text-xs font-bold text-blue-200 uppercase tracking-widest mb-1">💵 Con IVA ({{ iva_porcentaje }}%)</p>
+                <p class="text-2xl font-black text-white">${{ "%.2f"|format(costo_con_iva) }}</p>
+                <p class="text-xs text-blue-200 mt-1">IVA incluido: ${{ "%.2f"|format(iva_producto) }}</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Columna Izquierda: Ingredientes -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Formulario de Gastos -->
+                <form method="POST" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-[#341915] mb-4">⚙️ Ajustar Gastos de Producción</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500">Mano de Obra ($)</label>
+                            <input type="number" step="0.01" name="mano_obra" value="{{ mano_obra }}" 
+                                   class="w-full border-2 rounded-xl px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500">Gastos Operativos ($)</label>
+                            <input type="number" step="0.01" name="gastos" value="{{ gastos }}" 
+                                   class="w-full border-2 rounded-xl px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500">IVA (%)</label>
+                            <input type="number" step="1" name="iva_porcentaje" value="{{ iva_porcentaje }}" 
+                                   class="w-full border-2 rounded-xl px-4 py-2">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500">Unidades por lote</label>
+                            <input type="number" step="1" name="rendimiento" value="{{ rendimiento }}" 
+                                   class="w-full border-2 rounded-xl px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500">Margen de Ganancia (%)</label>
+                            <input type="number" step="5" name="margen_ganancia" value="{{ margen_ganancia }}" 
+                                   class="w-full border-2 rounded-xl px-4 py-2">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full mt-6 bg-[#341915] text-white py-3 rounded-xl font-bold hover:bg-[#561C24] transition">
+                        🔄 Recalcular
+                    </button>
+                </form>
+
+                <!-- Tabla de Ingredientes -->
+                <div class="bg-white rounded-3xl shadow-sm overflow-hidden">
+                    <div class="p-6 border-b bg-gray-50">
+                        <h3 class="font-bold text-gray-700">📋 Desglose de Materia Prima</h3>
+                        <p class="text-xs text-gray-400 mt-1">Precios automáticos basados en última compra</p>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr class="text-xs text-gray-500">
+                                    <th class="px-4 py-3">Ingrediente</th>
+                                    <th class="px-4 py-3 text-center">Cantidad</th>
+                                    <th class="px-4 py-3 text-center">Costo Unitario</th>
+                                    <th class="px-4 py-3 text-right">Subtotal</th>
+                                    <th class="px-4 py-3 text-right">%</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                {% for ing in ingredientes %}
+                                <tr class="hover:bg-amber-50/30">
+                                    <td class="px-4 py-3">
+                                        <div class="font-medium text-gray-800">{{ ing.nombre }}</div>
+                                        {% if ing.warning %}
+                                        <span class="text-xs text-amber-600">{{ ing.warning }}</span>
+                                        {% endif %}
+                                        {% if ing.ultima_compra %}
+                                        <div class="text-xs text-gray-400 mt-1">
+                                            🕐 Última compra: {{ ing.ultima_compra.fecha.strftime('%d/%m/%Y') }}
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        {{ ing.cantidad }} {{ ing.unidad }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="font-mono text-sm">
+                                            ${{ "%.4f"|format(ing.costo_unitario) }}/{{ ing.unidad }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-right font-semibold">
+                                        ${{ "%.2f"|format(ing.subtotal) }}
+                                    </td>
+                                    <td class="px-4 py-3 text-right text-gray-500">
+                                        {{ "%.1f"|format(ing.porcentaje) }}%
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="bg-amber-50">
+                                <tr>
+                                    <td colspan="3" class="px-4 py-3 text-right font-bold">Total Insumos:</td>
+                                    <td class="px-4 py-3 text-right font-bold text-amber-900">${{ "%.2f"|format(total_costo_receta) }}</td>
+                                    <td class="px-4 py-3 text-right">100%</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Precios -->
+            <div class="space-y-6">
+                
+                <!-- Tarjeta de Precios Sugeridos -->
+                <div class="bg-gradient-to-br from-[#341915] to-[#4a241d] rounded-3xl p-6 shadow-2xl sticky top-8">
+                    <h3 class="text-center font-bold text-amber-400 mb-4">💎 Precios Sugeridos</h3>
+                    
+                    <!-- Precio Económico -->
+                    <div class="bg-white/10 rounded-2xl p-4 mb-3">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-gray-300">📉 Económico ({{ margenes.economico }}% margen)</span>
+                            <span class="bg-gray-700 text-[10px] px-2 py-0.5 rounded-full">Bronce</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <p class="text-[10px] text-gray-400">Sin IVA</p>
+                                <p class="text-xl font-bold text-white">${{ "%.2f"|format(precios_sugeridos.economico.sin_iva) }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400">Con IVA</p>
+                                <p class="text-xl font-bold text-white">${{ "%.2f"|format(precios_sugeridos.economico.con_iva) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Precio Estándar (Recomendado) -->
+                    <div class="bg-amber-400 rounded-2xl p-4 mb-3 relative">
+                        <div class="absolute -top-3 right-4">
+                            <span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">⭐ Recomendado</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-[#341915]">🏆 Estándar ({{ margenes.estandar|round(0) }}% margen)</span>
+                            <span class="bg-[#341915] text-amber-400 text-[10px] px-2 py-0.5 rounded-full">Oro</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <p class="text-[10px] text-[#561C24]">Sin IVA</p>
+                                <p class="text-2xl font-bold text-[#341915]">${{ "%.2f"|format(precios_sugeridos.estandar.sin_iva) }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-[#561C24]">Con IVA</p>
+                                <p class="text-2xl font-bold text-[#341915]">${{ "%.2f"|format(precios_sugeridos.estandar.con_iva) }}</p>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-[#561C24] mt-2">
+                            💰 Ganancia por unidad: ${{ "%.2f"|format(precios_sugeridos.estandar.sin_iva - costo_por_pieza) }}
+                        </p>
+                    </div>
+
+                    <!-- Precio Premium -->
+                    <div class="bg-white/10 rounded-2xl p-4 mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-gray-300">✨ Premium ({{ margenes.premium }}% margen)</span>
+                            <span class="bg-amber-600 text-[10px] px-2 py-0.5 rounded-full">Platino</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <p class="text-[10px] text-gray-400">Sin IVA</p>
+                                <p class="text-xl font-bold text-white">${{ "%.2f"|format(precios_sugeridos.premium.sin_iva) }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-gray-400">Con IVA</p>
+                                <p class="text-xl font-bold text-white">${{ "%.2f"|format(precios_sugeridos.premium.con_iva) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumen -->
+                    <div class="border-t border-white/10 pt-4 space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-400">Costo por lote:</span>
+                            <span class="text-white font-bold">${{ "%.2f"|format(costo_lote_total) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-400">Costo unitario:</span>
+                            <span class="text-white font-bold">${{ "%.2f"|format(costo_por_pieza) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-2 border-t border-white/5">
+                            <span class="text-gray-400">Ganancia potencial:</span>
+                            <span class="text-green-400 font-bold">${{ "%.2f"|format(ganancia_potencial) }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="mt-6 space-y-2">
+                        <button onclick="copiarPrecio('{{ precios_sugeridos.estandar.con_iva }}')" 
+                                class="w-full bg-amber-500 hover:bg-amber-600 text-[#341915] py-2 rounded-xl font-bold transition">
+                            📋 Copiar Precio Recomendado
+                        </button>
+                        <a href="{{ url_for('productos.modificarProducto', id=producto.id_producto) }}" 
+                           class="flex items-center justify-center gap-2 w-full bg-[#561C24] hover:bg-[#341915] text-white py-2 rounded-xl font-bold transition">
+                            💾 Actualizar Precio del Producto
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Información de contexto -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-700">ℹ️ ¿Cómo se calculan los precios?</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Los costos se calculan automáticamente desde la <strong>última compra recibida</strong> 
+                                de cada materia prima. El sistema convierte todo a unidad base (gramos/ml/piezas) 
+                                para mayor precisión.
+                            </p>
+                            <div class="mt-2 text-[10px] text-gray-400">
+                                📊 Compras último mes: ${{ "%.2f"|format(total_compras_mes) }}<br>
+                                📦 Movimientos entrada: {{ total_movimientos_mes|round(0) }} unidades
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copiarPrecio(precio) {
+    navigator.clipboard.writeText(precio);
+    alert('Precio copiado: $' + precio);
+}
+</script>
+
+{% endblock %}

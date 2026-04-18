@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Conversiones - Sistema de Inventario</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .converter-section {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .converter-box {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .converter-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .converter-form {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        }
+
+        .convert-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .convert-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        .conversion-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .conversion-table caption {
+            font-size: 1.3em;
+            font-weight: bold;
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            caption-side: top;
+            text-align: center;
+        }
+
+        .conversion-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .conversion-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .conversion-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .mass-section {
+            background: #e8f4f8;
+        }
+
+        .volume-section {
+            background: #f0f8e8;
+        }
+
+        .formula {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        .badge-mass {
+            background: #3498db20;
+            color: #2980b9;
+        }
+
+        .badge-volume {
+            background: #27ae6020;
+            color: #1e8449;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 30px;
+            border-radius: 5px;
+        }
+
+        .btn-volver {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 30px;
+            transition: all 0.3s;
+        }
+
+        .btn-volver:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .converter-form {
+                flex-direction: column;
+            }
+            
+            .conversion-table {
+                font-size: 0.85em;
+            }
+            
+            .conversion-table th, 
+            .conversion-table td {
+                padding: 8px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Tabla de Conversiones</h1>
+            <p>Masa: kg ↔ g | Volumen: L ↔ mL | Conversiones para inventario</p>
+        </div>
+
+        <!-- Conversor interactivo -->
+        <div class="converter-section">
+            <div class="converter-box">
+                <div class="converter-title">🔄 Conversor de Unidades</div>
+               <form method="GET" action="{{ url_for('materiaPrima.tablaConversiones') }}" class="converter-form">
+                    <div class="form-group">
+                        <label>Valor a convertir:</label>
+                        <input type="number" name="valor" step="any" 
+                               value="{{ valor_original if valor_original is not none else '' }}" 
+                               placeholder="Ej: 1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Desde:</label>
+                        <select name="from_unit">
+                            <optgroup label="Masa">
+                                <option value="kg" {% if unidad_origen == 'kg' %}selected{% endif %}>Kilogramos (kg)</option>
+                                <option value="g" {% if unidad_origen == 'g' %}selected{% endif %}>Gramos (g)</option>
+                                <option value="mg" {% if unidad_origen == 'mg' %}selected{% endif %}>Miligramos (mg)</option>
+                            </optgroup>
+                            <optgroup label="Volumen">
+                                <option value="l" {% if unidad_origen == 'l' %}selected{% endif %}>Litros (L)</option>
+                                <option value="ml" {% if unidad_origen == 'ml' %}selected{% endif %}>Mililitros (mL)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hacia:</label>
+                        <select name="to_unit">
+                            <optgroup label="Masa">
+                                <option value="kg" {% if unidad_destino == 'kg' %}selected{% endif %}>Kilogramos (kg)</option>
+                                <option value="g" {% if unidad_destino == 'g' %}selected{% endif %}>Gramos (g)</option>
+                                <option value="mg" {% if unidad_destino == 'mg' %}selected{% endif %}>Miligramos (mg)</option>
+                            </optgroup>
+                            <optgroup label="Volumen">
+                                <option value="l" {% if unidad_destino == 'l' %}selected{% endif %}>Litros (L)</option>
+                                <option value="ml" {% if unidad_destino == 'ml' %}selected{% endif %}>Mililitros (mL)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="convert-btn">Convertir →</button>
+                    </div>
+                </form>
+                
+                {% if resultado_conversion is not none %}
+                <div class="result success">
+                     {{ "%.6f"|format(valor_original) }} {{ unidad_origen }} = {{ "%.6f"|format(resultado_conversion) }} {{ unidad_destino }}
+                </div>
+                {% elif error_conversion %}
+                <div class="result error">
+                     {{ error_conversion }}
+                </div>
+                {% else %}
+                <div class="result">
+                    Ingrese un valor y seleccione las unidades para convertir
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Tablas de conversión -->
+        <div class="table-container">
+            <!-- Tabla de Masa -->
+            <table class="conversion-table mass-section">
+                <caption> CONVERSIÓN DE MASA (kg ↔ g)</caption>
+                <thead>
+                    <tr>
+                        <th>Convertir de</th>
+                        <th>A</th>
+                        <th>Operación</th>
+                        <th>Ejemplo</th>
+                        <th>Factor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Kilogramos (kg)</strong></td>
+                        <td>Gramos (g)</td>
+                        <td class="formula">Multiplicar por 1000</td>
+                        <td>2 kg × 1000 = 2000 g</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gramos (g)</strong></td>
+                        <td>Kilogramos (kg)</td>
+                        <td class="formula">Dividir entre 1000</td>
+                        <td>500 g ÷ 1000 = 0.5 kg</td>
+                        <td>0.001</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Miligramos (mg)</strong></td>
+                        <td>Gramos (g)</td>
+                        <td class="formula">Dividir entre 1000</td>
+                        <td>1000 mg ÷ 1000 = 1 g</td>
+                        <td>0.001</td>
+                    </tr>
+                    <tr style="background: #f0f0f0;">
+                        <td colspan="5" style="text-align: center; font-weight: bold;">
+                            Fórmula: g = kg × 1000 | kg = g ÷ 1000
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Tabla de Volumen -->
+            <table class="conversion-table volume-section">
+                <caption>CONVERSIÓN DE VOLUMEN (L ↔ mL)</caption>
+                <thead>
+                    <tr>
+                        <th>Convertir de</th>
+                        <th>A</th>
+                        <th>Operación</th>
+                        <th>Ejemplo</th>
+                        <th>Factor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Litros (L)</strong></td>
+                        <td>Mililitros (mL)</td>
+                        <td class="formula">Multiplicar por 1000</td>
+                        <td>1.5 L × 1000 = 1500 mL</td>
+                        <td>1000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mililitros (mL)</strong></td>
+                        <td>Litros (L)</td>
+                        <td class="formula">Dividir entre 1000</td>
+                        <td>750 mL ÷ 1000 = 0.75 L</td>
+                        <td>0.001</td>
+                    </tr>
+                    <tr style="background: #f0f0f0;">
+                        <td colspan="5" style="text-align: center; font-weight: bold;">
+                            Fórmula: mL = L × 1000 | L = mL ÷ 1000
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Tabla de Conversiones de Materia Prima -->
+            <table class="conversion-table">
+                <caption>CONVERSIONES PARA MATERIA PRIMA EN INVENTARIO</caption>
+                <thead>
+                    <tr>
+                        <th>Materia Prima</th>
+                        <th>Stock (kg/L)</th>
+                        <th>Stock (g/mL)</th>
+                        <th>Unidad Base</th>
+                        <th>Factor Conversión</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mp in materia_prima_conversiones %}
+                    <tr>
+                        <td><strong>{{ mp.nombre }}</strong></td>
+                        <td>{{ mp.stock_kg }} {{ mp.unidad_grande }}</td>
+                        <td>{{ mp.stock_g }} {{ mp.unidad_pequena }}</td>
+                        <td><span class="badge {{ mp.badge_class }}">{{ mp.unidad_base }}</span></td>
+                        <td class="formula">1 {{ mp.unidad_grande }} = {{ mp.factor }} {{ mp.unidad_pequena }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No hay materias primas registradas</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Tabla de Equivalencias Comunes -->
+            <table class="conversion-table">
+                <caption>EQUIVALENCIAS COMUNES EN COCINA</caption>
+                <thead>
+                    <tr>
+                        <th>Unidad</th>
+                        <th>Equivalencia en Gramos</th>
+                        <th>Equivalencia en Mililitros</th>
+                        <th>Uso común</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1 Cucharada (sopera)</td>
+                        <td>15 g</td>
+                        <td>15 mL</td>
+                        <td>Harina, azúcar, aceite</td>
+                    </tr>
+                    <tr>
+                        <td>1 Cucharadita (café)</td>
+                        <td>5 g</td>
+                        <td>5 mL</td>
+                        <td>Sal, polvo de hornear</td>
+                    </tr>
+                    <tr>
+                        <td>1 Taza</td>
+                        <td>200-250 g</td>
+                        <td>240-250 mL</td>
+                        <td>Líquidos, harina</td>
+                    </tr>
+                    <tr>
+                        <td>1 Vaso</td>
+                        <td>200 g</td>
+                        <td>200 mL</td>
+                        <td>Agua, leche</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="note">
+            <strong> Nota importante:</strong> 
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li>Para conversión de masa (kg ↔ g): <strong>Multiplicar o dividir por 1000</strong></li>
+                <li>Para conversión de volumen (L ↔ mL): <strong>Multiplicar o dividir por 1000</strong></li>
+                <li>En el inventario, todo el stock se almacena en unidad base (gramos o mililitros)</li>
+                <li>La vista muestra automáticamente la conversión a la unidad más legible (kg o L)</li>
+            </ul>
+        </div>
+
+        <a href="{{ url_for('proveedores.inventarioMateria') }}" class="btn-volver">← Volver al Inventario</a>
+    </div>
+</body>
+</html>
