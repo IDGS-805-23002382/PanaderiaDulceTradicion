@@ -114,44 +114,7 @@
                             {% endfor %}
                         </div>
 
-                        <!-- PRECIO VENTA -->
-                        <div>
-                            {{ form.precio_venta.label(class="block text-sm font-semibold text-[#341915] mb-1") }}
-                            {{ form.precio_venta(class="w-full border rounded-xl px-3 py-3 focus:ring-2 focus:ring-[#341915] focus:border-transparent", 
-                                                step="0.01",
-                                                placeholder="0.00") }}
-                            
-                            {% for error in form.precio_venta.errors %}
-                                <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-                            {% endfor %}
-                        </div>
-
-                        <!-- COSTO UNITARIO -->
-                        <div>
-                            {{ form.costo_unitario_estimado.label(class="block text-sm font-semibold text-[#341915] mb-1") }}
-                            {{ form.costo_unitario_estimado(class="w-full border rounded-xl px-3 py-3 focus:ring-2 focus:ring-[#341915] focus:border-transparent", 
-                                                           step="0.01",
-                                                           placeholder="0.00") }}
-                            
-                            {% for error in form.costo_unitario_estimado.errors %}
-                                <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-                            {% endfor %}
-                        </div>
-
-                        <!-- DÍAS DE CADUCIDAD -->
-                        <div>
-                            {{ form.dias_caducidad.label(class="block text-sm font-semibold text-[#341915] mb-1") }}
-                            {{ form.dias_caducidad(class="w-full border rounded-xl px-3 py-3 focus:ring-2 focus:ring-[#341915] focus:border-transparent", 
-                                                  placeholder="Días hasta caducar") }}
-                            
-                            {% for error in form.dias_caducidad.errors %}
-                                <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-                            {% endfor %}
-                            
-                            <p class="text-xs text-gray-500 mt-1">
-                                Número de días hasta que el producto caduca.
-                            </p>
-                        </div>
+                      
 
                         <!-- ESTATUS -->
                         <div>

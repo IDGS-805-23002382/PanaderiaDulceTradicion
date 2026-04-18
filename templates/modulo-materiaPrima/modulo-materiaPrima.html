@@ -3,283 +3,141 @@
 
 <div class="w-full">
 
-    <!-- TITULO -->
-    <h1 class="text-2xl font-semibold text-center text-[#341915]">
-        Gestión de Materia Prima
-    </h1>
+```
+<!-- TITULO -->
+<h1 class="text-2xl font-semibold text-center text-[#341915]">
+    Gestión de Materia Prima
+</h1>
 
-    <div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-4"></div>
+<div class="w-1/2 h-1 bg-[#341915] mx-auto mt-2 mb-4"></div>
 
+<!-- BOTON AGREGAR -->
+<div class="flex justify-end mb-4">
+    <a href="{{ url_for('materiaPrima.agregarMateriaPrima') }}"
+       class="flex items-center gap-2 bg-[#E8D8C4] px-4 py-2 rounded hover:bg-[#d6c3a7]">
+        <img src="{{ url_for('static', filename='img/iconosModulos/nuevo.png') }}" class="h-6 w-6">
+        <span class="text-[#341915] font-medium">Agregar</span>
+    </a>
+</div>
 
-    <!-- BOTON AGREGAR -->
-    <div class="flex justify-end mb-4">
-        <a href="{{ url_for('materiaPrima.agregarMateriaPrima') }}"
-           class="flex items-center gap-2 bg-[#E8D8C4] px-4 py-2 rounded hover:bg-[#d6c3a7]">
+<!-- FILTRO Y BUSCAR -->
+<div class="flex items-center justify-between mb-4">
 
-            <img src="{{ url_for('static', filename='img/iconosModulos/nuevo.png') }}"
-                 class="h-6 w-6">
+    <!-- FILTRO -->
+    <details class="relative">
+        <summary class="flex items-center gap-2 text-[#341915] font-medium cursor-pointer">
+            <img src="{{ url_for('static', filename='img/iconosModulos/filtrar.png') }}" class="h-6 w-6">
+            <span>Filtrar</span>
+        </summary>
 
-            <span class="text-[#341915] font-medium">
-                Agregar
-            </span>
+        <div class="absolute mt-3 bg-white shadow-lg rounded-lg p-4 w-64 border z-50">
+            <form method="GET" action="{{ url_for('materiaPrima.materiaPrima') }}" class="flex flex-col gap-3">
 
-        </a>
-    </div>
+                <label class="text-sm font-semibold">Estatus</label>
+                <select name="estatus" class="border px-3 py-2 rounded bg-[#D7C7B0]">
+                    <option value="">Todos</option>
+                    <option value="activo" {% if request.args.get('estatus') == 'activo' %}selected{% endif %}>Activos</option>
+                    <option value="inactivo" {% if request.args.get('estatus') == 'inactivo' %}selected{% endif %}>Inactivos</option>
+                </select>
 
+                <label class="text-sm font-semibold">Ordenar</label>
+                <select name="orden" class="border px-3 py-2 rounded bg-[#D7C7B0]">
+                    <option value="">Sin ordenar</option>
+                    <option value="az" {% if request.args.get('orden') == 'az' %}selected{% endif %}>A-Z</option>
+                    <option value="za" {% if request.args.get('orden') == 'za' %}selected{% endif %}>Z-A</option>
+                </select>
 
+                <div class="flex gap-2 mt-2">
+                    <button type="submit" class="bg-[#341915] text-white px-3 py-2 rounded text-sm">Aplicar</button>
+                    <a href="{{ url_for('materiaPrima.materiaPrima') }}" class="bg-gray-200 px-3 py-2 rounded text-sm">Limpiar</a>
+                </div>
 
-    <!-- FILTRO Y BUSCAR -->
-    <div class="flex items-center justify-between mb-4">
+            </form>
+        </div>
+    </details>
 
-        <!-- FILTRO -->
-        <details class="relative">
+    <!-- BUSCAR -->
+    <form method="GET" action="{{ url_for('materiaPrima.materiaPrima') }}" class="flex">
+        <input type="text" name="buscar" placeholder="Buscar materia prima"
+               value="{{ request.args.get('buscar','') }}"
+               class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0]" />
 
-            <summary class="flex items-center gap-2 text-[#341915] font-medium cursor-pointer">
-                <img src="{{ url_for('static', filename='img/iconosModulos/filtrar.png') }}"
-                     class="h-6 w-6">
-                <span>Filtrar</span>
-            </summary>
+        <button type="submit" class="bg-[#341915] px-4 rounded-r">
+            <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}" class="h-5 w-5">
+        </button>
+    </form>
+</div>
 
-            <div class="absolute mt-3 bg-white shadow-lg rounded-lg p-4 w-64 border z-50">
+<!-- TABLA -->
+<div class="overflow-x-auto">
+    <table class="w-full text-sm text-left table-fixed">
 
-                <form method="GET"
-                      action="{{ url_for('materiaPrima.materiaPrima') }}"
-                      class="flex flex-col gap-3">
+        <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
+            <tr>
+                <th class="px-4 py-2">Nombre</th>
+                <th class="px-4 py-2">Unidad Base</th>
+                <th class="px-4 py-2">Proveedor</th>
+                <th class="px-4 py-2">Estatus</th>
+                <th class="px-4 py-2">Acciones</th>
+            </tr>
+        </thead>
 
-                    <!-- ESTATUS -->
-                    <label class="text-sm text-[#341915] font-semibold">
-                        Estatus
-                    </label>
+        <tbody class="bg-white">
+            {% for materia in materiaPrima %}
+            <tr class="border-b hover:bg-gray-50">
 
-                    <select name="estatus"
-                            class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
+                <td class="px-6 py-4">{{ materia.nombre }}</td>
 
-                        <option value="">Todos</option>
+                <td class="px-6 py-4 text-center">
+                    {% if materia.unidad_base == 'g' %}Gramos
+                    {% elif materia.unidad_base == 'kg' %}Kilogramos
+                    {% elif materia.unidad_base == 'ml' %}Mililitros
+                    {% elif materia.unidad_base == 'l' %}Litros
+                    {% elif materia.unidad_base == 'pza' %}Piezas
+                    {% else %}{{ materia.unidad_base }}
+                    {% endif %}
+                </td>
 
-                        <option value="activo"
-                        {% if request.args.get('estatus') == 'activo' %} selected {% endif %}>
-                            Activos
-                        </option>
+                <td class="px-6 py-4">
+                    {{ materia.proveedor.nombre if materia.proveedor else 'Sin proveedor' }}
+                </td>
 
-                        <option value="inactivo"
-                        {% if request.args.get('estatus') == 'inactivo' %} selected {% endif %}>
-                            Inactivos
-                        </option>
+                <td class="px-6 py-4 text-center">
+                    {% if materia.estatus == "activo" %}
+                        <span class="text-green-700 bg-green-100 px-3 py-1 rounded-full">Activo</span>
+                    {% else %}
+                        <span class="text-red-700 bg-red-100 px-3 py-1 rounded-full">Inactivo</span>
+                    {% endif %}
+                </td>
 
-                    </select>
+                <td class="px-4 py-2">
+                    <div class="flex justify-center items-center gap-3">
 
-                    <!-- ORDEN -->
-                    <label class="text-sm text-[#341915] font-semibold">
-                        Ordenar
-                    </label>
+                        <!-- DETALLE -->
+                        <a href="{{ url_for('materiaPrima.detalleMateriaPrima', id=materia.id_materia) }}">
+                            <img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}" class="w-5 h-5">
+                        </a>
 
-                    <select name="orden"
-                            class="border px-3 py-2 rounded bg-[#D7C7B0] text-[#341915]">
+                        <!-- EDITAR -->
+                        <a href="{{ url_for('materiaPrima.modificarMateriaPrima', id=materia.id_materia) }}">
+                            <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}" class="w-5 h-5">
+                        </a>
 
-                        <option value="">Sin ordenar</option>
-
-                        <option value="az"
-                        {% if request.args.get('orden') == 'az' %} selected {% endif %}>
-                            Nombre A-Z
-                        </option>
-
-                        <option value="za"
-                        {% if request.args.get('orden') == 'za' %} selected {% endif %}>
-                            Nombre Z-A
-                        </option>
-
-                    </select>
-
-                    <!-- BOTONES -->
-                    <div class="flex gap-2 mt-2">
-
-                        <button type="submit"
-                                class="bg-[#341915] text-white px-3 py-2 rounded hover:bg-[#4a241d] text-sm">
-                            Aplicar
-                        </button>
-
-                        <a href="{{ url_for('materiaPrima.materiaPrima') }}"
-                           class="bg-gray-200 px-3 py-2 rounded text-sm hover:bg-gray-300">
-                            Limpiar
+                        <!-- DESACTIVAR (SIN JS, REDIRECCIONA A VISTA) -->
+                        <a href="{{ url_for('materiaPrima.eliminarMateriaPrima', id=materia.id_materia) }}">
+                            <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}" class="w-5 h-5">
                         </a>
 
                     </div>
+                </td>
 
-                </form>
-
-            </div>
-
-        </details>
-
-
-
-        <!-- BUSCAR -->
-        <form method="GET"
-              action="{{ url_for('materiaPrima.materiaPrima') }}"
-              class="flex">
-
-            <input type="text"
-                   name="buscar"
-                   placeholder="Buscar materia prima"
-                   value="{{ request.args.get('buscar','') }}"
-                   class="border rounded-l px-4 py-2 w-64 bg-[#D7C7B0] placeholder-[#7a5a4d]" />
-
-            <button type="submit"
-                    class="bg-[#341915] px-4 rounded-r flex items-center justify-center">
-
-                <img src="{{ url_for('static', filename='img/iconosModulos/lupa.png') }}"
-                     class="h-5 w-5">
-
-            </button>
-
-        </form>
-
-    </div>
-
-
-
-    <!-- TABLA -->
-    <div class="overflow-x-auto">
-
-        <table class="w-full text-sm text-left table-fixed">
-
-            <thead class="bg-[#561C24] text-[#E8D8C4] text-center">
-
-                 <tr>
-                    <th class="px-4 py-2">Nombre</th>
-                    <th class="px-4 py-2">Tipo Empaque</th>
-                    <th class="px-4 py-2">Piezas x Caja</th>
-                    <th class="px-4 py-2">Peso x Pieza</th>
-                    <th class="px-4 py-3">Último Precio</th>
-                    <th class="px-4 py-2">Proveedor</th>
-                    <th class="px-4 py-2 w-32">Estatus</th>
-                    <th class="px-4 py-2 w-40">Acciones</th>
-                 </tr>
-
-            </thead>
-
-            <tbody class="bg-white">
-
-            {% for materia in materiaPrima %}
-
-                <tr class="border-b hover:bg-gray-50">
-
-                    <td class="px-6 py-4 font-medium">{{ materia.nombre }}</td>
-               
-                    <!-- Tipo de empaque con colores -->
-                    <td class="px-6 py-4 text-center">
-                        {% if materia.tipo_empaque == 'unidad' %}
-                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
-                                Unidad
-                            </span>
-                        {% elif materia.tipo_empaque == 'caja' %}
-                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
-                                Caja
-                            </span>
-                        {% elif materia.tipo_empaque == 'bulto' %}
-                            <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">
-                                Bulto
-                            </span>
-                        {% else %}
-                            {{ materia.tipo_empaque }}
-                        {% endif %}
-                    </td>
-                    
-                    <!-- Piezas por caja -->
-                    <td class="px-6 py-4 text-center">
-                        {% if materia.piezas_por_caja %}
-                            <span class="font-bold">{{ materia.piezas_por_caja }}</span>
-                            <span class="text-xs text-gray-500">{{ materia.unidad_medida }}</span>
-                        {% else %}
-                            <span class="text-gray-400">-</span>
-                        {% endif %}
-                    </td>
-                    
-                    <!-- Peso por pieza -->
-                    <td class="px-6 py-4 text-center">
-                        {% if materia.peso_por_pieza %}
-                            <span class="font-bold">{{ materia.peso_por_pieza }}</span>
-                            <span class="text-xs text-gray-500">{{ materia.unidad_contenido }}</span>
-                            <div class="text-[10px] text-gray-400">
-                                por pieza
-                            </div>
-                        {% else %}
-                            <span class="text-gray-400">-</span>
-                        {% endif %}
-                    </td>
-
-                    <!-- Precio (último precio de compra) -->
-                    <td class="px-4 py-4 text-center">
-                        {% set ultimo_precio = materia.get_ultimo_precio() %}
-                        {% if ultimo_precio > 0 %}
-                            <span class="font-bold text-[#561C24] text-lg">
-                                ${{ "%.2f"|format(ultimo_precio) }}
-                            </span>
-                            <!-- Mostrar precio por pieza si es caja -->
-                            {% if materia.tipo_empaque == 'caja' and materia.piezas_por_caja %}
-                                <div class="text-[10px] text-gray-500">
-                                    (${{ "%.2f"|format(ultimo_precio / materia.piezas_por_caja) }} x pieza)
-                                </div>
-                            {% endif %}
-                        {% else %}
-                            <span class="text-gray-400 text-sm">Sin precio</span>
-                        {% endif %}
-                    </td>
-                    
-                    <!-- Proveedor -->
-                    <td class="px-6 py-4">
-                        {{ materia.proveedor.nombre if materia.proveedor else 'Sin proveedor' }}
-                    </td>
-
-                    <!-- ESTATUS -->
-                    <td class="px-6 py-4 text-center">
-                        {% if materia.estatus == "activo" %}
-                            <span class="px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">
-                                Activo
-                            </span>
-                        {% else %}
-                            <span class="px-3 py-1 text-sm font-semibold text-red-700 bg-red-100 rounded-full">
-                                Inactivo
-                            </span>
-                        {% endif %}
-                    </td>
-
-                    <!-- ACCIONES -->
-                  <td class="px-4 py-2 bg-[#561C24] w-40">
-                        <div class="flex justify-center items-center gap-3">
-                            <!-- DETALLE -->
-                            <a href="{{ url_for('materiaPrima.detalleMateriaPrima', id=materia.id_materia) }}"
-                               class="hover:opacity-75 transition">
-                                <img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}"
-                                     class="w-5 h-5">
-                            </a>
-
-                            <!-- EDITAR -->
-                            <a href="{{ url_for('materiaPrima.modificarMateriaPrima', id=materia.id_materia) }}"
-                               class="hover:opacity-75 transition">
-                                <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}"
-                                     class="w-5 h-5">
-                            </a>
-
-                            <!-- ELIMINAR -->
-                            <a href="{{ url_for('materiaPrima.eliminarMateriaPrima', id=materia.id_materia) }}"
-                               class="hover:opacity-75 transition"
-                               onclick="return confirm('¿Estás seguro de eliminar {{ materia.nombre }}?')">
-                                <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}"
-                                     class="w-5 h-5">
-                            </a>
-                        </div>
-                    </td>
-
-                </tr>
-
+            </tr>
             {% endfor %}
+        </tbody>
 
-            </tbody>
-
-        </table>
-
-    </div>
+    </table>
+</div>
+```
 
 </div>
 

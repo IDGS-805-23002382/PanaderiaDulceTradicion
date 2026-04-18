@@ -1,0 +1,197 @@
+{% extends "layoutModulos.html" %}
+{% block container %}
+
+<div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- TÍTULO -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-[#341915] text-center">Bitácora de Auditoría</h1>
+            <div class="w-24 h-1 bg-[#341915] mx-auto mt-2"></div>
+            <p class="text-center text-gray-600 mt-2">Historial de cambios en el sistema</p>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Buscador -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
+                    <input type="text" name="buscar" value="{{ buscar }}" 
+                           placeholder="Usuario, acción, tabla..."
+                           class="w-full border rounded-lg px-3 py-2">
+                </div>
+
+                <!-- Acción -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Acción</label>
+                    <select name="accion" class="w-full border rounded-lg px-3 py-2">
+                        <option value="">Todas</option>
+                        {% for accion in acciones %}
+                        <option value="{{ accion }}" {% if accion_filtro == accion %}selected{% endif %}>
+                            {{ accion }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Tabla -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tabla</label>
+                    <select name="tabla" class="w-full border rounded-lg px-3 py-2">
+                        <option value="">Todas</option>
+                        {% for tabla in tablas %}
+                        <option value="{{ tabla }}" {% if tabla_filtro == tabla %}selected{% endif %}>
+                            {{ tabla }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Fechas -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha desde</label>
+                    <input type="date" name="fecha_desde" value="{{ fecha_desde }}"
+                           class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha hasta</label>
+                    <input type="date" name="fecha_hasta" value="{{ fecha_hasta }}"
+                           class="w-full border rounded-lg px-3 py-2">
+                </div>
+
+                <!-- Botones -->
+                <div class="md:col-span-4 flex gap-3">
+                    <button type="submit" class="bg-[#341915] text-white px-4 py-2 rounded-lg hover:bg-[#4a241d]">
+                        Filtrar
+                    </button>
+                    <a href="{{ url_for('bitacora.ver_bitacora') }}" class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400">
+                        Limpiar
+                    </a>
+                    {% if current_user.id_rol == 1 %}
+                    <button type="button" onclick="confirmarLimpiar()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 ml-auto">
+                        Limpiar registros antiguos
+                    </button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        <!-- TABLA DE BITÁCORA -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-[#561C24] text-[#E8D8C4]">
+                        <tr>
+                            <th class="px-4 py-3 text-left">Fecha/Hora</th>
+                            <th class="px-4 py-3 text-left">Usuario</th>
+                            <th class="px-4 py-3 text-left">Acción</th>
+                            <th class="px-4 py-3 text-left">Tabla</th>
+                            <th class="px-4 py-3 text-left">Descripción</th>
+                            <th class="px-4 py-3 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for log in logs.items %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {{ log.fecha_hora.strftime('%Y-%m-%d %H:%M:%S') if log.fecha_hora else 'N/A' }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="px-2 py-1 bg-gray-100 rounded-full text-xs font-medium">
+                                    {{ log.usuario_nombre or 'sistema' }}
+                                </span>
+                                {% if log.ip_usuario %}
+                                <span class="text-xs text-gray-400 ml-1">({{ log.ip_usuario }})</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if log.accion == 'INSERT' %}
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs">CREAR</span>
+                                {% elif log.accion == 'UPDATE' %}
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">EDITAR</span>
+                                {% elif log.accion == 'DELETE' %}
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs">ELIMINAR</span>
+                                {% else %}
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">{{ log.accion }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="font-mono text-xs">{{ log.tabla }}</span>
+                            </td>
+                            <td class="px-4 py-3 max-w-md">
+                                <div class="truncate" title="{{ log.descripcion }}">
+                                    {{ log.descripcion[:100] }}{% if log.descripcion|length > 100 %}...{% endif %}
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <a href="{{ url_for('bitacora.detalle_log', id=log.id_bitacora) }}" 
+                                   class="text-blue-600 hover:text-blue-800">
+                                    Ver detalle
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                                No hay registros en la bitácora
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINACIÓN -->
+            {% if logs.pages > 1 %}
+            <div class="px-4 py-3 border-t flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                    Mostrando {{ logs.items|length }} de {{ logs.total }} registros
+                </div>
+                <div class="flex gap-2">
+                    {% if logs.has_prev %}
+                    <a href="{{ url_for('bitacora.ver_bitacora', pagina=logs.prev_num, buscar=buscar, accion=accion_filtro, tabla=tabla_filtro, fecha_desde=fecha_desde, fecha_hasta=fecha_hasta) }}"
+                       class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+                        ← Anterior
+                    </a>
+                    {% endif %}
+                    
+                    <span class="px-3 py-1 bg-[#341915] text-white rounded">
+                        {{ logs.page }}
+                    </span>
+                    
+                    {% if logs.has_next %}
+                    <a href="{{ url_for('bitacora.ver_bitacora', pagina=logs.next_num, buscar=buscar, accion=accion_filtro, tabla=tabla_filtro, fecha_desde=fecha_desde, fecha_hasta=fecha_hasta) }}"
+                       class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+                        Siguiente →
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<script>
+function confirmarLimpiar() {
+    if (confirm('⚠️ ¿Estás seguro de eliminar registros con más de 180 días?\n\nEsta acción no se puede deshacer.')) {
+        fetch('{{ url_for("bitacora.limpiar_bitacora") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
+        }).catch(error => {
+            alert('Error al limpiar la bitácora');
+        });
+    }
+}
+</script>
+
+{% endblock %}

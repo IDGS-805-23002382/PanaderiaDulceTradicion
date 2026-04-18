@@ -3,6 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from models import Usuario  
+from itsdangerous import URLSafeTimedSerializer
 
 class LoginForm(FlaskForm):
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
@@ -27,3 +28,18 @@ class RegisterForm(FlaskForm):
         user = Usuario.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('Este correo ya está registrado. Usa otro o inicia sesión.')
+        
+class ResetPasswordForm(FlaskForm):
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    submit = SubmitField('Enviar instrucciones')
+    
+class NuevaPasswordForm(FlaskForm):
+    password = PasswordField('Nueva Contraseña', validators=[
+        DataRequired(),
+        Length(min=6, message='La contraseña debe tener al menos 6 caracteres')
+    ])
+    confirm_password = PasswordField('Confirmar Contraseña', validators=[
+        DataRequired(),
+        EqualTo('password', message='Las contraseñas no coinciden')
+    ])
+    submit = SubmitField('ACTUALIZAR')

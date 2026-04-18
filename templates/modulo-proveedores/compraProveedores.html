@@ -3,55 +3,12 @@
 
 <div class="min-h-screen bg-[#E8D8C4] p-6">
 
-  <!-- BREADCRUMB MEJORADO -->
-  <nav class="w-full mb-6" aria-label="Breadcrumb">
-    <ol class="flex flex-wrap items-center gap-2">
-        
-      <li class="flex items-center">
-        <a href="vistaEmpleado" 
-           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
-          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
-          </svg>
-          <span>Panel de Control</span>
-        </a>
-      </li>
-      <li class="text-[#561C24] font-bold">
-        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
-        </svg>
-      </li>
-       <li class="flex items-center">
-        <a href="inventario_materia" 
-           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
-          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
-          </svg>
-          <span>Inventario Materia Prima</span>
-        </a>
-      </li>
-      <li class="text-[#561C24] font-bold">
-        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
-        </svg>
-      </li>
-      <li class="flex items-center">
-        <div class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#561C24] bg-[#E8D8C4] rounded-lg border border-[#C7B7A3] shadow-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-          </svg>
-          <span>Orden de Compra</span>
-        </div>
-      </li>
-    </ol>
-  </nav>
-
   <!-- BOTÓN HISTORIAL -->
   <div class="max-w-5xl mx-auto mb-4">
     <div class="flex justify-end">
       <a href="{{ url_for('proveedores.detalleCompra') }}"
-         class="inline-flex items-center gap-2 bg-[#341915] text-white px-5 py-2.5 rounded-xl hover:bg-[#561C24] transition-all duration-200 shadow-md hover:shadow-lg group">
-        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         class="inline-flex items-center gap-2 bg-[#341915] text-white px-5 py-2.5 rounded-xl hover:bg-[#561C24] transition-all duration-200 shadow-md hover:shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
         </svg>
         <span class="font-semibold">Historial de Compras</span>
@@ -67,18 +24,15 @@
     </div>
 
     <div class="p-6">
-      <form method="POST" action="{{ url_for('proveedores.compraProveedores') }}">
+      <form method="POST" action="{{ url_for('proveedores.compraProveedores') }}" id="formCompra" onsubmit="return validarFormulario()">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
+        <!-- Datos generales -->
         <div class="grid md:grid-cols-2 gap-6 mb-6">
-          <!-- Proveedor -->
           <div>
-            <label class="block text-sm font-semibold text-[#341915] mb-2">
-              Proveedor <span class="text-red-500">*</span>
-            </label>
-            <select name="proveedor" onchange="this.form.submit()"
-                    class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5 bg-white focus:outline-none focus:border-[#561C24] focus:ring-2 focus:ring-[#561C24]/30 transition">
-              <option value=""> Seleccione proveedor</option>
+            <label class="block text-sm font-semibold text-[#341915] mb-2">Proveedor <span class="text-red-500">*</span></label>
+            <select name="proveedor" onchange="this.form.submit()" class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5 bg-white">
+              <option value="">Seleccione proveedor</option>
               {% for p in proveedores %}
               <option value="{{ p.id_proveedor }}" {% if proveedor_id == p.id_proveedor|string %}selected{% endif %}>
                 {{ p.nombre }}
@@ -87,80 +41,165 @@
             </select>
           </div>
 
-          <!-- Sucursal -->
           <div>
-            <label class="block text-sm font-semibold text-[#341915] mb-2">
-              Sucursal <span class="text-red-500">*</span>
-            </label>
-            <select name="sucursal" class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5 bg-white focus:outline-none focus:border-[#561C24] focus:ring-2 focus:ring-[#561C24]/30 transition">
+            <label class="block text-sm font-semibold text-[#341915] mb-2">Sucursal <span class="text-red-500">*</span></label>
+            <select name="sucursal" class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5 bg-white" required>
               <option value="">Seleccione sucursal</option>
               {% for s in sucursales %}
-              <option value="{{ s.id_sucursal }}" {% if datos_form.sucursal == s.id_sucursal|string %}selected{% endif %}>
-                {{ s.nombre }}
-              </option>
+              <option value="{{ s.id_sucursal }}">{{ s.nombre }}</option>
               {% endfor %}
             </select>
           </div>
 
-          <!-- Fecha estimada -->
           <div>
-            <label class="block text-sm font-semibold text-[#341915] mb-2">
-              Fecha Estimada de Entrega <span class="text-red-500">*</span>
-            </label>
-            <input type="date" name="fecha_estimada_entrega" min="{{ today }}"
-                   value="{{ datos_form.fecha_estimada_entrega }}"
-                   class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5 bg-white focus:outline-none focus:border-[#561C24] focus:ring-2 focus:ring-[#561C24]/30 transition">
+            <label class="block text-sm font-semibold text-[#341915] mb-2">Fecha Estimada de Entrega <span class="text-red-500">*</span></label>
+            <input type="date" name="fecha_estimada_entrega" min="{{ today }}" class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5" required>
           </div>
 
-          <!-- Notas -->
           <div>
-            <label class="block text-sm font-semibold text-[#341915] mb-2">
-              Notas u Observaciones
-            </label>
-            <textarea name="notas" rows="1" class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5 bg-white focus:outline-none focus:border-[#561C24] focus:ring-2 focus:ring-[#561C24]/30 transition"
-                      placeholder="Ej: Envío urgente, factura adjunta...">{{ datos_form.notas }}</textarea>
+            <label class="block text-sm font-semibold text-[#341915] mb-2">Notas</label>
+            <textarea name="notas" rows="1" class="w-full border-2 border-[#C7B7A3] rounded-xl px-4 py-2.5" placeholder="Ej: Factura adjunta, envío urgente..."></textarea>
           </div>
         </div>
 
         <!-- DETALLE DE COMPRA -->
         <div class="border-t border-[#C7B7A3] pt-6 mt-4">
-          <h3 class="text-lg font-bold text-[#341915] mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-            </svg>
-            Detalle de Compra
-          </h3>
+          <h3 class="text-lg font-bold text-[#341915] mb-4">Detalle de Compra</h3>
 
-          <div class="space-y-3">
+          <div id="detalles-container" class="space-y-4">
             {% for i in range(filas) %}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 bg-[#E8D8C4] rounded-xl">
-              <select name="materia_id_{{ i }}" class="border-2 border-[#C7B7A3] rounded-lg px-3 py-2 bg-white focus:outline-none focus:border-[#561C24]">
-                <option value="">Seleccione materia prima</option>
-                {% for m in materias %}
-                <option value="{{ m.id_materia }}" 
-                    {% if datos_form.get('materia_id_' ~ i) == m.id_materia|string %}selected{% endif %}>
-                  {{ m.nombre }} ({{ m.tipo_empaque }})
-                </option>
-                {% endfor %}
-              </select>
+            <div class="detalle-item p-4 bg-[#E8D8C4] rounded-xl border border-[#C7B7A3]">
+              <div class="flex justify-between items-start mb-3">
+                <h4 class="font-semibold text-[#341915]">Producto #{{ i+1 }}</h4>
+                {% if i > 0 %}
+                <button type="button" onclick="eliminarFila(this)" class="text-red-500 hover:text-red-700 text-sm">
+                  Eliminar
+                </button>
+                {% endif %}
+              </div>
 
-              <select name="tipo_{{ i }}" class="border-2 border-[#C7B7A3] rounded-lg px-3 py-2 bg-white focus:outline-none focus:border-[#561C24]">
-                <option value="unidad" {% if datos_form.get('tipo_' ~ i) == 'unidad' %}selected{% endif %}>Pieza</option>
-                <option value="caja" {% if datos_form.get('tipo_' ~ i) == 'caja' %}selected{% endif %}> Caja</option>
-              </select>
+              <!-- Materia Prima -->
+              <div class="mb-3">
+                <select name="materia_id_{{ i }}" class="w-full border-2 border-[#C7B7A3] rounded-lg px-3 py-2 bg-white" required>
+                  <option value="">Seleccione materia prima</option>
+                  {% for m in materias %}
+                  <option value="{{ m.id_materia }}">{{ m.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
 
-              <input type="number" name="cantidad_{{ i }}" step="0.01" min="0.01" placeholder="Cantidad"
-                     value="{{ datos_form.get('cantidad_' ~ i) }}"
-                     class="border-2 border-[#C7B7A3] rounded-lg px-3 py-2 bg-white focus:outline-none focus:border-[#561C24]">
+              <!-- Tipo de Compra (3 opciones) -->
+              <div class="mb-3">
+                <select name="tipo_compra_{{ i }}" class="tipo-compra border-2 border-[#C7B7A3] rounded-lg px-3 py-2 bg-white w-full" data-index="{{ i }}">
+                  <option value="granel">📦 A Granel (kg, litros)</option>
+                  <option value="piezas" selected>📦 Por Piezas/Unidades (con empaque)</option>
+                  <option value="caja">📦 Por Caja/Paquete</option>
+                </select>
+              </div>
+
+              <!-- ========================================== -->
+              <!-- OPCIÓN 1: A GRANEL -->
+              <!-- ========================================== -->
+              <div class="campos-granel" id="campos-granel-{{ i }}" style="display: none;">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-semibold text-[#341915] mb-1">Cantidad</label>
+                    <input type="text" name="cantidad_granel_{{ i }}" placeholder="Ej: 5" class="w-full border rounded-lg px-3 py-2 cantidad-input" oninput="validarEnteroPositivo(this)">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-[#341915] mb-1">Unidad</label>
+                    <select name="unidad_granel_{{ i }}" class="w-full border rounded-lg px-3 py-2 bg-white">
+                      <option value="kg">Kilogramos (kg)</option>
+                      <option value="g">Gramos (g)</option>
+                      <option value="l">Litros (l)</option>
+                      <option value="ml">Mililitros (ml)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ========================================== -->
+              <!-- OPCIÓN 2: POR PIEZAS/UNIDADES (CON EMPAQUE) -->
+              <!-- ========================================== -->
+              <div class="campos-piezas" id="campos-piezas-{{ i }}" style="display: block;">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-xs font-semibold text-[#341915] mb-1">Cantidad</label>
+                    <input type="text" name="cantidad_piezas_{{ i }}" placeholder="Ej: 3" class="w-full border rounded-lg px-3 py-2 cantidad-input" required oninput="validarEnteroPositivo(this)">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-[#341915] mb-1">Tipo de empaque</label>
+                    <select name="tipo_empaque_piezas_{{ i }}" class="w-full border rounded-lg px-3 py-2 bg-white">
+                      <option value="bolsa">Bolsa</option>
+                      <option value="frasco">Frasco</option>
+                      <option value="bote">Bote</option>
+                      <option value="paquete">Paquete</option>
+                      <option value="costal">Costal</option>
+                      <option value="sobre">Sobre</option>
+                      <option value="lata">Lata</option>
+                      <option value="caja">Caja</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-[#341915] mb-1">Contenido por empaque</label>
+                    <div class="flex gap-2">
+                      <input type="text" name="contenido_pieza_{{ i }}" placeholder="500" class="w-2/3 border rounded-lg px-3 py-2 contenido-input" oninput="validarEnteroPositivo(this)">
+                      <select name="unidad_contenido_pieza_{{ i }}" class="w-1/3 border rounded-lg px-2 py-2 bg-white">
+                        <option value="g">g</option>
+                        <option value="kg">kg</option>
+                        <option value="ml">ml</option>
+                        <option value="l">l</option>
+                        <option value="pza">pza</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2 p-2 bg-blue-50 rounded text-xs text-gray-600">
+                   Ejemplo: 3 frascos de 80 ml c/u
+                </div>
+              </div>
+
+              <!-- ========================================== -->
+              <!-- OPCIÓN 3: POR CAJA/PAQUETE -->
+              <!-- ========================================== -->
+              <div class="campos-caja" id="campos-caja-{{ i }}" style="display: none;">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-xs font-semibold text-[#341915] mb-1">Cantidad de cajas</label>
+                    <input type="text" name="cantidad_cajas_{{ i }}" placeholder="Ej: 2" class="w-full border rounded-lg px-3 py-2 cantidad-input" oninput="validarEnteroPositivo(this)">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-[#341915] mb-1">Piezas por caja</label>
+                    <input type="text" name="piezas_por_caja_{{ i }}" placeholder="Ej: 24" class="w-full border rounded-lg px-3 py-2" oninput="validarEnteroPositivo(this)">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-[#341915] mb-1">Contenido por pieza</label>
+                    <div class="flex gap-2">
+                      <input type="text" name="contenido_pieza_caja_{{ i }}" placeholder="500" class="w-2/3 border rounded-lg px-3 py-2 contenido-input" oninput="validarEnteroPositivo(this)">
+                      <select name="unidad_contenido_caja_{{ i }}" class="w-1/3 border rounded-lg px-2 py-2 bg-white">
+                        <option value="g">g</option>
+                        <option value="kg">kg</option>
+                        <option value="ml">ml</option>
+                        <option value="l">l</option>
+                        <option value="pza">pza</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-2 p-2 bg-blue-50 rounded text-xs text-gray-600">
+                  📌 Ejemplo: 2 cajas de 24 bolsas de 500g c/u
+                </div>
+              </div>
+
             </div>
             {% endfor %}
           </div>
 
           <!-- BOTONES -->
           <div class="flex flex-col sm:flex-row gap-3 mt-6">
-            <input type="hidden" name="num_filas" value="{{ filas }}">
+            <input type="hidden" name="num_filas" id="num_filas" value="{{ filas }}">
             
-            <button type="submit" name="accion" value="agregar_fila"
+            <button type="button" onclick="agregarFila()"
                     class="inline-flex items-center justify-center gap-2 bg-[#C7B7A3] hover:bg-[#341915] text-[#341915] hover:text-white px-5 py-2.5 rounded-xl transition-all duration-200 font-semibold">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -229,8 +268,17 @@
               </td>
               <td class="px-4 py-3">
                 <div class="flex items-center justify-center gap-2">
+                  <a href="{{ url_for('proveedores.ver_detalle_especifico', id=c.id_compra) }}" 
+                     class="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    Ver
+                  </a>
                   <a href="{{ url_for('proveedores.cancelar_compra', id=c.id_compra) }}" 
-                     class="inline-flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200">
+                     class="inline-flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200"
+                     onclick="return confirm('¿Cancelar esta compra?')">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -263,5 +311,242 @@
   </div>
 
 </div>
+
+<script>
+// Función para validar que solo sean números enteros positivos
+function validarEnteroPositivo(input) {
+    // Eliminar cualquier carácter que no sea número
+    let valor = input.value.replace(/[^0-9]/g, '');
+    
+    // Si está vacío o es 0, dejar vacío
+    if (valor === '' || parseInt(valor) <= 0) {
+        input.value = '';
+    } else {
+        input.value = parseInt(valor);
+    }
+}
+
+// Mostrar/ocultar campos según tipo de compra
+function mostrarCampos(select) {
+    const item = select.closest('.detalle-item');
+    const tipo = select.value;
+
+    const bloques = {
+        granel: item.querySelector('.campos-granel'),
+        piezas: item.querySelector('.campos-piezas'),
+        caja: item.querySelector('.campos-caja')
+    };
+
+    // ocultar todo y deshabilitar
+    Object.values(bloques).forEach(b => {
+        if (!b) return;
+        b.style.display = "none";
+        b.querySelectorAll('input, select').forEach(i => i.disabled = true);
+    });
+
+    // mostrar activo
+    const activo = bloques[tipo];
+    if (activo) {
+        activo.style.display = "block";
+        activo.querySelectorAll('input, select').forEach(i => i.disabled = false);
+    }
+}
+
+// Validar formulario completo antes de enviar
+function validarFormulario() {
+    // Validar que haya al menos un producto
+    const items = document.querySelectorAll('.detalle-item');
+    if (items.length === 0) {
+        alert('⚠️ Debe agregar al menos un producto a la compra');
+        return false;
+    }
+    
+    // Validar que todos los campos requeridos estén llenos
+    let productoValido = false;
+    
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const materiaSelect = item.querySelector('select[name^="materia_id_"]');
+        const tipoCompra = item.querySelector('.tipo-compra').value;
+        
+        if (!materiaSelect.value) {
+            alert(`⚠️ Producto #${i+1}: Debe seleccionar una materia prima`);
+            materiaSelect.focus();
+            return false;
+        }
+        
+        if (tipoCompra === 'granel') {
+            const cantidad = item.querySelector('input[name^="cantidad_granel_"]');
+            if (!cantidad.value || parseInt(cantidad.value) <= 0) {
+                alert(`⚠️ Producto #${i+1}: Debe ingresar una cantidad válida (número entero positivo)`);
+                cantidad.focus();
+                return false;
+            }
+            productoValido = true;
+        } else if (tipoCompra === 'piezas') {
+            const cantidad = item.querySelector('input[name^="cantidad_piezas_"]');
+            const contenido = item.querySelector('input[name^="contenido_pieza_"]');
+            
+            if (!cantidad.value || parseInt(cantidad.value) <= 0) {
+                alert(`⚠️ Producto #${i+1}: Debe ingresar una cantidad válida (número entero positivo)`);
+                cantidad.focus();
+                return false;
+            }
+            if (contenido && (!contenido.value || parseInt(contenido.value) <= 0)) {
+                alert(`⚠️ Producto #${i+1}: Debe ingresar el contenido por empaque (número entero positivo)`);
+                contenido.focus();
+                return false;
+            }
+            productoValido = true;
+        } else if (tipoCompra === 'caja') {
+            const cantidadCajas = item.querySelector('input[name^="cantidad_cajas_"]');
+            const piezasPorCaja = item.querySelector('input[name^="piezas_por_caja_"]');
+            const contenido = item.querySelector('input[name^="contenido_pieza_caja_"]');
+            
+            if (!cantidadCajas.value || parseInt(cantidadCajas.value) <= 0) {
+                alert(`⚠️ Producto #${i+1}: Debe ingresar la cantidad de cajas (número entero positivo)`);
+                cantidadCajas.focus();
+                return false;
+            }
+            if (piezasPorCaja && (!piezasPorCaja.value || parseInt(piezasPorCaja.value) <= 0)) {
+                alert(`⚠️ Producto #${i+1}: Debe ingresar las piezas por caja (número entero positivo)`);
+                piezasPorCaja.focus();
+                return false;
+            }
+            if (contenido && (!contenido.value || parseInt(contenido.value) <= 0)) {
+                alert(`⚠️ Producto #${i+1}: Debe ingresar el contenido por pieza (número entero positivo)`);
+                contenido.focus();
+                return false;
+            }
+            productoValido = true;
+        }
+    }
+    
+    if (!productoValido) {
+        alert('⚠️ Debe agregar al menos un producto válido');
+        return false;
+    }
+    
+    // Validar sucursal
+    const sucursal = document.querySelector('select[name="sucursal"]');
+    if (!sucursal.value) {
+        alert('⚠️ Debe seleccionar una sucursal');
+        sucursal.focus();
+        return false;
+    }
+    
+    // Validar fecha estimada
+    const fechaEstimada = document.querySelector('input[name="fecha_estimada_entrega"]');
+    if (!fechaEstimada.value) {
+        alert('⚠️ Debe seleccionar una fecha estimada de entrega');
+        fechaEstimada.focus();
+        return false;
+    }
+    
+    return true;
+}
+
+// Agregar nueva fila
+function agregarFila() {
+    const container = document.getElementById('detalles-container');
+    const numFilas = document.getElementById('num_filas');
+    const currentIndex = parseInt(numFilas.value);
+    const newIndex = currentIndex;
+
+    const primerItem = container.querySelector('.detalle-item');
+    if (!primerItem) return;
+
+    const nuevoItem = primerItem.cloneNode(true);
+
+    // limpiar inputs
+    nuevoItem.querySelectorAll('input, select').forEach(input => {
+        if (input.type === 'text' || input.tagName === 'INPUT') {
+            input.value = '';
+        } else if (input.tagName === 'SELECT') {
+            input.selectedIndex = 0;
+        }
+        input.disabled = false;
+    });
+
+    // actualizar names
+    nuevoItem.querySelectorAll('[name]').forEach(input => {
+        const name = input.getAttribute('name');
+        if (name) {
+            input.setAttribute('name', name.replace(/_\d+/, `_${newIndex}`));
+        }
+    });
+
+    // actualizar data-index
+    nuevoItem.querySelectorAll('.tipo-compra').forEach(select => {
+        select.setAttribute('data-index', newIndex);
+        select.addEventListener('change', function () {
+            mostrarCampos(this);
+        });
+    });
+
+    // actualizar IDs de bloques
+    nuevoItem.querySelectorAll('[id^="campos-"]').forEach(div => {
+        const id = div.getAttribute('id');
+        if (id) {
+            div.setAttribute('id', id.replace(/-\d+$/, `-${newIndex}`));
+        }
+    });
+
+    // actualizar título
+    const titulo = nuevoItem.querySelector('h4');
+    if (titulo) {
+        titulo.textContent = `Producto #${newIndex + 1}`;
+    }
+
+    // botón eliminar
+    const header = nuevoItem.querySelector('.flex.justify-between');
+    if (header && !header.querySelector('button')) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = 'Eliminar';
+        btn.className = 'text-red-500 text-sm';
+        btn.onclick = () => eliminarFila(btn);
+        header.appendChild(btn);
+    }
+
+    container.appendChild(nuevoItem);
+    numFilas.value = newIndex + 1;
+
+    // inicializar campos correctamente
+    nuevoItem.querySelectorAll('.tipo-compra').forEach(select => {
+        mostrarCampos(select);
+    });
+}
+
+// eliminar fila
+function eliminarFila(boton) {
+    const item = boton.closest('.detalle-item');
+    if (item) item.remove();
+
+    const items = document.querySelectorAll('.detalle-item');
+    items.forEach((item, idx) => {
+        const titulo = item.querySelector('h4');
+        if (titulo) titulo.textContent = `Producto #${idx + 1}`;
+    });
+    document.getElementById('num_filas').value = items.length;
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.tipo-compra').forEach(select => {
+        select.addEventListener('change', function () {
+            mostrarCampos(this);
+        });
+        mostrarCampos(select);
+    });
+    
+    // Aplicar validación a todos los inputs de cantidad existentes
+    document.querySelectorAll('.cantidad-input, .contenido-input').forEach(input => {
+        input.addEventListener('input', function() {
+            validarEnteroPositivo(this);
+        });
+    });
+});
+</script>
 
 {% endblock %}

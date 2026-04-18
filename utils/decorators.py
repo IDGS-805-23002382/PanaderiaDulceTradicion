@@ -14,7 +14,7 @@ def gerente_or_admin_required(f):
             return redirect(url_for('auth.login'))
         if current_user.rol.nombre not in ['Administrador', 'Gerente']:
             flash('Acceso denegado. Se requieren permisos de Gerente o Administrador.', 'error')
-            return redirect(url_for('public.index'))
+            return redirect(url_for('home'))
         return f(*args, **kwargs)
     return decorated_function
 

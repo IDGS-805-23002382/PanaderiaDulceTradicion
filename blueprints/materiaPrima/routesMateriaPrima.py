@@ -1,13 +1,73 @@
-# routes.py
 from flask import render_template, request, redirect, url_for, flash
-from models import MateriaPrima, Proveedor, db, Compra, DetalleCompra
-from sqlalchemy import or_
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import contains_eager
+from sqlalchemy import or_, func
 from . import materiaPrima_bp
+from models import MateriaPrima, Proveedor, db, Bitacora
 import forms
+import datetime
+import os
+from utils.decorators import empleado_required, gerente_or_admin_required,cocina_or_admin_required,vendedor_or_admin_required,login_required_with_message
+from flask_login import login_required
 
+@materiaPrima_bp.route('/backup', methods=['POST'])
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
+def backup_db():
+    try:
+        fecha = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        nombre_archivo = f"backup_{fecha}.sql"
+
+        ruta = os.path.join("backups", nombre_archivo)
+
+        # Crear carpeta si no existe
+        os.makedirs("backups", exist_ok=True)
+
+        # Comando mysqldump
+        comando = f"mysqldump -u root -proot panaderia_db4 > {ruta}"
+        os.system(comando)
+
+        flash(f"Backup creado correctamente: {nombre_archivo}", "success")
+
+    except Exception as e:
+        flash(f"Error al generar backup: {str(e)}", "error")
+
+    return redirect(url_for('materiaPrima.materiaPrima'))
+
+# BITÁCORA / LOG
+def registrar_log(accion, tabla, descripcion, usuario_nombre="sistema"):
+    try:
+        ip_usuario = None
+        try:
+            ip_usuario = request.remote_addr
+        except:
+            pass
+        
+        log = Bitacora(
+            accion=accion,
+            tabla=tabla,
+            descripcion=descripcion,
+            fecha_hora=datetime.datetime.now(),
+            usuario_nombre=usuario_nombre,  # ← CORRECTO: usuario_nombre, no usuario
+            usuario_id=None,
+            ip_usuario=ip_usuario
+        )
+        
+        db.session.add(log)
+        db.session.commit()
+        print(f"✅ Log creado: {accion} - {tabla}")
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ Error al crear log: {str(e)}")
+
+
+# LISTADO
 @materiaPrima_bp.route('/materiaPrima')
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
 def materiaPrima():
     buscar = request.args.get("buscar")
     estatus = request.args.get("estatus")
@@ -16,15 +76,15 @@ def materiaPrima():
     query = MateriaPrima.query
 
     # BUSCAR
-    if buscar and buscar.strip() != "":
+    if buscar and buscar.strip():
         query = query.filter(
             or_(
                 MateriaPrima.nombre.ilike(f"%{buscar}%"),
-                MateriaPrima.unidad_medida.ilike(f"%{buscar}%")
+                MateriaPrima.unidad_base.ilike(f"%{buscar}%")
             )
         )
 
-    # FILTRAR POR ESTATUS
+    # FILTRAR ESTATUS
     if estatus:
         query = query.filter(MateriaPrima.estatus == estatus)
 
@@ -34,18 +94,102 @@ def materiaPrima():
     elif orden == "za":
         query = query.order_by(MateriaPrima.nombre.desc())
 
-    # OBTENER DATOS
-    materiaPrima = query.all()
+    materias = query.all()
 
     return render_template(
         "modulo-materiaPrima/modulo-materiaPrima.html",
-        materiaPrima=materiaPrima
+        materiaPrima=materias
     )
 
 
+
+# AGREGAR
 @materiaPrima_bp.route('/agregarMateriaPrima', methods=['GET', 'POST'])
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
 def agregarMateriaPrima():
     form = forms.MateriaPrimaForm()
+
+    # 🔹 PROVEEDORES
+    proveedores = Proveedor.query.all()
+    form.id_proveedor.choices = [(0, 'Seleccione un proveedor')] + [
+        (p.id_proveedor, p.nombre) for p in proveedores
+    ]
+
+    if form.validate_on_submit():
+        try:
+            nombre = form.nombre.data.strip()
+
+            #  VALIDAR DUPLICADO
+            existe = MateriaPrima.query.filter(
+                func.lower(MateriaPrima.nombre) == nombre.lower()
+            ).first()
+
+            if existe:
+                flash("Ya existe esta materia prima", "error")
+                return render_template(
+                    'modulo-materiaPrima/agregarMateriaPrima.html',
+                    form=form
+                )
+
+            nueva = MateriaPrima(
+                nombre=nombre,
+                unidad_base=form.unidad_base.data,
+                id_proveedor=form.id_proveedor.data if form.id_proveedor.data != 0 else None,
+                estatus=form.estatus.data
+            )
+
+            db.session.add(nueva)
+
+            # LOG
+            registrar_log(
+                accion="INSERT",
+                tabla="materias_primas",
+                descripcion=f"Se registró materia prima: {nombre}"
+            )
+
+            db.session.commit()
+
+            flash("Materia prima registrada correctamente", "success")
+            return redirect(url_for('materiaPrima.materiaPrima'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error: {str(e)}", "error")
+
+    return render_template(
+        'modulo-materiaPrima/agregarMateriaPrima.html',
+        form=form
+    )
+
+
+
+# DETALLE
+
+@materiaPrima_bp.route('/detalleMateriaPrima/<int:id>')
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
+def detalleMateriaPrima(id):
+    materia = MateriaPrima.query.get_or_404(id)
+
+    return render_template(
+        'modulo-materiaPrima/detallesMateriaPrima.html',
+        materia=materia
+    )
+
+
+#  EDITAR (AUDITORÍA)
+@materiaPrima_bp.route('/editarMateriaPrima/<int:id>', methods=['GET','POST'])
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+def modificarMateriaPrima(id):
+    materia = MateriaPrima.query.get_or_404(id)
+    form = forms.MateriaPrimaForm(obj=materia)
 
     proveedores = Proveedor.query.all()
     form.id_proveedor.choices = [(0, 'Seleccione un proveedor')] + [
@@ -54,145 +198,199 @@ def agregarMateriaPrima():
 
     if form.validate_on_submit():
         try:
-            tipo_empaque = request.form.get('tipo_empaque', 'unidad')
-            
-            piezas_val = request.form.get('piezas_por_caja')
-            piezas_val = int(piezas_val) if piezas_val and piezas_val.strip() else 1
-            
-            contenido_val = request.form.get('contenido_por_pieza')
-            contenido_val = float(contenido_val) if contenido_val and contenido_val.strip() else 0
-            
-            unidad_contenido = request.form.get('unidad_contenido', 'gr')
+            cambios = []
 
-            nueva_materia = MateriaPrima(
-                nombre=form.nombre.data.strip(),
-                unidad_medida=form.unidad_medida.data,
-                tipo_empaque=tipo_empaque,
-                piezas_por_caja=piezas_val,
-                peso_por_pieza=contenido_val,
-                unidad_contenido=unidad_contenido,
-                id_proveedor=form.id_proveedor.data if form.id_proveedor.data != 0 else None,
-                estatus=form.estatus.data
-            )
+            nombre_nuevo = form.nombre.data.strip()
 
-            db.session.add(nueva_materia)
+            # VALIDAR DUPLICADO SI CAMBIA
+            if materia.nombre.lower() != nombre_nuevo.lower():
+                existe = MateriaPrima.query.filter(
+                    func.lower(MateriaPrima.nombre) == nombre_nuevo.lower(),
+                    MateriaPrima.id_materia != materia.id_materia
+                ).first()
+
+                if existe:
+                    flash("Ya existe otra materia prima con ese nombre", "error")
+                    return render_template(
+                        'modulo-materiaPrima/modificarMateriaPrima.html',
+                        form=form,
+                        materiaPrima=materia
+                    )
+
+                cambios.append(f"Nombre: {materia.nombre} → {nombre_nuevo}")
+                materia.nombre = nombre_nuevo
+
+            # UNIDAD
+            if materia.unidad_base != form.unidad_base.data:
+                cambios.append(f"Unidad: {materia.unidad_base} → {form.unidad_base.data}")
+                materia.unidad_base = form.unidad_base.data
+
+            # ESTATUS
+            if materia.estatus != form.estatus.data:
+                cambios.append(f"Estatus: {materia.estatus} → {form.estatus.data}")
+                materia.estatus = form.estatus.data
+
+            # PROVEEDOR
+            materia.id_proveedor = form.id_proveedor.data if form.id_proveedor.data != 0 else None
+
+            # AUDITORÍA
+            if cambios:
+                registrar_log(
+                    accion="UPDATE",
+                    tabla="materias_primas",
+                    descripcion=f"Cambios en {materia.nombre}: {', '.join(cambios)}"
+                )
+
             db.session.commit()
-            flash('Materia prima registrada correctamente', 'success')
+
+            flash("Materia prima actualizada correctamente", "success")
             return redirect(url_for('materiaPrima.materiaPrima'))
 
         except Exception as e:
             db.session.rollback()
-            print(f"Error detallado: {str(e)}")
-            flash(f'Error al guardar: {str(e)}', 'error')
-    else:
-        if form.errors:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    flash(f'Error en {getattr(form, field).label.text}: {error}', 'error')
+            flash(f"Error: {str(e)}", "error")
 
-    return render_template(
-        'modulo-materiaPrima/agregarMateriaPrima.html',
-        form=form
-    )
-    
-@materiaPrima_bp.route('/detalleMateriaPrima/<int:id>')
-def detalleMateriaPrima(id):
-    materia = MateriaPrima.query.get_or_404(id)
-
-    compras = Compra.query.join(DetalleCompra)\
-        .filter(DetalleCompra.id_materia == id)\
-        .all()
-
-    return render_template(
-        'modulo-materiaPrima/detallesMateriaPrima.html',
-        materia=materia,
-        compras=compras
-    )
-    
-
-@materiaPrima_bp.route('/editarMateriaPrima/<int:id>', methods=['GET','POST'])
-def modificarMateriaPrima(id):
-    materiaPrima = MateriaPrima.query.get_or_404(id)
-    form = forms.MateriaPrimaForm(obj=materiaPrima)
-    
-    # Cargar proveedores
-    proveedores = Proveedor.query.all()
-    form.id_proveedor.choices = [(0, 'Seleccione un proveedor')] + [(p.id_proveedor, p.nombre) for p in proveedores]
-    
-    if request.method == 'POST':
-        # Forzamos la lectura de datos del form de WTForms
-        # Si validate_on_submit() falla, revisa form.errors
-        if form.validate_on_submit():
-            
-            # VALIDAR DUPLICADOS
-            existe = MateriaPrima.query.filter(
-                MateriaPrima.nombre.ilike(form.nombre.data.strip()),
-                MateriaPrima.id_materia != id
-            ).first()
-            
-            if existe:
-                flash('Ya existe otra materia prima con este nombre', 'error')
-                return render_template('modulo-materiaPrima/modificarMateriaPrima.html', form=form, materiaPrima=materiaPrima)
-
-            try:
-                # CAMPOS DEL WTFORMS
-                materiaPrima.nombre = form.nombre.data.strip()
-                materiaPrima.unidad_medida = form.unidad_medida.data
-                materiaPrima.id_proveedor = form.id_proveedor.data if form.id_proveedor.data != 0 else None
-                materiaPrima.estatus = form.estatus.data
-
-                # CAMPOS MANUALES (Los que agregamos por bulto/empaque)
-                materiaPrima.tipo_empaque = request.form.get('tipo_empaque')
-                
-                piezas = request.form.get('piezas_por_caja')
-                materiaPrima.piezas_por_caja = int(piezas) if piezas and piezas.strip() else None
-
-                contenido = request.form.get('contenido_por_pieza')
-                materiaPrima.peso_por_pieza = float(contenido) if contenido and contenido.strip() else None
-
-                materiaPrima.unidad_contenido = request.form.get('unidad_contenido')
-
-                db.session.add(materiaPrima) # Aseguramos que el objeto esté en la sesión
-                db.session.commit()
-                
-                flash('Materia prima actualizada exitosamente', 'success')
-                return redirect(url_for('materiaPrima.materiaPrima'))
-
-            except Exception as e:
-                db.session.rollback()
-                flash(f'Error al actualizar: {str(e)}', 'error')
-        else:
-            # Si no valida, imprimimos los errores en consola para saber qué campo falla
-            print(form.errors)
-            flash('Error en los datos del formulario. Revisa los campos.', 'error')
-
-    # Para GET: Preseleccionar el proveedor actual
+    # PARA GET
     if request.method == 'GET':
-        form.id_proveedor.data = materiaPrima.id_proveedor if materiaPrima.id_proveedor else 0
+        form.id_proveedor.data = materia.id_proveedor if materia.id_proveedor else 0
 
     return render_template(
         'modulo-materiaPrima/modificarMateriaPrima.html',
         form=form,
-        materiaPrima=materiaPrima
+        materiaPrima=materia
     )
 
-# DESACTIVAR
+
+#  DESACTIVAR (SOFT DELETE)
 @materiaPrima_bp.route('/eliminarMateriaPrima/<int:id>', methods=['GET','POST'])
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
 def eliminarMateriaPrima(id):
-    materiaPrima = MateriaPrima.query.get_or_404(id)
+    materia = MateriaPrima.query.get_or_404(id)
 
     if request.method == 'POST':
-        if materiaPrima.estatus == "inactivo":
-            flash("Esta materia prima ya está desactivada.", "warning")
+
+        if materia.estatus == "inactivo":
+            flash("Esta materia prima ya está desactivada", "warning")
             return redirect(url_for('materiaPrima.materiaPrima'))
 
-        materiaPrima.estatus = "inactivo"
+        materia.estatus = "inactivo"
+
+        registrar_log(
+            accion="DELETE",
+            tabla="materias_primas",
+            descripcion=f"Se desactivó materia prima: {materia.nombre}"
+        )
+
         db.session.commit()
 
-        flash("Materia prima desactivada correctamente.", "success")
+        flash("Materia prima desactivada correctamente", "success")
         return redirect(url_for('materiaPrima.materiaPrima'))
 
+    # ESTE ES EL GET (muestra la vista bonita)
     return render_template(
         'modulo-materiaPrima/eliminarMateriaPrima.html',
-        materiaPrima=materiaPrima
+        materiaPrima=materia
+    )
+
+@materiaPrima_bp.route('/tabla-conversiones')
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
+def tablaConversiones():
+    from models import InventarioMateriaPrima
+    
+    valor_original = request.args.get('valor', type=float)
+    unidad_origen = request.args.get('from_unit', 'kg')
+    unidad_destino = request.args.get('to_unit', 'g')
+    resultado_conversion = None
+    error_conversion = None
+    
+    if valor_original is not None:
+        try:
+            # Conversiones de masa
+            conversiones_masa = {
+                ('kg', 'g'): valor_original * 1000,
+                ('g', 'kg'): valor_original / 1000,
+                ('kg', 'mg'): valor_original * 1000000,
+                ('mg', 'kg'): valor_original / 1000000,
+                ('g', 'mg'): valor_original * 1000,
+                ('mg', 'g'): valor_original / 1000,
+            }
+            
+            # Conversiones de volumen
+            conversiones_volumen = {
+                ('l', 'ml'): valor_original * 1000,
+                ('ml', 'l'): valor_original / 1000,
+            }
+            
+            key = (unidad_origen, unidad_destino)
+            if key in conversiones_masa:
+                resultado_conversion = conversiones_masa[key]
+            elif key in conversiones_volumen:
+                resultado_conversion = conversiones_volumen[key]
+            else:
+                error_conversion = f"No se puede convertir de {unidad_origen} a {unidad_destino}"
+        except Exception as e:
+            error_conversion = str(e)
+    
+    # Obtener materias primas del inventario para mostrar conversiones
+    inventario = InventarioMateriaPrima.query.all()
+    materia_prima_conversiones = []
+    
+    for item in inventario:
+        unidad_base = item.materia.unidad_base
+        stock = item.stock_actual
+        
+        if unidad_base == 'g':
+            materia_prima_conversiones.append({
+                'nombre': item.materia.nombre,
+                'stock_kg': round(stock / 1000, 2),
+                'stock_g': round(stock, 2),
+                'unidad_grande': 'kg',
+                'unidad_pequena': 'g',
+                'factor': 1000,
+                'badge_class': 'badge-mass'
+            })
+        elif unidad_base == 'kg':
+            materia_prima_conversiones.append({
+                'nombre': item.materia.nombre,
+                'stock_kg': round(stock, 2),
+                'stock_g': round(stock * 1000, 2),
+                'unidad_grande': 'kg',
+                'unidad_pequena': 'g',
+                'factor': 1000,
+                'badge_class': 'badge-mass'
+            })
+        elif unidad_base == 'ml':
+            materia_prima_conversiones.append({
+                'nombre': item.materia.nombre,
+                'stock_kg': round(stock / 1000, 2),
+                'stock_g': round(stock, 2),
+                'unidad_grande': 'L',
+                'unidad_pequena': 'mL',
+                'factor': 1000,
+                'badge_class': 'badge-volume'
+            })
+        elif unidad_base == 'l':
+            materia_prima_conversiones.append({
+                'nombre': item.materia.nombre,
+                'stock_kg': round(stock, 2),
+                'stock_g': round(stock * 1000, 2),
+                'unidad_grande': 'L',
+                'unidad_pequena': 'mL',
+                'factor': 1000,
+                'badge_class': 'badge-volume'
+            })
+    
+    return render_template(
+        'modulo-materiaPrima/tablaConversiones.html',
+        valor_original=valor_original,
+        unidad_origen=unidad_origen,
+        unidad_destino=unidad_destino,
+        resultado_conversion=resultado_conversion,
+        error_conversion=error_conversion,
+        materia_prima_conversiones=materia_prima_conversiones
     )

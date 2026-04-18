@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block container %}
+<section class="bg-[#E8D8C4] py-20 px-10 flex items-center justify-center">
+    <div class="relative w-[320px] pb-20">
+        <div class="bg-[#341915] rounded-[40px] pt-10 pb-10 px-8 shadow-2xl">
+            <h2 class="text-white text-center font-bold mb-6 tracking-wide">RECUPERAR CUENTA</h2>
+            
+            <form method="POST" class="space-y-4">
+                {{ form.hidden_tag() }}
+
+                <div class="relative">
+                    {{ form.email(
+                        class="w-full bg-[#C7B7A3] px-4 py-2.5 text-sm rounded-xl outline-none focus:ring-2 placeholder-stone-600",
+                        placeholder="Ingresa tu correo"
+                    ) }}
+                    <span class="absolute right-3 top-2.5 text-lg">📧</span>
+                    {% for error in form.email.errors %}
+                        <p class="text-red-300 text-xs mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="flex justify-center pt-4">
+                    <button type="submit"
+                            class="bg-[#E8D8C4] px-6 py-2 rounded-full font-semibold text-sm text-stone-800 hover:bg-[#d7c7b3] transition shadow-lg">
+                        ENVIAR CORREO
+                    </button>
+                </div>
+
+                <div class="text-center mt-4 text-white">
+                    <a href="{{ url_for('auth.login') }}" class="block text-sm font-semibold hover:underline">Volver al inicio</a>
+                </div>
+            </form>
+        </div>
+        </div>
+</section>
+
+{% endblock %}

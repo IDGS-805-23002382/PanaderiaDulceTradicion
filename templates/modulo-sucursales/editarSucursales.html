@@ -89,6 +89,22 @@
                                 class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-[#341915] outline-none">
                         </div>
 
+
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Hora de Apertura</label>
+                                <input type="time" name="horario_abierto" 
+                                    value="{{ sucursal.horario_abierto.strftime('%H:%M') if sucursal.horario_abierto else '' }}"
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-[#341915] outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Hora de Cierre</label>
+                                <input type="time" name="horario_cierre" 
+                                    value="{{ sucursal.horario_cierre.strftime('%H:%M') if sucursal.horario_cierre else '' }}"
+                                    class="w-full border-2 border-gray-200 rounded-lg px-4 py-2 focus:border-[#341915] outline-none">
+                            </div>
+                        </div>
+
                     <div class="md:col-span-2">
                         <label class="block text-sm font-bold text-gray-700 mb-1">Dirección (Calle y Número)</label>
                         <input type="text" name="direccion" value="{{ sucursal.direccion or '' }}"

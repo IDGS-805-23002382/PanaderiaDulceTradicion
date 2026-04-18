@@ -1,86 +1,185 @@
 {% extends 'layoutModulos.html' %}
 {% block container %}
-<div class="max-w-6xl mx-auto bg-white p-6 rounded-3xl shadow">
-  <h2 class="text-2xl font-bold mb-4">Recibir Compra</h2>
 
-  <!-- DATOS GENERALES -->
-  <div class="grid grid-cols-2 gap-4 mb-6">
-    <div>
-      <p><b>Proveedor:</b> {{ compra.proveedor.nombre }}</p>
-      <p><b>Sucursal:</b> {{ compra.sucursal.nombre }}</p>
-    </div>
-    <div>
-      <p><b>Fecha Pedido:</b> {{ compra.fecha_orden }}</p>
-      <p><b>Entrega Estimada:</b> {{ compra.fecha_estimada_entrega }}</p>
-    </div>
-  </div>
+<div class="min-h-screen bg-[#E8D8C4] p-6">
 
-  <div class="mb-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-sm">
-    📌 <strong>Importante:</strong> Ingresa el <strong>precio por unidad de compra</strong> (lo que cuesta 1 caja o 1 unidad).
-    <br>Ejemplo: Si compraste 4 cajas por $1,812 total, ingresa <strong>$453.00</strong>
-  </div>
+  <!-- BREADCRUMB -->
+  <nav class="w-full mb-6" aria-label="Breadcrumb">
+    <ol class="flex flex-wrap items-center gap-2">
+      <li class="flex items-center">
+        <a href="{{ url_for('proveedores.proveedores') }}" 
+           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
+          <span>Proveedores</span>
+        </a>
+      </li>
 
-  <form method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <li class="text-[#561C24] font-bold">›</li>
+
+      <li class="flex items-center">
+        <a href="{{ url_for('proveedores.compraProveedores') }}" 
+           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
+          <span>Orden de Compra</span>
+        </a>
+      </li>
+
+      <li class="text-[#561C24] font-bold">›</li>
+
+      <li class="flex items-center">
+        <div class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#561C24] bg-[#E8D8C4] rounded-lg border border-[#C7B7A3]">
+          <span>Recibir Compra #{{ compra.id_compra }}</span>
+        </div>
+      </li>
+    </ol>
+  </nav>
+
+  <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
     
-    <table class="w-full text-center mb-4 border">
-      <thead class="bg-[#561C24] text-white">
-        <tr>
-          <th class="p-2">Materia</th>
-          <th class="p-2">Cantidad</th>
-          <th class="p-2">Tipo</th>
-          <th class="p-2">Piezas x Caja</th>
-          <th class="p-2">Precio por {{ 'caja' if compra.detalles[0].tipo_empaque == 'caja' else 'unidad' }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for d in compra.detalles %}
-        <tr class="border-b">
-          <td class="p-2">{{ d.materia.nombre }}</td>
-          <td class="p-2 font-bold">{{ d.cantidad }}</td>
-          <td class="p-2">
-            {% if d.tipo_empaque == 'caja' %}
-              <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Caja</span>
-            {% else %}
-              <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Unidad</span>
-            {% endif %}
-          </td>
-          <td class="p-2">
-            {% if d.tipo_empaque == 'caja' %}
-              {{ d.materia.piezas_por_caja or '?' }}
-            {% else %}
-              -
-            {% endif %}
-          </td>
-          <td class="p-2">
-            <input type="number" 
-                   step="0.01" 
-                   name="precio_{{ d.id_detalle }}" 
-                   class="border rounded px-2 py-1 w-32 text-center"
-                   value="{{ d.precio_unitario_compra or '' }}"
-                   required />
-            <div class="text-xs text-gray-500 mt-1">
-              {% if d.tipo_empaque == 'caja' %}
-                (Ej: 453.00 por caja)
-              {% else %}
-                (Precio por unidad)
-              {% endif %}
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <div class="flex gap-4 mt-4">
-      <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
-        Recibir Compra
-      </button>
-      <a href="{{ url_for('proveedores.detalleCompra', id=compra.id_compra) }}" 
-         class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 text-center">
-        Cancelar
-      </a>
+    <div class="bg-gradient-to-r from-[#341915] to-[#561C24] px-6 py-5 text-white">
+      <h2 class="text-2xl font-bold">Recibir Compra #{{ compra.id_compra }}</h2>
+      <p class="text-sm text-[#C7B7A3] mt-1">El número de lote se genera automáticamente</p>
     </div>
-  </form>
+
+    <div class="p-6">
+
+      <!-- Información -->
+      <div class="grid md:grid-cols-2 gap-4 mb-6 p-4 bg-[#E8D8C4] rounded-xl text-[#341915]">
+        <div><b>Proveedor:</b> {{ compra.proveedor.nombre }}</div>
+        <div><b>Sucursal:</b> {{ compra.sucursal.nombre }}</div>
+        <div><b>Fecha Pedido:</b> {{ compra.fecha_orden.strftime('%Y-%m-%d') }}</div>
+        <div><b>Entrega Estimada:</b> {{ compra.fecha_estimada_entrega }}</div>
+      </div>
+
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="overflow-x-auto rounded-xl border border-[#C7B7A3]">
+          <table class="w-full text-sm">
+
+            <thead class="bg-[#561C24] text-white">
+              <tr>
+                <th class="p-3 text-left">Materia Prima</th>
+                <th class="p-3">Tipo</th>
+                <th class="p-3">Detalle</th>
+                <th class="p-3 text-center">Cantidad</th>
+                <th class="p-3 text-right">Precio</th>
+                <th class="p-3 text-center">Caducidad</th>
+                <th class="p-3 text-right">Subtotal</th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-[#C7B7A3]">
+
+              {% for d in compra.detalles %}
+              <tr class="hover:bg-[#E8D8C4]/50">
+
+                <td class="p-3 font-bold text-[#341915]">
+                  {{ d.materia.nombre }}
+                </td>
+
+                <td class="p-3 text-center">
+                  {{ d.tipo_compra }}
+                </td>
+
+                <!-- DETALLE CORREGIDO -->
+                <td class="p-3">
+
+                  {% if d.tipo_compra == 'granel' %}
+                    {{ d.cantidad_granel or 0 }} {{ d.unidad_granel or 'kg' }}
+
+                  {% elif d.tipo_compra == 'piezas' %}
+                    {{ d.cantidad_empaques or 0 }} {{ d.tipo_empaque or 'unidad' }}
+                    de {{ d.contenido_empaque or 0 }} {{ d.unidad_contenido or 'g' }}
+
+                  {% else %}
+                    {{ d.cantidad_cajas or 0 }} cajas ×
+                    {{ d.piezas_por_caja or 0 }} ×
+                    {{ d.contenido_por_pieza or 0 }} {{ d.unidad_contenido_caja or 'g' }}
+
+                  {% endif %}
+
+                </td>
+
+                <!-- CANTIDAD CORREGIDA -->
+                <td class="p-3 text-center cantidad-valor">
+                  {% if d.tipo_compra == 'granel' %}
+                    {{ d.cantidad_granel or 0 }}
+                  {% elif d.tipo_compra == 'piezas' %}
+                    {{ d.cantidad_empaques or 0 }}
+                  {% else %}
+                    {{ d.cantidad_cajas or 0 }}
+                  {% endif %}
+                </td>
+
+                <td class="p-3">
+                  <input type="number" step="0.01"
+                         name="precio_{{ d.id_detalle }}"
+                         class="precio-input w-24 border rounded px-2 py-1 text-right"
+                         required>
+                </td>
+
+                <td class="p-3 text-center">
+                  <input type="date"
+                         name="fecha_caducidad_{{ d.id_detalle }}"
+                         class="border rounded px-2 py-1">
+                </td>
+
+                <td class="p-3 text-right subtotal-cell">$0.00</td>
+
+              </tr>
+              {% endfor %}
+
+            </tbody>
+
+            <tfoot class="bg-[#E8D8C4]">
+              <tr>
+                <td colspan="6" class="p-4 text-right font-bold">
+                  TOTAL:
+                </td>
+                <td class="p-4 text-right font-bold text-xl" id="total-compra">$0.00</td>
+              </tr>
+            </tfoot>
+
+          </table>
+        </div>
+
+        <div class="flex gap-4 mt-6">
+          <button type="submit"
+                  class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold">
+            Confirmar Recepción
+          </button>
+
+          <a href="{{ url_for('proveedores.compraProveedores') }}"
+             class="px-6 py-3 bg-gray-500 text-white rounded-xl">
+            Cancelar
+          </a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
 </div>
+
+<script>
+// Calcular totales
+document.querySelectorAll('.precio-input').forEach(input => {
+  input.addEventListener('input', function() {
+
+    const fila = this.closest('tr');
+    const precio = parseFloat(this.value) || 0;
+    const cantidad = parseFloat(fila.querySelector('.cantidad-valor').innerText) || 0;
+
+    const subtotal = precio * cantidad;
+    fila.querySelector('.subtotal-cell').innerText = "$" + subtotal.toFixed(2);
+
+    let total = 0;
+    document.querySelectorAll('.subtotal-cell').forEach(cell => {
+      total += parseFloat(cell.innerText.replace('$','')) || 0;
+    });
+
+    document.getElementById('total-compra').innerText = "$" + total.toFixed(2);
+  });
+});
+</script>
+
 {% endblock %}

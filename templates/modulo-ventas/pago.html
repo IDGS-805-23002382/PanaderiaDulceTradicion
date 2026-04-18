@@ -1,4 +1,4 @@
-{% extends 'layoutModulos.html' %}
+{% extends 'layout.html' %}
 {% block container %}
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
@@ -6,130 +6,272 @@
       <div class="mb-6 p-4 rounded-xl font-bold uppercase text-sm shadow-lg border-l-8 
         {% if category == 'danger' %} bg-red-100 border-red-600 text-red-800 
         {% else %} bg-green-100 border-green-600 text-green-800 {% endif %}">
-        <div class="flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-            </svg>
-            {{ message }}
-        </div>
+        {{ message }}
       </div>
     {% endfor %}
   {% endif %}
 {% endwith %}
+
+<!-- ===================== MODAL MÉTODO DE ENTREGA ===================== -->
+<div id="modal-entrega" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
+  <div class="bg-[#2c1b16] border-2 border-[#6b1f26] rounded-2xl shadow-2xl w-full max-w-md mx-4 p-8 animate-fade-in">
+    
+    <h3 class="text-[#f3e5d8] font-black uppercase tracking-widest text-lg mb-2 text-center">¿Cómo quieres recibir tu pedido?</h3>
+    <p id="modal-sucursal-nombre" class="text-white/50 text-xs text-center mb-6 uppercase font-bold"></p>
+
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <!-- Opción: Recoger en sucursal -->
+      <button type="button" onclick="elegirEntrega('sucursal')"
+              class="group flex flex-col items-center gap-3 p-5 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-[#6b1f26] hover:bg-[#6b1f26]/20 transition-all">
+        <svg class="w-10 h-10 text-[#f3e5d8] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9.75L12 3l9 6.75V21a1 1 0 01-1 1H4a1 1 0 01-1-1V9.75z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 22V12h6v10"/>
+        </svg>
+        <span class="text-white font-black uppercase text-xs text-center">Recoger en<br>Sucursal</span>
+      </button>
+
+      <!-- Opción: Envío a domicilio -->
+      <button type="button" onclick="elegirEntrega('domicilio')"
+              class="group flex flex-col items-center gap-3 p-5 rounded-2xl border-2 border-white/10 bg-white/5 hover:border-[#6b1f26] hover:bg-[#6b1f26]/20 transition-all">
+        <svg class="w-10 h-10 text-[#f3e5d8] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zm10 0a2 2 0 11-4 0 2 2 0 014 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z"/>
+        </svg>
+        <span class="text-white font-black uppercase text-xs text-center">Envío a<br>Domicilio</span>
+      </button>
+    </div>
+
+    <button type="button" onclick="cerrarModal()"
+            class="w-full py-2 rounded-xl text-white/40 hover:text-white text-xs font-bold uppercase transition-colors">
+      Cancelar
+    </button>
+  </div>
+</div>
+<!-- ================================================================== -->
+
 <section class="bg-[#d8c9b4] min-h-screen py-8">
     <div class="max-w-7xl mx-auto px-6">
-        
-        <div class="bg-[#6b1f26] rounded-2xl p-6 mb-8 flex justify-between items-center shadow-xl border-b-4 border-[#2c1b16]">
-            <div>
-                <h1 class="text-3xl font-black text-[#f3e5d8] uppercase tracking-tighter">Terminal de Ventas</h1>
-                <p class="text-[#f3e5d8]/80 font-bold uppercase text-xs tracking-widest">
-                    Sucursal: <span class="text-white">{{ sucursal.nombre }}</span>
-                </p>
-            </div>
-            <a href="{{ url_for('ventasSucursal.cambiar_sucursal') }}" 
-               class="bg-[#f3e5d8] text-[#6b1f26] px-4 py-2 rounded-xl font-black text-xs hover:bg-white transition-all uppercase">
-                Cambiar Sucursal
+
+        <!-- ── Botón regresar ── -->
+        <div class="mb-6 flex gap-4">
+            <a href="{{ url_for('catalogo') }}"
+               class="inline-flex items-center gap-2 text-[#6b1f26] font-black uppercase text-sm hover:underline transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Seguir comprando
+            </a>
+            <span class="text-[#6b1f26]/30 font-black">|</span>
+            <a href="{{ url_for('home') }}"
+               class="inline-flex items-center gap-2 text-[#6b1f26] font-black uppercase text-sm hover:underline transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 5v6h4v-6m-4 0H9m4 0h2"/>
+                </svg>
+                Ir al inicio
             </a>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white/40 backdrop-blur-md border-4 border-[#6b1f26] rounded-2xl p-6 shadow-lg">
-                    <h2 class="text-xl font-black text-[#2c1b16] mb-6 uppercase border-b-2 border-[#6b1f26]/20 pb-2">Catálogo Disponible</h2>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {% for producto in productos %}
-                        <div class="bg-[#f3e5d8] border-2 border-[#6b1f26]/10 rounded-xl p-4 flex flex-col items-center text-center hover:border-[#6b1f26] transition-all group">
-                            <div class="w-16 h-16 bg-[#6b1f26] rounded-full mb-3 flex items-center justify-center text-[#f3e5d8] font-bold text-xl uppercase">
-                                {{ producto.nombre[:1] }}
-                            </div>
-                            <h3 class="font-black text-[#2c1b16] text-sm uppercase leading-tight h-10">{{ producto.nombre }}</h3>
-                            <p class="text-[#6b1f26] font-black text-lg mb-3">${{ "%.2f"|format(producto.precio_venta) }}</p>
-                            
-                            <form action="{{ url_for('ventasSucursal.pos_agregar') }}" method="POST" class="w-full">
-                                <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
-                                <input type="number" name="cantidad" value="1" min="1" class="w-full mb-2 p-1 rounded-lg border-2 border-[#6b1f26]/20 text-center font-bold">
-                                <button type="submit" class="w-full bg-[#6b1f26] text-white py-2 rounded-lg font-black text-[10px] uppercase hover:bg-[#2c1b16] transition-colors">
-                                    Agregar
-                                </button>
-                            </form>
+            <!-- Panel agregar producto -->
+            <div class="lg:col-span-2 bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-2xl p-6 mb-8">
+                <h3 class="text-white font-black uppercase tracking-widest mb-4">Agregar Nuevo Producto</h3>
+                
+                <div class="flex flex-col md:flex-row gap-6 items-center">
+                    <div class="w-32 h-32 bg-black/40 rounded-xl border-2 border-[#6b1f26] flex items-center justify-center overflow-hidden shadow-inner">
+                        <img id="img-preview" src="" class="w-full h-full object-cover hidden" alt="Vista previa">
+                        <div id="placeholder-text" class="flex flex-col items-center text-white/40">
+                            <span class="text-[10px] font-bold uppercase">Sin foto</span>
                         </div>
-                        {% endfor %}
                     </div>
+
+                    <form action="{{ url_for('ventas.agregar_al_carrito') }}" method="POST" class="flex-1 w-full space-y-4">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        
+                        <div class="space-y-1">
+                            <label class="text-[#f3e5d8] text-[10px] font-black uppercase">Seleccionar Producto</label>
+                            <select id="select-producto" name="id_producto[]" onchange="actualizarPrevisualizacion(this)" 
+                                    class="w-full bg-[#2c1b16] border-2 border-white/20 rounded-lg p-3 text-white font-bold focus:border-[#6b1f26] outline-none transition-all">
+                                <option value="" data-img="">-- Selecciona un pan --</option>
+                                {% for producto in productos_catalogo %}
+                                    <option value="{{ producto.id_producto }}" 
+                                            data-img="{% if producto.imagen_url %}data:image/jpeg;base64,{{ producto.imagen_url | b64encode }}{% endif %}">
+                                        {{ producto.nombre }} - ${{ "%.2f"|format(producto.precio_venta) }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <input type="hidden" id="id_maestro" name="todos_los_ids[]" value="">
+
+                        <div class="flex gap-4">
+                            <div class="w-1/3">
+                                <label class="text-[#f3e5d8] text-[10px] font-black uppercase">Cantidad</label>
+                                <input type="number" name="cantidad[]" value="1" min="1" 
+                                       class="w-full bg-[#2c1b16] border-2 border-white/20 rounded-lg p-2 text-white font-bold">
+                            </div>
+                            <button type="submit" class="flex-1 bg-[#6b1f26] text-white rounded-lg font-black uppercase hover:bg-white hover:text-[#6b1f26] transition-all">
+                                Añadir al pedido
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
+            <!-- Panel detalle de venta -->
             <div class="lg:col-span-1">
                 <div class="bg-[#2c1b16] rounded-2xl p-6 shadow-2xl sticky top-8 border-t-8 border-[#6b1f26]">
                     <h2 class="text-[#f3e5d8] font-black text-xl uppercase mb-6 tracking-widest border-b border-[#f3e5d8]/20 pb-4">Detalle de Venta</h2>
                     
-                    <div class="space-y-3 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                        {% for id, item in carrito.items() %}
-                        <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/10">
-                            <div class="text-[#f3e5d8]">
-                                <p class="font-bold text-xs uppercase">{{ item.nombre }}</p>
-                                <p class="text-[10px] opacity-60">{{ item.cantidad }} x ${{ "%.2f"|format(item.precio) }}</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <p class="font-black text-[#f3e5d8] text-sm">${{ "%.2f"|format(item.cantidad * item.precio) }}</p>
-                                <a href="{{ url_for('ventasSucursal.pos_eliminar', id_producto=id) }}" class="text-red-400 hover:text-red-600">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    <div class="space-y-3 mb-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        {% for id, item in carrito_pos.items() %}
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="text-[#f3e5d8]">
+                                    <p class="font-black text-sm uppercase">{{ item.nombre }}</p>
+                                    <p class="text-[10px] opacity-60">Unitario: ${{ "%.2f"|format(item.precio) }}</p>
+                                </div>
+                                <a href="{{ url_for('ventas.eliminar_del_pago', id_producto=id) }}" 
+                                class="text-red-400 hover:text-red-600 transition-colors" title="Eliminar producto">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
                                 </a>
+                            </div>
+                            <div class="flex justify-between items-center mt-4">
+                                <form action="{{ url_for('ventas.actualizar_cantidad') }}" method="POST" class="flex items-center gap-2">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="id_producto" value="{{ id }}">
+                                    <label class="text-[10px] text-white/50 uppercase font-bold">Cant:</label>
+                                    <input type="number" name="cantidad" value="{{ item.cantidad }}" 
+                                        onchange="this.form.submit()"
+                                        class="w-16 bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-white text-xs font-bold focus:outline-none focus:border-[#6b1f26]">
+                                </form>
+                                <p class="font-black text-[#f3e5d8] text-lg">
+                                    ${{ "%.2f"|format(item.cantidad * item.precio) }}
+                                </p>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
 
-                    <form action="{{ url_for('ventasSucursal.pos_registrar') }}" method="POST" class="space-y-4">
+                    <form action="{{ url_for('ventas.finalizar_compra') }}" method="POST" class="space-y-4">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <!-- Sucursal -->
                         <div>
-                            <label class="block text-[#f3e5d8] text-[10px] font-black uppercase mb-1">Nombre del Cliente</label>
-                            <input type="text" name="nombre_cliente" placeholder="Cliente General" 
-                                   class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white placeholder-white/30 font-bold focus:outline-none focus:border-[#6b1f26]">
+                            <label class="block text-[#f3e5d8] font-black uppercase text-[10px] mb-2">Sucursal de Despacho</label>
+                            <select name="id_sucursal" id="select-sucursal" required
+                                    onchange="abrirModalEntrega(this)"
+                                    class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-white outline-none focus:border-[#6b1f26] cursor-pointer">
+                                {% for suc in sucursales %}
+                                    <option value="{{ suc.id_sucursal }}" data-nombre="{{ suc.nombre }}"
+                                        {% if session.get('pos_sucursal') == suc.id_sucursal %}selected{% endif %} 
+                                        class="text-black">
+                                        {{ suc.nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
                         </div>
 
-                            <div class="mb-6">
-                                <label class="block text-[#2c1b16] font-black uppercase text-xs mb-4">Método de Pago</label>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="metodo_pago" value="Efectivo" class="peer hidden" checked onchange="toggleTarjeta(false)">
-                                        <div class="p-4 border-2 border-[#6b1f26]/20 rounded-xl peer-checked:border-[#6b1f26] peer-checked:bg-[#6b1f26]/5 transition-all text-center font-bold uppercase text-xs">
-                                            Efectivo / Transferencia
-                                        </div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="metodo_pago" value="Tarjeta" class="peer hidden" onchange="toggleTarjeta(true)">
-                                        <div class="p-4 border-2 border-[#6b1f26]/20 rounded-xl peer-checked:border-[#6b1f26] peer-checked:bg-[#6b1f26]/5 transition-all text-center font-bold uppercase text-xs">
-                                            Tarjeta
-                                        </div>
-                                    </label>
-                                </div>
+                        <!-- Método de entrega (hidden, se llena desde el modal) -->
+                        <input type="hidden" name="metodo_entrega" id="input-metodo-entrega" value="sucursal">
+
+                        <!-- Resumen de entrega seleccionada -->
+                        <div id="resumen-entrega" class="flex items-center gap-3 bg-white/5 border border-[#6b1f26]/50 rounded-xl px-4 py-3">
+                            <span id="icono-entrega" class="text-xl"></span>
+                            <div>
+                                <p class="text-[#f3e5d8] font-black text-xs uppercase" id="texto-entrega">Recoger en Sucursal</p>
+                                <p class="text-white/40 text-[10px]" id="subtexto-entrega">
+                                    ⏳ Puedes pasar por tu pedido en aprox. {{ tiempo_espera }}
+                                </p>
+                            </div>
+                            <button type="button" onclick="abrirModalEntrega(document.getElementById('select-sucursal'))"
+                                    class="ml-auto text-[#6b1f26] hover:text-red-400 text-[10px] font-black uppercase transition-colors">
+                                Cambiar
+                            </button>
+                        </div>
+
+                        <!-- Campo dirección (visible solo si eligió domicilio) -->
+                        <div id="campo-direccion" class="hidden space-y-2">
+                            <label class="text-[#f3e5d8] font-black uppercase text-xs tracking-widest">Dirección de Envío</label>
+                            <textarea name="direccion_envio" id="textarea-direccion" rows="3"
+                                      class="w-full bg-white/5 border-2 border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#6b1f26] resize-none transition-all"
+                                      placeholder="Calle, número, colonia y referencias..."></textarea>
+                        </div>
+
+                        <!-- Nombre del cliente -->
+                        <div class="space-y-2">
+                            <label class="text-[#f3e5d8] font-black uppercase text-xs tracking-widest">Cliente</label>
+                            <div class="w-full bg-white/5 border-2 border-white/20 rounded-xl p-3 text-white font-bold shadow-inner">
+                                {{ current_user.nombre_mostrable }}
+                            </div>
+                            <input type="hidden" name="nombre_cliente" value="{{ current_user.nombre_mostrable }}">
+                        </div>
+
+                        <!-- Método de pago -->
+                        <div>
+                            <label class="block text-[#f3e5d8] font-black uppercase text-[10px] mb-2">Método de Pago</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="cursor-pointer text-[#f3e5d8]">
+                                    <input type="radio" name="metodo_pago" value="Efectivo" class="peer hidden" checked onchange="toggleTarjeta(false)">
+                                    <div class="p-3 border border-white/20 rounded-xl peer-checked:bg-[#6b1f26] text-center font-bold text-[10px] uppercase">Efectivo</div>
+                                </label>
+                                <label class="cursor-pointer text-[#f3e5d8]">
+                                    <input type="radio" name="metodo_pago" value="Tarjeta" class="peer hidden" onchange="toggleTarjeta(true)">
+                                    <div class="p-3 border border-white/20 rounded-xl peer-checked:bg-[#6b1f26] text-center font-bold text-[10px] uppercase">Tarjeta</div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Formulario dinámico de tarjeta -->
+                        <div id="form-tarjeta" class="hidden space-y-3 bg-white/5 p-4 rounded-xl border border-white/10">
+
+                            <!-- Número de tarjeta -->
+                            <div>
+                                <label class="text-[#f3e5d8] text-[10px] font-black uppercase mb-1 block">Número de Tarjeta</label>
+                                <input type="text" id="numero-tarjeta" placeholder="0000 0000 0000 0000" maxlength="19"
+                                       oninput="formatearTarjeta(this)"
+                                       class="w-full p-2 rounded-lg bg-transparent border border-white/20 text-white text-sm font-mono tracking-widest focus:border-[#6b1f26] outline-none transition-all">
+                                <p id="tipo-tarjeta" class="text-white/30 text-[10px] font-bold uppercase text-right mt-1">— Ingresa tu número</p>
                             </div>
 
-                            <div id="form-tarjeta" class="hidden space-y-4 bg-white/30 p-4 rounded-xl border border-[#6b1f26]/10 mb-6">
-                                <input type="text" placeholder="Número de Tarjeta (16 dígitos)" class="w-full p-3 rounded-lg border-2 border-[#6b1f26]/20 font-mono text-sm">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <input type="text" placeholder="MM/AA" class="p-3 rounded-lg border-2 border-[#6b1f26]/20 text-sm">
-                                    <input type="text" placeholder="CVV" class="p-3 rounded-lg border-2 border-[#6b1f26]/20 text-sm">
-                                </div>
+                            <!-- Nombre en tarjeta -->
+                            <div>
+                                <label class="text-[#f3e5d8] text-[10px] font-black uppercase mb-1 block">Nombre en la Tarjeta</label>
+                                <input type="text" id="nombre-tarjeta" placeholder="JUAN PÉREZ" maxlength="26"
+                                       oninput="this.value = this.value.toUpperCase()"
+                                       class="w-full p-2 rounded-lg bg-transparent border border-white/20 text-white text-sm font-bold focus:border-[#6b1f26] outline-none transition-all">
                             </div>
 
-                            <script>
-                            function toggleTarjeta(show) {
-                                const form = document.getElementById('form-tarjeta');
-                                if(show) form.classList.remove('hidden');
-                                else form.classList.add('hidden');
-                            }
-                            </script>
+                            <div class="flex gap-3">
+                                <!-- Fecha de vencimiento -->
+                                <div class="flex-1">
+                                    <label class="text-[#f3e5d8] text-[10px] font-black uppercase mb-1 block">Vencimiento</label>
+                                    <input type="text" id="vencimiento-tarjeta" placeholder="MM/AA" maxlength="5"
+                                           oninput="formatearVencimiento(this)"
+                                           class="w-full p-2 rounded-lg bg-transparent border border-white/20 text-white text-sm font-mono focus:border-[#6b1f26] outline-none transition-all">
+                                </div>
 
+                                <!-- CVV -->
+                                <div class="w-20">
+                                    <label class="text-[#f3e5d8] text-[10px] font-black uppercase mb-1 block">CVV</label>
+                                    <input type="password" id="cvv-tarjeta" placeholder="•••" maxlength="3"
+                                           oninput="this.value = this.value.replace(/\D/g,'')"
+                                           class="w-full p-2 rounded-lg bg-transparent border border-white/20 text-white text-sm font-mono focus:border-[#6b1f26] outline-none transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total -->
                         <div class="pt-6 border-t border-white/10 flex justify-between items-end">
-                            <p class="text-[#f3e5d8] font-black uppercase text-sm">Total a Pagar</p>
+                            <p class="text-[#f3e5d8] font-black uppercase text-xs">Total</p>
                             <p class="text-3xl font-black text-white">${{ "%.2f"|format(total) }}</p>
                         </div>
 
                         <button type="submit" {% if not carrito_pos %}disabled{% endif %}
                                 class="w-full py-4 rounded-xl font-black uppercase tracking-widest transition-all
-                                {% if carrito_pos %}bg-[#6b1f26] text-white hover:bg-[#8e2a33] shadow-lg
+                                {% if carrito_pos %}bg-[#6b1f26] text-white hover:bg-red-700 shadow-lg
                                 {% else %}bg-gray-600 text-gray-400 cursor-not-allowed{% endif %}">
                             Finalizar Venta
                         </button>
@@ -141,9 +283,110 @@
 </section>
 
 <style>
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b1f26; border-radius: 10px; }
+@keyframes fade-in {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-fade-in { animation: fade-in 0.2s ease-out; }
 </style>
 
+<script>
+/* ── Modal de entrega ── */
+function abrirModalEntrega(selectEl) {
+    const nombre = selectEl.options[selectEl.selectedIndex].getAttribute('data-nombre') || 'la sucursal seleccionada';
+    document.getElementById('modal-sucursal-nombre').textContent = nombre;
+    const modal = document.getElementById('modal-entrega');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function cerrarModal() {
+    const modal = document.getElementById('modal-entrega');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function elegirEntrega(tipo) {
+    document.getElementById('input-metodo-entrega').value = tipo;
+
+    const iconoEl  = document.getElementById('icono-entrega');
+    const textoEl  = document.getElementById('texto-entrega');
+    const subEl    = document.getElementById('subtexto-entrega');
+    const campoDir = document.getElementById('campo-direccion');
+    const textarea = document.getElementById('textarea-direccion');
+
+    if (tipo === 'domicilio') {
+        iconoEl.textContent = '';
+        textoEl.textContent = 'Envío a Domicilio';
+        subEl.textContent   = 'Ingresa tu dirección abajo';
+        campoDir.classList.remove('hidden');
+        textarea.required = true;
+    } else {
+        iconoEl.textContent = '';
+        textoEl.textContent = 'Recoger en Sucursal';
+        subEl.textContent   = ' Puedes pasar por tu pedido en aprox. {{ tiempo_espera }}';
+        campoDir.classList.add('hidden');
+        textarea.required = false;
+        textarea.value = '';
+    }
+
+    cerrarModal();
+}
+
+/* Cerrar modal al hacer clic fuera */
+document.getElementById('modal-entrega').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModal();
+});
+
+/* ── Tarjeta ── */
+function toggleTarjeta(show) {
+    const form = document.getElementById('form-tarjeta');
+    if (show) form.classList.remove('hidden');
+    else form.classList.add('hidden');
+}
+
+function formatearTarjeta(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = val.match(/.{1,4}/g)?.join(' ') || val;
+
+    const tipo = document.getElementById('tipo-tarjeta');
+    if      (/^4/.test(val))        tipo.textContent = '💳 Visa';
+    else if (/^5[1-5]/.test(val))   tipo.textContent = '💳 Mastercard';
+    else if (/^3[47]/.test(val))    tipo.textContent = '💳 American Express';
+    else if (val.length > 0)        tipo.textContent = '💳 Tarjeta';
+    else                             tipo.textContent = '— Ingresa tu número';
+}
+
+function formatearVencimiento(input) {
+    let val = input.value.replace(/\D/g, '').substring(0, 4);
+    if (val.length >= 3) {
+        input.value = val.substring(0, 2) + '/' + val.substring(2);
+    } else {
+        input.value = val;
+    }
+}
+
+/* ── Preview imagen producto ── */
+function actualizarPrevisualizacion(elemento) {
+    const img         = document.getElementById('img-preview');
+    const placeholder = document.getElementById('placeholder-text');
+    const idMaestro   = document.getElementById('id_maestro');
+    
+    const selectedOption = elemento.options[elemento.selectedIndex];
+    const imgSrc = selectedOption.getAttribute('data-img');
+    const idVal  = selectedOption.value;
+
+    idMaestro.value = idVal;
+
+    if (imgSrc && imgSrc.length > 30) { 
+        img.src = imgSrc;
+        img.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+    } else {
+        img.src = "";
+        img.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+    }
+}
+</script>
 {% endblock %}

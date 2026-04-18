@@ -22,7 +22,7 @@
 <body>
 
 <!-- NAVBAR -->
-<nav class="bg-[#341915] px-8 py-4 shadow-md">
+<nav class="bg-[#140b0a] px-8 py-4 shadow-md">
 <div class="container flex items-center justify-between mx-auto">
 
 <!-- LOGO -->
@@ -37,7 +37,34 @@ class="h-14 w-14 rounded-full bg-white p-1">
 <li><a href="{{ url_for('nosotros') }}" class="hover:underline underline-offset-4">Nosotros</a></li>
 <li><a href="{{ url_for('catalogo') }}" class="hover:underline underline-offset-4">Catálogo</a></li>
 <li><a href="{{ url_for('sucursales.sucursales') }}" class="hover:underline underline-offset-4">Sucursales</a></li>
+{% if current_user.is_authenticated %}
+<li>
+    <a href="{{ url_for('ventas.mis_compras') }}" class="hover:underline underline-offset-4">
+        Mis Compras
+    </a>
+</li>
+{% endif %}
 </ul>
+
+{% if current_user.is_authenticated %}
+
+  <span class="text-[#E8D8C4] text-sm">
+    {{ current_user.nombre }}
+  </span>
+
+  {% if current_user.rol.nombre in ['Administrador', 'Gerente'] %}
+    <a href="/gestion"
+       class="bg-[#6b1f26] text-white px-4 py-2 rounded hover:bg-[#4b151b] text-sm">
+       Gestión
+    </a>
+  {% endif %}
+
+  <a href="{{ url_for('auth.logout') }}"
+     class="text-[#E8D8C4] hover:underline text-sm">
+     Salir
+  </a>
+
+{% endif %}
 
 <!-- ICONO -->
 <div class="flex items-center">

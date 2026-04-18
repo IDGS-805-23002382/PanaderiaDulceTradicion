@@ -1,38 +1,64 @@
 from flask import render_template, request, redirect, url_for, flash
 from datetime import date, datetime
-from models import Producto, Orden, db, Receta, DetalleOrden, MateriaPrima, Sucursal, InventarioMateriaPrima, MovimientoInventario, InventarioProducto, MovimientoInventarioProducto
+from models import Producto, Orden, db, Receta, DetalleOrden, MateriaPrima, Sucursal, InventarioMateriaPrima, MovimientoInventario, InventarioProducto, MovimientoInventarioProducto, HistorialPreciosMateriaPrima
 from werkzeug.utils import secure_filename
 from sqlalchemy import or_
 import forms
 from . import ordenProduccion_bp
+from utils.decorators import empleado_required, gerente_or_admin_required,cocina_or_admin_required,vendedor_or_admin_required,login_required_with_message
+from flask_login import login_required
+
+# ========== FUNCIÓN NUEVA ==========
+def obtener_costo_unitario_materia(id_materia):
+    """Obtiene el costo por unidad base (g/ml/pza) desde el historial de precios"""
+    materia = MateriaPrima.query.get(id_materia)
+    if not materia:
+        return 0.0
+    
+    ultimo = HistorialPreciosMateriaPrima.query.filter_by(
+        id_materia=id_materia
+    ).order_by(HistorialPreciosMateriaPrima.fecha_compra.desc()).first()
+    
+    if not ultimo:
+        return 0.0
+    
+    if materia.unidad_base == 'g':
+        return float(ultimo.precio_por_gramo or 0)
+    elif materia.unidad_base == 'ml':
+        return float(ultimo.precio_por_ml or 0)
+    elif materia.unidad_base == 'pza':
+        return float(ultimo.precio_por_pieza or 0)
+    
+    return 0.0
 
 def convertir_a_base(cantidad, unidad):
     unidad = (unidad or '').lower().strip()
-
     if unidad in ['kg']:
-        return cantidad * 1000  # kg → g
+        return cantidad * 1000
     elif unidad in ['l', 'litro', 'litros']:
-        return cantidad * 1000  # l → ml
+        return cantidad * 1000
     else:
-        return cantidad  # g, ml, pz
+        return cantidad
 
 @ordenProduccion_bp.route('/ordenes')
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@cocina_or_admin_required
 def listarOrdenes():
-
     ordenes = Orden.query.all()
-
-    return render_template(
-        'modulo-ordenes/modulo-ordenes.html',
-        ordenes=ordenes
-    )
+    return render_template('modulo-ordenes/modulo-ordenes.html', ordenes=ordenes)
 
 @ordenProduccion_bp.route('/agregarOrden', methods=['GET', 'POST'])
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@cocina_or_admin_required
 def agregarOrden():
     form = forms.OrdenForm()
     form.id_sucursal.choices = [(s.id_sucursal, s.nombre) for s in Sucursal.query.all()]
     form.id_producto.choices = [(p.id_producto, p.nombre) for p in Producto.query.filter_by(estatus='activo').all()]
     
-    # INICIALIZAR TODAS LAS VARIABLES EN 0 O VACÍO (se borrarán en cada GET)
     total_costo_orden = 0
     costo_unitario_pan = 0
     costo_por_receta = 0
@@ -45,13 +71,10 @@ def agregarOrden():
     hay_stock_suficiente = True
     faltantes = []
 
-    # IMPORTANTE: Si es GET, mostrar formulario vacío
     if request.method == 'GET':
-        # Resetear campos del formulario
         form.cantidad_recetas.data = None
         form.id_producto.data = None
         form.id_sucursal.data = None
-        
         return render_template(
             'modulo-ordenes/agregarOrden.html',
             form=form,
@@ -68,11 +91,11 @@ def agregarOrden():
             faltantes=[]
         )
 
-    # PROCESAR POST (solo si viene del formulario)
     if request.method == 'POST':
         id_prod = request.form.get('id_producto')
         id_suc = request.form.get('id_sucursal')
         cantidad_recetas = int(request.form.get('cantidad_recetas', 0))
+        para_stock = 'para_stock' in request.form
 
         sucursal_obj = Sucursal.query.get(id_suc)
         if sucursal_obj:
@@ -89,12 +112,10 @@ def agregarOrden():
                 total_receta = 0
                 ingredientes_base = []
 
-                # CALCULAR INGREDIENTES EN UNIDAD BASE
                 for det in receta.ingredientes:
                     mp = det.materia
                     tipo = (det.tipo or '').lower().strip()
 
-                    # Normalizar tipos
                     if tipo in ['gr','gramos']:
                         tipo = 'g'
                     elif tipo in ['kg','kilogramos']:
@@ -107,25 +128,18 @@ def agregarOrden():
                         tipo = 'pz'
 
                     cantidad = float(det.cantidad)
-
-                    # CONVERTIR A BASE
                     cantidad_base = convertir_a_base(cantidad, tipo)
-
-                    # Calcular costo según tipo
-                    if tipo in ['g','kg','ml','l']:
-                        costo_unit = mp.precio_por_gramo_ml
-                    elif tipo == 'pz':
-                        costo_unit = mp.precio_por_pieza
-                    else:
-                        costo_unit = float(mp.precio_unitario)
-
+                    
+                    # 🔥 USAR LA NUEVA FUNCIÓN para obtener costo
+                    costo_unit = obtener_costo_unitario_materia(mp.id_materia)
+                    
                     subtotal = cantidad_base * costo_unit
                     total_receta += subtotal
 
                     ingredientes_base.append({
                         "nombre": mp.nombre,
                         "id_materia": mp.id_materia,
-                        "cantidad": cantidad_base,  # YA EN BASE
+                        "cantidad": cantidad_base,
                         "tipo": tipo,
                         "tipo_original": det.tipo,
                         "costo_unit": costo_unit
@@ -139,7 +153,6 @@ def agregarOrden():
                 faltantes = []
                 hay_stock_suficiente = True
 
-                # VALIDACIÓN DE STOCK (YA EN BASE)
                 for ing in ingredientes_base:
                     cantidad_total = ing["cantidad"] * cantidad_recetas
 
@@ -150,7 +163,6 @@ def agregarOrden():
 
                     stock_disponible = inventario.stock_actual if inventario else 0
 
-                    # Mostrar stock en unidad legible para el usuario
                     if ing["tipo_original"] in ['l', 'litros']:
                         stock_mostrar = stock_disponible / 1000
                         unidad_mostrar = 'l'
@@ -185,7 +197,6 @@ def agregarOrden():
                         "necesario_base": cantidad_total
                     })
 
-                # CONFIRMAR ORDEN
                 if 'confirmar' in request.form:
                     if not hay_stock_suficiente:
                         flash('No hay stock suficiente', 'error')
@@ -205,7 +216,7 @@ def agregarOrden():
 
                     nueva_orden = Orden(
                         id_sucursal=id_suc,
-                        id_usuario=1,  # Cambiar por usuario logueado
+                        id_usuario=1,
                         fecha_produccion=datetime.now().date(),
                         total_unidades=piezas_totales,
                         costo_total_estimado=total_costo_orden,
@@ -225,7 +236,6 @@ def agregarOrden():
                     )
                     db.session.add(detalle)
 
-                    # DESCONTAR INVENTARIO (USANDO UNIDAD BASE)
                     for ing in ingredientes_base:
                         cantidad_total_base = ing["cantidad"] * cantidad_recetas
 
@@ -249,8 +259,6 @@ def agregarOrden():
 
                     db.session.commit()
                     flash('Orden creada correctamente', 'success')
-                    
-                    # REDIRIGIR para evitar reenvío de datos al recargar
                     return redirect(url_for('ordenProduccion.agregarOrden'))
 
     return render_template(
@@ -268,9 +276,12 @@ def agregarOrden():
         hay_stock_suficiente=hay_stock_suficiente,
         faltantes=faltantes
     )
-    
-    
+
 @ordenProduccion_bp.route('/panel')
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@cocina_or_admin_required
 def panelCocina():
     ordenes_pendientes = Orden.query.filter_by(estatus='planeada').order_by(Orden.fecha_produccion.asc()).all()
     ordenes_preparacion = Orden.query.filter_by(estatus='preparacion').order_by(Orden.fecha_produccion.asc()).all()
@@ -282,20 +293,19 @@ def panelCocina():
                          ordenes_canceladas=ordenes_canceladas)
 
 @ordenProduccion_bp.route('/cambiar_estado/<int:id_orden>', methods=['POST'])
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@cocina_or_admin_required
 def cambiar_estado(id_orden):
     orden = Orden.query.get_or_404(id_orden)
-
     nuevo_estatus = request.form.get('estatus')
 
     if nuevo_estatus:
-        # Si la orden se está completando
         if nuevo_estatus == 'completada' and orden.estatus != 'completada':
-            
-            # Obtener el detalle de la orden
             detalle = DetalleOrden.query.filter_by(id_orden=id_orden).first()
             
             if detalle:
-                # Obtener o crear inventario para este producto en esta sucursal
                 inventario = InventarioProducto.query.filter_by(
                     id_producto=detalle.id_producto,
                     id_sucursal=orden.id_sucursal
@@ -310,11 +320,9 @@ def cambiar_estado(id_orden):
                     )
                     db.session.add(inventario)
                 
-                # Sumar las unidades producidas
                 inventario.stock_actual += detalle.cantidad
                 
-                # Registrar movimiento en bitácora
-                bitacora_movimiento = MovimientoInventarioProducto(
+                movimiento = MovimientoInventarioProducto(
                     id_producto=detalle.id_producto,
                     id_sucursal=orden.id_sucursal,
                     cantidad=detalle.cantidad,
@@ -322,36 +330,33 @@ def cambiar_estado(id_orden):
                     referencia=f'Orden #{orden.id_orden}',
                     fecha=datetime.now()
                 )
-                db.session.add(bitacora_movimiento)
+                db.session.add(movimiento)
                 
-                flash(f'Se agregaron {detalle.cantidad} unidades al inventario', 'success')
+                flash(f'✅ Se agregaron {detalle.cantidad} unidades al inventario de productos', 'success')
         
         orden.estatus = nuevo_estatus
-
         if nuevo_estatus == 'cancelada':
             orden.motivo_cancelacion = request.form.get('motivo_cancelacion')
-
         db.session.commit()
         flash('Estado actualizado correctamente', 'success')
 
     return redirect(url_for('ordenProduccion.panelCocina'))
 
 @ordenProduccion_bp.route('/detalle_orden/<int:id_orden>')
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@cocina_or_admin_required
 def detalle_orden(id_orden):
-    # Obtener la orden con sus relaciones
     orden = Orden.query.get_or_404(id_orden)
-    
-    # Obtener el detalle de la orden
     detalle = DetalleOrden.query.filter_by(id_orden=id_orden).first()
     
     if not detalle:
         flash('No se encontraron detalles para esta orden', 'error')
         return redirect(url_for('ordenProduccion.listarOrdenes'))
     
-    # Obtener la receta del producto
     receta = Receta.query.filter_by(id_producto=detalle.id_producto).first()
     
-    # Calcular materia prima requerida
     materia_prima_detalle = []
     costo_total_materia_prima = 0
     
@@ -362,15 +367,9 @@ def detalle_orden(id_orden):
             unidad = detalle_receta.tipo
             cantidad_total = cantidad_por_receta * detalle.cantidad_recetas
             
-            # Determinar el precio según la unidad
-            if unidad in ['pz', 'pieza', 'piezas']:
-                # Para piezas, usar precio_por_pieza si existe
-                costo_unitario = getattr(mp, 'precio_por_pieza', 0)
-            else:
-                # Para gramos, ml, etc., usar precio_por_gramo_ml
-                costo_unitario = getattr(mp, 'precio_por_gramo_ml', 0)
+            # 🔥 USAR LA NUEVA FUNCIÓN para obtener costo
+            costo_unitario = obtener_costo_unitario_materia(mp.id_materia)
             
-            # Mostrar cantidades en unidades legibles
             if unidad in ['kg', 'kilogramos']:
                 cantidad_mostrar = cantidad_total
                 unidad_mostrar = 'kg'
@@ -401,10 +400,7 @@ def detalle_orden(id_orden):
             
             costo_total_materia_prima += subtotal
     
-    # Obtener información de la sucursal
     sucursal = Sucursal.query.get(orden.id_sucursal)
-    
-    # Obtener el producto
     producto = Producto.query.get(detalle.id_producto)
     
     return render_template(

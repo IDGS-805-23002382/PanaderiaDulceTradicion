@@ -2,38 +2,33 @@
 {% block container %}
 
 <div class="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 py-12 px-4 sm:px-6 lg:px-8">
-
+    
     <div class="max-w-2xl mx-auto">
 
-        <!-- Botón regresar -->
+        <!-- BOTÓN REGRESAR -->
         <div class="mb-6">
             <a href="{{ url_for('materiaPrima.materiaPrima') }}"
                class="inline-flex items-center text-[#341915] hover:text-[#4a241d] transition group">
-
+                
                 <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition"
                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                    <path stroke-linecap="round"
-                          stroke-linejoin="round"
+                    <path stroke-linecap="round" stroke-linejoin="round"
                           stroke-width="2"
                           d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-
                 </svg>
 
                 <span class="font-medium">Volver a materias primas</span>
             </a>
         </div>
 
-
         <!-- CARD -->
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20">
 
             <!-- HEADER -->
             <div class="bg-gradient-to-r from-[#341915] to-[#4a241d] px-8 py-6">
-
                 <div class="flex items-center space-x-4">
-
-                    <div class="p-3 rounded-2xl">
+                    
+                    <div class="p-3">
                         <img class="w-16 h-16"
                              src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}">
                     </div>
@@ -42,16 +37,13 @@
                         <h1 class="text-3xl font-bold text-white">
                             Desactivar Materia Prima
                         </h1>
-
                         <p class="text-amber-100/80 mt-1">
-                            La materia prima cambiará a estatus inactivo
+                            Esta acción cambiará su estatus a inactivo
                         </p>
                     </div>
 
                 </div>
-
             </div>
-
 
             <!-- BODY -->
             <div class="p-8 text-center text-[#341915]">
@@ -65,28 +57,22 @@
                     <span class="font-semibold text-[#341915]">
                         {{ materiaPrima.nombre }}
                     </span>
-                    dejará de aparecer en la lista de materias primas activas.
+                    dejará de estar disponible en el sistema.
                 </p>
 
-
-                <!-- INFO -->
+                <!-- INFORMACIÓN -->
                 <div class="bg-gray-50 rounded-xl p-6 text-left mb-8 shadow-inner">
-
                     <p><b>Nombre:</b> {{ materiaPrima.nombre }}</p>
-                    <p><b>Unidad:</b> {{ materiaPrima.unidad_medida }}</p>
-                    <p><b>Stock actual:</b> {{ materiaPrima.stock_actual }}</p>
-                    <p><b>Stock mínimo:</b> {{ materiaPrima.stock_minimo }}</p>
-                    <p><b>Precio:</b> $ {{ materiaPrima.precio_unitario }}</p>
-
-                    <p>
-                        <b>Proveedor:</b>
+                    <p><b>Unidad base:</b> {{ materiaPrima.unidad_base }}</p>
+                    <p><b>Proveedor:</b> 
                         {{ materiaPrima.proveedor.nombre if materiaPrima.proveedor else "Sin proveedor" }}
                     </p>
-
+                    <p><b>Estatus actual:</b> 
+                        {{ materiaPrima.estatus }}
+                    </p>
                 </div>
 
-
-                <!-- FORM -->
+                <!-- FORM CONFIRMACIÓN -->
                 <form action="{{ url_for('materiaPrima.eliminarMateriaPrima', id=materiaPrima.id_materia) }}"
                       method="POST">
 
@@ -94,18 +80,16 @@
 
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
 
+                        <!-- BOTÓN CONFIRMAR -->
                         <button type="submit"
-                        class="bg-[#341915] text-white px-6 py-3 rounded-xl hover:bg-[#4a241d] transition transform hover:scale-105 shadow-lg font-semibold">
-
+                                class="bg-[#341915] text-white px-6 py-3 rounded-xl hover:bg-[#4a241d] transition transform hover:scale-105 shadow-lg font-semibold">
                             Desactivar materia prima
-
                         </button>
 
+                        <!-- CANCELAR -->
                         <a href="{{ url_for('materiaPrima.materiaPrima') }}"
-                        class="bg-gray-200 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-300 transition transform hover:scale-105 font-semibold">
-
+                           class="bg-gray-200 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-300 transition transform hover:scale-105 font-semibold">
                             Cancelar
-
                         </a>
 
                     </div>
@@ -113,11 +97,8 @@
                 </form>
 
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 {% endblock %}

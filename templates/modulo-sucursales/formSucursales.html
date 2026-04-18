@@ -34,23 +34,34 @@ class="w-full border rounded p-2">
 <input type="text" name="ciudad"
 class="w-full border rounded p-2">
 </div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-        <label class="block font-medium">Email de Sucursal</label>
-        <input type="email" name="email" class="w-full border rounded p-2" required>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-medium">Email de Sucursal</label>
+                <input type="email" name="email" class="w-full border rounded p-2" required>
+            </div>
+            <div>
+                <label class="block font-medium">Código Postal</label>
+                <input type="text" name="codigo_postal" class="w-full border rounded p-2">
+            </div>
+            <div>
+                <label class="block font-medium">Estado/Provincia</label>
+                <input type="text" name="estado" class="w-full border rounded p-2">
+            </div>
+            <div>
+                <label class="block font-medium">URL de Imagen</label>
+                <input type="url" name="imagen_url" class="w-full border rounded p-2" placeholder="https://ejemplo.com/imagen.jpg">
+            </div>
     </div>
-    <div>
-        <label class="block font-medium">Código Postal</label>
-        <input type="text" name="codigo_postal" class="w-full border rounded p-2">
-    </div>
-    <div>
-        <label class="block font-medium">Estado/Provincia</label>
-        <input type="text" name="estado" class="w-full border rounded p-2">
-    </div>
-    <div>
-        <label class="block font-medium">URL de Imagen</label>
-        <input type="url" name="imagen_url" class="w-full border rounded p-2" placeholder="https://ejemplo.com/imagen.jpg">
-    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+        <div>
+            <label class="block font-medium">Hora de Apertura</label>
+            <input type="time" name="horario_abierto" class="w-full border rounded p-2" value="{{ request.form.horario_abierto or '' }}">
+        </div>
+        <div>
+            <label class="block font-medium">Hora de Cierre</label>
+            <input type="time" name="horario_cierre" class="w-full border rounded p-2" value="{{ request.form.horario_cierre or '' }}">
+        </div>
     </div>
 <div class="flex gap-3">
     <div class="grid grid-cols-2 gap-4 mt-4">
@@ -62,7 +73,7 @@ class="w-full border rounded p-2">
         <label class="block font-medium text-xs text-gray-500 uppercase">Longitud</label>
         <input type="text" name="longitud" class="w-full border rounded p-2" placeholder="Ej: -101.6822">
     </div>
-</div>
+    </div>
 
 <button type="submit"
 class="bg-[#341915] text-white px-4 py-2 rounded hover:bg-[#4b231c]">

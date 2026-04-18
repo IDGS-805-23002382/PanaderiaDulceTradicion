@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,137 +75,194 @@ class="h-14 w-14 rounded-full bg-white p-1">
 <aside id="sidebar"
 class="fixed top-0 left-0 z-40 w-64 h-screen p-6 transition-transform -translate-x-full bg-[#C7B7A3] overflow-y-auto">
 
-<h2 class="flex items-center text-xl font-bold mb-8 text-[#341915]">
-
+<h3 class="flex items-center text-xl font-bold mb-8 text-[#341915]">
 <img src="{{ url_for('static', filename='img/iconosModulos/avatar.png') }}"
 class="h-14 w-14 mr-3">
 
-Mi cuenta
+{{ current_user.nombre }}
+</h3>
 
-</h2>
-
-
-<ul class="space-y-3 text-[#341915]">
-
-<li>
-<a href="/gestion" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/pedidos.png') }}" class="h-6 w-6">
-<span>Gestión</span>
-</a>
-</li>
-
-<li>
-<a href="/empleados" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/empleados.png') }}" class="h-6 w-6">
-<span>Empleados</span>
-</a>
-</li>
-
-<li>
-<a href="/usuarios" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/usuarios.png') }}" class="h-6 w-6">
-<span>Usuarios</span>
-</a>
-</li>
-
-<li>
-<a href="/clientes" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/clientes.png') }}" class="h-6 w-6">
-<span>Clientes</span>
-</a>
-</li>
-
-<li>
-  <a href="{{ url_for('dashboard.dashboard') }}"
-     class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3] bg-[#6b1f26]/10">
-    <img src="{{ url_for('static', filename='img/iconosModulos/ventas.png') }}" class="h-6 w-6">
-    <span class="font-black text-[#6b1f26]">Dashboard</span>
-  </a>
-</li>
-
-<li>
-<a href="/roles" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/roles.png') }}" class="h-6 w-6">
-<span>Roles</span>
-</a>
-</li>
-
-<li>
-    <a href="{{ url_for('sucursales.gestion_sucursales') }}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-        <img src="{{ url_for('static', filename='img/iconosModulos/sucursales.png') }}" class="h-6 w-6">
-        <span>Sucursales</span>
-    </a>
-</li>
-
-<li>
-<a href="/proveedores" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/proveedores.png') }}" class="h-6 w-6">
-<span>Proveedores</span>
-</a>
-</li>
-
-<li>
-<a href="/categorias" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/categoria.png') }}" class="h-6 w-6">
-<span>Categorías</span>
-</a>
-</li>
-
-<li>
-<a href="/productos" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/productos.png') }}" class="h-6 w-6">
-<span>Productos</span>
-</a>
-</li>
-
-<li>
-<a href="/materiaPrima" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/materiaPrima.png') }}" class="h-6 w-6">
-<span>Materia Prima</span>
-</a>
-</li>
-
-<li>
-<a href="/recetas" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/receta.png') }}" class="h-6 w-6">
-<span>Recetas</span>
-</a>
-</li>
-
-<li>
-<a href="/ordenes" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/ordenProduccion.png') }}" class="h-6 w-6">
-<span>Órdenes de Producción</span>
-</a>
-</li>
-
-<li>
-  <a href="{{ url_for('ventas.historial_ventas') }}" 
-     class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-    <img src="{{ url_for('static', filename='img/iconosModulos/ventas.png') }}" class="h-6 w-6">
-    <span>Mis Ventas</span>
-  </a>
-</li>
-
-<li>
-  <a href="{{ url_for('ventasSucursal.seleccionar_sucursal') }}" 
-     class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-    <img src="{{ url_for('static', filename='img/iconosModulos/ventas.png') }}" class="h-6 w-6">
-    <span>Punto de Venta</span>
-  </a>
-</li>
+<form action="{{ url_for('materiaPrima.backup_db') }}" method="POST" class="inline">
+     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm">
+        Backup
+    </button>
+</form>
 
 
 
+<ul class="space-y-4 text-[#341915]">
 
-<hr class="my-6 border-[#341915]">
+    <!-- === ADMINISTRACIÓN === -->
+    <li class="text-xs font-bold uppercase text-[#6b1f26] mt-2">Administración</li>
 
-<li>
-<a href="/logout" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
-<img src="{{ url_for('static', filename='img/iconosModulos/cerrar-sesion.png') }}" class="h-6 w-6">
-<span>Cerrar sesión</span>
-</a>
-</li>
+    {% if has_role(['Administrador', 'Gerente']) %}
+    <li>
+        <a href="/gestion" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/gestion') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/pedidos.png') }}" class="h-6 w-6">
+            <span>Gestión</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role(['Administrador', 'Gerente']) %}
+    <li>
+        <a href="/empleados" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/empleados') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/empleados.png') }}" class="h-6 w-6">
+            <span>Empleados</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role('Administrador') %}
+    <li>
+        <a href="/usuarios" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/usuarios') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/usuarios.png') }}" class="h-6 w-6">
+            <span>Usuarios</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role(['Administrador', 'Gerente']) %}
+    <li>
+        <a href="/clientes" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/clientes') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/clientes.png') }}" class="h-6 w-6">
+            <span>Clientes</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role('Administrador') %}
+    <li>
+        <a href="/roles" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/roles') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/roles.png') }}" class="h-6 w-6">
+            <span>Roles</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role(['Administrador', 'Gerente']) %}
+    <li>
+        <a href="{{ url_for('sucursales.gestion_sucursales') }}" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/sucursales') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/sucursales.png') }}" class="h-6 w-6">
+            <span>Sucursales</span>
+        </a>
+    </li>
+    {% endif %}
+
+    <!-- === PRODUCCIÓN === -->
+    <li class="text-xs font-bold uppercase text-[#6b1f26] mt-4">Producción</li>
+
+    {% if has_role(['Administrador', 'Gerente', 'Encargado cocina']) %}
+    <li>
+        <a href="/categorias" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/categorias') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/categoria.png') }}" class="h-6 w-6">
+            <span>Categorías</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role(['Administrador', 'Gerente', 'Encargado cocina']) %}
+    <li>
+        <a href="/productos" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/productos') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/productos.png') }}" class="h-6 w-6">
+            <span>Productos</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role(['Administrador', 'Gerente', 'Encargado cocina']) %}
+    <li>
+        <a href="/materiaPrima" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/materiaPrima') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/materiaPrima.png') }}" class="h-6 w-6">
+            <span>Materia Prima</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role(['Administrador', 'Gerente', 'Encargado cocina']) %}
+    <li>
+        <a href="/recetas" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/recetas') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/receta.png') }}" class="h-6 w-6">
+            <span>Recetas</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role(['Administrador', 'Gerente', 'Encargado cocina']) %}
+    <li>
+        <a href="/ordenes" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/ordenes') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/ordenProduccion.png') }}" class="h-6 w-6">
+            <span>Órdenes de Producción</span>
+        </a>
+    </li>
+    {% endif %}
+
+    <!-- === VENTAS === -->
+    <li class="text-xs font-bold uppercase text-[#6b1f26] mt-4">Ventas</li>
+
+    {% if has_role(['Administrador', 'Gerente', 'Vendedor']) %}
+    <li>
+        <a href="{{ url_for('dashboard.dashboard') }}" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/dashboard') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/ventas.png') }}" class="h-6 w-6">
+            <span>Dashboard</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role(['Administrador', 'Gerente', 'Vendedor']) %}
+    <li>
+        <a href="{{ url_for('ventas.historial_ventas') }}" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/ventas') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/ventas.png') }}" class="h-6 w-6">
+            <span>Mis Ventas</span>
+        </a>
+    </li>
+    {% endif %}
+
+    {% if has_role(['Administrador', 'Gerente', 'Vendedor']) %}
+    <li>
+        <a href="{{ url_for('ventasSucursal.seleccionar_sucursal') }}" class="group flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+            <img src="{{ url_for('static', filename='img/iconosModulos/ventas.png') }}" class="h-6 w-6">
+            <span>Punto de Venta</span>
+        </a>
+    </li>
+    {% endif %}
+
+     <li>
+        <a href="{{ url_for('proveedores.compraProveedores') }}" class="group flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+            <img src="{{ url_for('static', filename='img/iconosModulos/ventas.png') }}" class="h-6 w-6">
+            <span>Compra Proveedores</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="{{ url_for('proveedores.inventarioMateria') }}" class="group flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+            <img src="{{ url_for('static', filename='img/iconosModulos/ventas.png') }}" class="h-6 w-6">
+            <span>Inventario Materia</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="{{ url_for('inventarios') }}" class="group flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+            <img src="{{ url_for('static', filename='img/iconosModulos/ventas.png') }}" class="h-6 w-6">
+            <span>Inventario Producto</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="{{ url_for('ordenProduccion.panelCocina') }}" class="group flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+            <img src="{{ url_for('static', filename='img/iconosModulos/ventas.png') }}" class="h-6 w-6">
+            <span>Panel</span>
+        </a>
+    </li>
+    <hr class="my-6 border-[#341915]">
+
+    <li>
+        <a href="{{ url_for('auth.logout') }}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+            <img src="{{ url_for('static', filename='img/iconosModulos/cerrar-sesion.png') }}" class="h-6 w-6">
+            <span>Cerrar sesión</span>
+        </a>
+    </li>
 
 </ul>
 
@@ -216,15 +272,7 @@ Mi cuenta
 <!-- CONTENIDO -->
 <div class="p-10">
 
-{% with messages=get_flashed_messages() %}
-{% if messages %}
-{% for message in messages %}
-<div class="bg-green-200 p-4 mb-4 rounded">
-{{ message }}
-</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
+
 
 {% block container %}
 {% endblock %}

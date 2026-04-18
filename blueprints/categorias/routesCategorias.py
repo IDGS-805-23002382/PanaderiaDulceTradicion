@@ -3,8 +3,14 @@ from models import Categoria, db, Producto
 from sqlalchemy import or_
 from . import categorias_bp
 import forms
+from utils.decorators import empleado_required, gerente_or_admin_required,cocina_or_admin_required,vendedor_or_admin_required,login_required_with_message
+from flask_login import login_required
 
 @categorias_bp.route('/categorias')
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
 def categorias():
 
     buscar = request.args.get("buscar", "")
@@ -41,6 +47,10 @@ def categorias():
 
 # AGREGAR
 @categorias_bp.route('/registrarCategoria', methods=['GET','POST'])
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
 def agregarCategoria():
 
     form = forms.CategoriaForm()
@@ -74,6 +84,10 @@ def agregarCategoria():
 
 # EDITAR
 @categorias_bp.route('/editarCategoria/<int:id>', methods=['GET','POST'])
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
 def modificarCategoria(id):
 
     categoria = Categoria.query.get_or_404(id)
@@ -130,6 +144,10 @@ def modificarCategoria(id):
 
 # DETALLE
 @categorias_bp.route('/detalleCategoria/<int:id>')
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
 def detallesCategoria(id):
 
     categoria = Categoria.query.get_or_404(id)
@@ -152,6 +170,10 @@ def detallesCategoria(id):
     )
 
 @categorias_bp.route('/eliminarCategoria/<int:id>', methods=['GET','POST'])
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
 def eliminarCategoria(id):
 
     categoria = Categoria.query.get_or_404(id)
@@ -183,6 +205,10 @@ def eliminarCategoria(id):
 
 # MOSTRAR IMAGEN
 @categorias_bp.route('/categoria_imagen/<int:id>')
+@login_required
+@login_required_with_message
+@gerente_or_admin_required
+@empleado_required
 def categoria_imagen(id):
 
     categoria = Categoria.query.get_or_404(id)

@@ -3,9 +3,12 @@ from flask_login import current_user, login_required
 from models import Producto, MateriaPrima, Orden, Sucursal, Compra, db, InventarioProducto, InventarioMateriaPrima
 from blueprints.dashboard import dashboard_bp
 from datetime import datetime, timedelta
+from utils.decorators import empleado_required, gerente_or_admin_required,cocina_or_admin_required,vendedor_or_admin_required,login_required_with_message
 
 @dashboard_bp.route('/dashboard')
+@login_required_with_message
 @login_required
+@gerente_or_admin_required
 def dashboard():
     mongo = current_app.mongo
     hoy_dt = datetime.now()

@@ -43,74 +43,36 @@ class ProveedorForm(FlaskForm):
     )
     
 class MateriaPrimaForm(FlaskForm):
-
-    id_materia = IntegerField("ID")
-
     nombre = StringField(
-        "Nombre de la materia prima",
+        "Nombre",
         validators=[
             InputRequired(message="El nombre es requerido"),
             Length(min=3, max=100)
         ]
     )
 
-    unidad_medida = SelectField(
-        "Unidad de medida",
+    unidad_base = SelectField(
+        "Unidad base de medición",
         choices=[
-            ("kg", "Kilogramos (kg)"),
-            ("g", "Gramos (g)"),
-            ("l", "Litros (L)"),
-            ("ml", "Mililitros (ml)"),
-            ("pz", "Piezas"),
-            ("bulto", "Bultos"),
-            ("caja", "Cajas"),
-            ("paquete", "Paquetes")
+            ("g", "Gramos"),
+            ("kg", "Kilogramos"),
+            ("ml", "Mililitros"),
+            ("l", "Litros"),
+            ("pza", "Piezas/Unidades")
         ],
-        validators=[
-            DataRequired(message="Seleccione una unidad de medida")
-        ]
+        validators=[DataRequired(message="Seleccione una unidad base")]
     )
-
-   
-    tipo_empaque = SelectField(
-        "Tipo de empaque",
-        choices=[
-            ("unidad", "Unidad suelta"),
-            ("caja", "Caja")
-        ],
-        default="unidad",
-        validators=[DataRequired()]
-    )
-
-    piezas_por_caja = IntegerField(
-        "Piezas por caja",
-        validators=[Optional()]
-    )
-
-    peso_por_pieza = FloatField(
-        "Peso por pieza (gramos)",
-        validators=[Optional()]
-    )
-
-    
 
     id_proveedor = SelectField(
-        "Proveedor",
+        "Proveedor principal",
         coerce=int,
-        validators=[
-            DataRequired(message="Seleccione un proveedor")
-        ]
+        validators=[DataRequired(message="Seleccione un proveedor")]
     )
 
     estatus = SelectField(
         "Estatus",
-        choices=[
-            ("activo", "Activo"),
-            ("inactivo", "Inactivo")
-        ],
-        validators=[
-            DataRequired(message="Seleccione un estatus")
-        ]
+        choices=[("activo", "Activo"), ("inactivo", "Inactivo")],
+        validators=[DataRequired()]
     )
 
 class CategoriaForm(FlaskForm):
@@ -154,19 +116,12 @@ class ProductoForm(FlaskForm):
         validators=[DataRequired(message="Seleccione una categoría")]
     )
 
-    precio_venta = DecimalField("Precio de venta", [
-        validators.InputRequired(message="El precio es requerido")
-    ])
 
-    costo_unitario_estimado = DecimalField("Costo estimado", [
-        validators.Optional()]
-    )
+
 
     imagen_url = StringField("URL de imagen")
 
-    dias_caducidad = IntegerField("Días de caducidad", [
-        validators.InputRequired(message="Indique los días de caducidad")
-    ])
+    
 
     estatus = SelectField(
         "Estatus",
@@ -314,7 +269,6 @@ class RolForm(FlaskForm):
 
 class UsuarioForm(FlaskForm):
     id_usuario = IntegerField("ID")
-    nombre     = StringField("Nombre completo", [DataRequired(), Length(min=3, max=100)])
     email      = EmailField("Correo", [DataRequired(), Email()])
     password   = PasswordField("Contraseña", [Optional(), Length(min=6)])
     id_rol     = SelectField("Rol", coerce=int)
@@ -335,3 +289,39 @@ class RegisterForm(FlaskForm):
         from models import Usuario
         if Usuario.query.filter_by(email=email.data).first():
             raise ValidationError('Este correo ya está registrado.') 
+        
+class DetalleCompraForm(FlaskForm):
+    id_materia = SelectField("Materia Prima", coerce=int, validators=[DataRequired()])
+    
+    tipo_empaque = SelectField(
+        "Tipo de empaque",
+        choices=[
+            ("bolsa", "Bolsa"),
+            ("frasco", "Frasco"),
+            ("bote", "Bote"),
+            ("paquete", "Paquete"),
+            ("costal", "Costal"),
+            ("caja", "Caja")
+        ],
+        validators=[DataRequired()]
+    )
+    
+    cantidad_empaques = FloatField("Cantidad de empaques", validators=[DataRequired(), NumberRange(min=0.01)])
+    
+    piezas_por_empaque = IntegerField("Piezas por empaque", default=1, validators=[DataRequired(), NumberRange(min=1)])
+    
+    unidad_por_pieza = FloatField("Cantidad por pieza", validators=[DataRequired(), NumberRange(min=0.01)])
+    
+    unidad_medida_pieza = SelectField(
+        "Unidad de medida por pieza",
+        choices=[
+            ("g", "Gramos"),
+            ("kg", "Kilogramos"),
+            ("ml", "Mililitros"),
+            ("l", "Litros"),
+            ("pza", "Piezas")
+        ],
+        validators=[DataRequired()]
+    )
+    
+    precio_unitario_compra = FloatField("Precio por empaque", validators=[DataRequired(), NumberRange(min=0.01)])

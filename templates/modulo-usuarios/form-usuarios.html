@@ -1,5 +1,4 @@
-<!-- template/usuarios/form-usuarios.html -->
- {% extends 'layoutModulos.html' %}
+{% extends 'layoutModulos.html' %}
 {% block container %}
 <div class="w-full max-w-2xl mx-auto">
 
@@ -14,31 +13,23 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-        <!-- NOMBRE -->
-        <div class="md:col-span-2">
-          <label class="flex items-center gap-2 text-sm font-medium text-[#341915] mb-1">
-            <img src="{{ url_for('static', filename='img/iconosModulos/usuarios.png') }}" class="h-4 w-4">
-            {{ form.nombre.label.text }}
-          </label>
-          {{ form.nombre(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.nombre.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
-        </div>
-
         <!-- EMAIL -->
-        <div>
-          <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.email.label.text }}</label>
-          {{ form.email(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-[#341915] mb-1">
+            {{ form.email.label.text }}
+          </label>
+          {{ form.email(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
         </div>
 
-        <!-- CONTRASEÑA -->
-        <div>
+        <!-- PASSWORD -->
+        <div class="md:col-span-2">
           <label class="block text-sm font-medium text-[#341915] mb-1">
             {{ form.password.label.text }}
-            {% if accion == 'Editar' %}<span class="text-xs text-gray-400">(dejar vacío para no cambiar)</span>{% endif %}
+            {% if accion == 'Editar' %}
+              <span class="text-xs text-gray-400">(dejar vacío para no cambiar)</span>
+            {% endif %}
           </label>
-          {{ form.password(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.password.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          {{ form.password(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
         </div>
 
         <!-- ROL -->
@@ -47,13 +38,15 @@
             <img src="{{ url_for('static', filename='img/iconosModulos/roles.png') }}" class="h-4 w-4">
             {{ form.id_rol.label.text }}
           </label>
-          {{ form.id_rol(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
+          {{ form.id_rol(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
         </div>
 
         <!-- ESTATUS -->
         <div>
-          <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.activo.label.text }}</label>
-          {{ form.activo(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
+          <label class="block text-sm font-medium text-[#341915] mb-1">
+            {{ form.activo.label.text }}
+          </label>
+          {{ form.activo(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
         </div>
 
       </div>
@@ -63,6 +56,7 @@
                 class="flex-1 bg-[#341915] hover:bg-[#561C24] text-[#E8D8C4] font-medium py-2 rounded-lg transition">
           {{ accion }}
         </button>
+
         <a href="{{ url_for('usuarios.index') }}"
            class="flex-1 text-center border border-[#341915] text-[#341915] hover:bg-[#e8d8c4] font-medium py-2 rounded-lg transition">
           Cancelar

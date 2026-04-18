@@ -84,6 +84,7 @@
                 <tr>
                     <th class="px-4 py-2 w-24">Imagen</th>
                     <th class="px-4 py-2">Nombre</th>
+                    <th class="px-4 py-2 w-32">horario</th> 
                     <th class="px-4 py-2">Dirección</th>
                     <th class="px-4 py-2 w-32">Estatus</th>
                     <th class="px-4 py-2 w-40">Acciones</th>
@@ -108,6 +109,19 @@
                         <div class="text-xs text-blue-500 font-medium">{{ s.email }}</div>
                         <div class="text-xs text-gray-400 mt-1"><i class="fas fa-phone"></i> {{ s.telefono }}</div>
                     </td>
+
+                       <td class="px-4 py-2 text-center">
+                            <div class="text-sm font-medium text-gray-700">
+                                {% if s.horario_abierto and s.horario_cierre %}
+                                    {% set hora_apertura = s.horario_abierto.strftime('%I:%M %p') if s.horario_abierto is not string else s.horario_abierto %}
+                                    {% set hora_cierre = s.horario_cierre.strftime('%I:%M %p') if s.horario_cierre is not string else s.horario_cierre %}
+                                    {{ hora_apertura }} - {{ hora_cierre }}
+                                {% else %}
+                                    <span class="text-gray-400">No especificado</span>
+                                {% endif %}
+                            </div>
+                        </td>
+
                     <td class="p-5">
                         <div class="text-gray-700 text-sm font-semibold">{{ s.direccion }}</div>
                         <div class="text-gray-400 text-[11px] uppercase tracking-wider">{{ s.ciudad }}, {{ s.estado }}</div>

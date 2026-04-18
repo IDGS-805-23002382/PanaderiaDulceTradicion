@@ -3,65 +3,64 @@
 
 <div class="min-h-screen bg-[#E8D8C4] p-6">
 
-  <!-- BREADCRUMB MEJORADO -->
+  <!-- BREADCRUMB (igual que antes) -->
   <nav class="w-full mb-6" aria-label="Breadcrumb">
     <ol class="flex flex-wrap items-center gap-2">
       <li class="flex items-center">
-        <a href="vistaEmpleado" 
-           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
-          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <a href="{{ url_for('proveedores.proveedores') }}" class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
           </svg>
-          <span>Panel de Control</span>
+          <span>Proveedores</span>
         </a>
       </li>
-      <li class="text-[#561C24] font-bold">
-        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
-        </svg>
-      </li>
+      <li class="text-[#561C24] font-bold">›</li>
       <li class="flex items-center">
-        <a href="inventario_materia" 
-           class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
+        <a href="{{ url_for('proveedores.inventarioMateria') }}" class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#341915] bg-white hover:bg-[#561C24] hover:text-white rounded-lg transition-all duration-200 border border-[#C7B7A3] shadow-sm hover:shadow-md">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
           </svg>
-          <span>Inventario Materia Prima</span>
+          <span>Inventario</span>
         </a>
       </li>
-      <li class="text-[#561C24] font-bold">
-        <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
-        </svg>
-      </li>
+      <li class="text-[#561C24] font-bold">›</li>
       <li class="flex items-center">
         <div class="inline-flex items-center gap-2 py-2 px-3 text-sm font-semibold text-[#561C24] bg-[#E8D8C4] rounded-lg border border-[#C7B7A3] shadow-sm">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
           </svg>
-          <span>Historial de Movimientos</span>
+          <span>Movimientos: {{ materia.nombre }}</span>
         </div>
       </li>
     </ol>
   </nav>
 
   <!-- TARJETA PRINCIPAL -->
-  <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
+  <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
     
     <!-- ENCABEZADO -->
     <div class="bg-[#341915] px-6 py-5">
       <div class="flex justify-between items-center flex-wrap gap-4">
         <div>
           <h2 class="text-2xl font-bold text-white tracking-tight">Historial de Movimientos</h2>
-          <p class="text-[#C7B7A3] text-sm mt-1">Registro detallado de entradas y salidas</p>
+          <p class="text-[#C7B7A3] text-sm mt-1">{{ materia.nombre }} - {{ sucursal.nombre }}</p>
         </div>
-        <a href="{{ url_for('proveedores.inventarioMateria') }}" 
-           class="inline-flex items-center gap-2 bg-[#E8D8C4] hover:bg-[#C7B7A3] text-[#341915] px-4 py-2 rounded-lg transition-all duration-200 font-semibold">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-          </svg>
-          Volver al Inventario
-        </a>
+        <div class="flex gap-3">
+          <a href="{{ url_for('proveedores.registrar_merma', id_materia=materia.id_materia, id_sucursal=sucursal.id_sucursal) }}" 
+             class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all duration-200 font-semibold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            Registrar Merma
+          </a>
+          <a href="{{ url_for('proveedores.inventarioMateria') }}" 
+             class="inline-flex items-center gap-2 bg-[#E8D8C4] hover:bg-[#C7B7A3] text-[#341915] px-4 py-2 rounded-lg transition-all duration-200 font-semibold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver
+          </a>
+        </div>
       </div>
     </div>
 
@@ -96,7 +95,7 @@
         </div>
       </div>
 
-      <!-- TABLA DE MOVIMIENTOS -->
+      <!-- TABLA DE MOVIMIENTOS CORREGIDA -->
       {% if movimientos %}
       <div class="overflow-x-auto rounded-xl border border-[#C7B7A3]">
         <table class="w-full text-sm">
@@ -105,123 +104,135 @@
               <th class="px-4 py-3 text-left font-semibold">Fecha</th>
               <th class="px-4 py-3 text-left font-semibold">Tipo</th>
               <th class="px-4 py-3 text-center font-semibold">Cantidad</th>
-              <th class="px-4 py-3 text-left font-semibold">Referencia</th>
-            </tr>
+              <th class="px-4 py-3 text-left font-semibold">Lote</th>
+              <th class="px-4 py-3 text-center font-semibold">F. Caducidad</th>
+              <th class="px-4 py-3 text-left font-semibold">Stock Antes</th>
+              <th class="px-4 py-3 text-left font-semibold">Stock Después</th>
+              <th class="px-4 py-3 text-left font-semibold">Referencia/Motivo</th>
+             </tr>
           </thead>
           <tbody class="divide-y divide-[#C7B7A3]">
             {% for m in movimientos %}
             <tr class="hover:bg-[#E8D8C4] transition duration-150">
-              <td class="px-4 py-3 text-gray-700">
-                <div class="flex items-center gap-2">
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
-                  {% if m.fecha %}
-                    {{ m.fecha.strftime('%d/%m/%Y %H:%M') }}
-                  {% else %}
-                    N/A
-                  {% endif %}
-                </div>
-              </td>
+              <!-- FECHA - CORREGIDA -->
+              <td class="px-4 py-3 text-gray-700 whitespace-nowrap">
+                {{ m.fecha.strftime('%d/%m/%Y %H:%M') if m.fecha else 'N/A' }}
+               </td>
+              
+              <!-- TIPO -->
               <td class="px-4 py-3">
                 {% if m.tipo == 'entrada' %}
                   <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
                     Entrada
                   </span>
                 {% elif m.tipo == 'salida' or m.tipo == 'salida_produccion' %}
                   <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                    </svg>
                     Salida
+                  </span>
+                {% elif m.tipo == 'merma' %}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                     Merma
+                  </span>
+                {% elif m.tipo == 'ajuste' %}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                     Ajuste
                   </span>
                 {% else %}
                   <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                     {{ m.tipo }}
                   </span>
                 {% endif %}
-              </td>
+               </td>
+              
+              <!-- CANTIDAD -->
               <td class="px-4 py-3 text-center font-bold text-[#341915]">
-                {{ m.cantidad if m.cantidad else 0 }}
-              </td>
-              <td class="px-4 py-3 text-gray-600">
-                {% if m.referencia %}
-                  <span class="inline-flex items-center gap-1">
-                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
-                    </svg>
-                    {{ m.referencia }}
+                {{ m.cantidad|round(2) if m.cantidad else 0 }} {{ m.unidad_legible }}
+               </td>
+              
+              <!-- LOTE -->
+              <td class="px-4 py-3">
+                {% if m.lote %}
+                  <span class="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                    {{ m.lote }}
                   </span>
                 {% else %}
-                  <span class="text-gray-400">—</span>
+                  <span class="text-xs text-gray-400">—</span>
                 {% endif %}
-              </td>
-            </tr>
+               </td>
+              
+              <!-- FECHA DE CADUCIDAD - CORREGIDA -->
+              <td class="px-4 py-3 text-center">
+                {% if m.fecha_caducidad %}
+                  {% set dias_restantes = (m.fecha_caducidad - hoy).days %}
+                  {% if dias_restantes < 0 %}
+                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold whitespace-nowrap">
+                      ⚠️ VENCIDO
+                    </span>
+                    <div class="text-xs text-red-500 mt-1">{{ m.fecha_caducidad.strftime('%d/%m/%Y') }}</div>
+                  {% elif dias_restantes <= 7 %}
+                    <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold whitespace-nowrap">
+                      ⏰ {{ dias_restantes }} días
+                    </span>
+                    <div class="text-xs text-orange-500 mt-1">{{ m.fecha_caducidad.strftime('%d/%m/%Y') }}</div>
+                  {% else %}
+                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold whitespace-nowrap">
+                      ✓ Vigente
+                    </span>
+                    <div class="text-xs text-gray-500 mt-1">{{ m.fecha_caducidad.strftime('%d/%m/%Y') }}</div>
+                  {% endif %}
+                {% else %}
+                  <span class="text-xs text-gray-400">—</span>
+                {% endif %}
+               </td>
+              
+              <!-- STOCK ANTES -->
+              <td class="px-4 py-3 text-center text-gray-600">
+                {{ m.stock_antes|round(2) if m.stock_antes else 0 }}
+               </td>
+              
+              <!-- STOCK DESPUÉS -->
+              <td class="px-4 py-3 text-center text-gray-600">
+                {{ m.stock_despues|round(2) if m.stock_despues else 0 }}
+               </td>
+              
+              <!-- REFERENCIA/MOTIVO -->
+              <td class="px-4 py-3 text-gray-600 max-w-xs truncate" title="{{ m.referencia or m.motivo }}">
+                {{ m.referencia or m.motivo or '—' }}
+               </td>
+             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
 
       <!-- RESUMEN DE MOVIMIENTOS -->
-      <div class="mt-6">
-        <h3 class="text-md font-semibold text-[#341915] mb-3 flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-          </svg>
-          Resumen de Movimientos
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-green-50 rounded-xl p-4 border border-green-200">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-xs text-green-600 font-semibold uppercase">Total Entradas</p>
-                <p class="text-2xl font-bold text-green-700 mt-1">
-                  {{ movimientos|selectattr('tipo', 'equalto', 'entrada')|map(attribute='cantidad')|sum|default(0) }}
-                </p>
-              </div>
-              <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div class="bg-red-50 rounded-xl p-4 border border-red-200">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-xs text-red-600 font-semibold uppercase">Total Salidas</p>
-                <p class="text-2xl font-bold text-red-700 mt-1">
-                  {% set salidas = movimientos|selectattr('tipo', 'in', ['salida', 'salida_produccion'])|map(attribute='cantidad')|sum|default(0) %}
-                  {{ salidas }}
-                </p>
-              </div>
-              <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-xs text-blue-600 font-semibold uppercase">Movimientos Totales</p>
-                <p class="text-2xl font-bold text-blue-700 mt-1">
-                  {{ movimientos|length }}
-                </p>
-              </div>
-              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-green-50 rounded-xl p-4 border border-green-200">
+          <p class="text-xs text-green-600 font-semibold uppercase">Total Entradas</p>
+          <p class="text-2xl font-bold text-green-700">
+            {{ movimientos|selectattr('tipo', 'equalto', 'entrada')|map(attribute='cantidad')|sum|default(0)|round(2) }}
+          </p>
+        </div>
+        <div class="bg-red-50 rounded-xl p-4 border border-red-200">
+          <p class="text-xs text-red-600 font-semibold uppercase">Total Salidas</p>
+          <p class="text-2xl font-bold text-red-700">
+            {{ movimientos|selectattr('tipo', 'in', ['salida', 'salida_produccion'])|map(attribute='cantidad')|sum|default(0)|round(2) }}
+          </p>
+        </div>
+        <div class="bg-orange-50 rounded-xl p-4 border border-orange-200">
+          <p class="text-xs text-orange-600 font-semibold uppercase">Total Mermas</p>
+          <p class="text-2xl font-bold text-orange-700">
+            {{ movimientos|selectattr('tipo', 'equalto', 'merma')|map(attribute='cantidad')|sum|default(0)|round(2) }}
+          </p>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+          <p class="text-xs text-blue-600 font-semibold uppercase">Stock Actual</p>
+          <p class="text-2xl font-bold text-blue-700">
+            {{ movimientos[0].stock_despues|round(2) if movimientos else 0 }}
+          </p>
         </div>
       </div>
+      
       {% else %}
       <!-- ESTADO VACÍO -->
       <div class="text-center py-12 bg-[#E8D8C4] rounded-xl border border-[#C7B7A3]">
@@ -229,16 +240,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
         </svg>
         <p class="text-lg font-medium text-[#341915]">No hay movimientos registrados</p>
-        <p class="text-sm text-gray-500 mt-1">Esta materia prima aún no tiene movimientos de entrada o salida</p>
-        <div class="mt-4">
-          <a href="{{ url_for('proveedores.inventarioMateria') }}" 
-             class="inline-flex items-center gap-2 text-[#561C24] hover:text-[#341915] font-semibold">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Volver al inventario
-          </a>
-        </div>
+        <p class="text-sm text-gray-500 mt-1">Esta materia prima aún no tiene movimientos</p>
       </div>
       {% endif %}
 

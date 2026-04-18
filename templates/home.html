@@ -8,6 +8,7 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 
 <style>
   body { 
@@ -29,6 +30,12 @@
     opacity: 0.05;
     pointer-events: none;
   }
+
+  .font-title {
+    font-family: 'Great Vibes', cursive !important;
+    text-transform: none !important;
+    font-weight: 400; /* Estas fuentes no suelen tener negrita, su grosor es natural */
+  }
 </style>
 
 <!-- NAVBAR -->
@@ -48,6 +55,26 @@ class="h-14 w-14 rounded-full bg-white p-1">
 <li><a href="{{ url_for('catalogo') }}" class="hover:underline underline-offset-4">Catálogo</a></li>
 <li><a href="{{ url_for('sucursales.sucursales') }}" class="hover:underline underline-offset-4">Sucursales</a></li>
 </ul>
+
+{% if current_user.is_authenticated %}
+
+  <span class="text-[#E8D8C4] text-sm">
+    {{ current_user.nombre }}
+  </span>
+
+  {% if current_user.rol.nombre in ['Administrador', 'Gerente'] %}
+    <a href="/gestion"
+       class="bg-[#6b1f26] text-white px-4 py-2 rounded hover:bg-[#4b151b] text-sm">
+       Gestión
+    </a>
+  {% endif %}
+
+  <a href="{{ url_for('auth.logout') }}"
+     class="text-[#E8D8C4] hover:underline text-sm">
+     Salir
+  </a>
+
+{% endif %}
 
 <!-- ICONO -->
 <div class="flex items-center">
@@ -70,43 +97,49 @@ class="h-14 w-14 rounded-full bg-white p-1">
   <div class="grainy-overlay absolute inset-0"></div>
   
   <div class="container mx-auto px-6 text-center relative z-10">
-    <span class="text-[#e3b394] tracking-[0.5em] uppercase text-sm italic">• DULCE TRADICIÓN •</span>
-    <h1 class="text-6xl md:text-8xl font-title text-white mt-4 mb-4 uppercase tracking-tighter">
-      Sabor de <span class="text-[#e3b394]">Corazón</span>
-    </h1>
+    <span class="text-[#e3b394] tracking-[0.5em] uppercase text-sm italic">• Panadería •</span>
+    <h1 class="text-[#e3b394] text-9xl md:text-9xl font-title tracking-normal leading-tight mt-4 mb-4">
+  Dulce Tradición
+</h1>
     <p class="text-[#f3e5d8] max-w-lg mx-auto italic text-lg border-t border-gray-800 pt-6">
       "Pan tradicional que despierta tus mejores recuerdos."
     </p>
 
-    <img src="{{ url_for('static', filename='img/contenido/pan1.png') }}" class="absolute -left-20 top-0 w-72 rotate-12 opacity-80 hidden lg:block">
-    <img src="{{ url_for('static', filename='img/contenido/croissant.png') }}" class="absolute -right-20 bottom-0 w-80 -rotate-12 opacity-80 hidden lg:block">
+    <img src="{{ url_for('static', filename='img/contenido/corazon2.png') }}" class="absolute -left-20 top-0 w-60 rotate-12 opacity-80 hidden lg:block">
+    <img src="{{ url_for('static', filename='img/contenido/cuernito2.png') }}" class="absolute -right-25 bottom-10 w-70 -rotate-12 opacity-80 hidden lg:block">
   </div>
 </section>
 
-<section class="bg-[#140b0a] py-16 px-4">
-  <div class="max-w-6xl mx-auto torn-paper p-10 md:p-20 text-[#3b2a1f]">
-    <h2 class="text-center text-4xl font-title uppercase mb-12 tracking-widest">• Nuestras Categorías •</h2>
+<section class="bg-[#140b0a] py-16 px-4 relative overflow-hidden">
+  <div class="max-w-6xl mx-auto torn-paper p-10 md:p-20 text-[#3b2a1f] relative z-20">
     
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <h2 class="text-center text-4xl font-title uppercase mb-16 tracking-widest">• Nuestras Categorías •</h2>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
       {% for categoria in categorias %}
       
       <a href="{{ url_for('catalogo') }}#categoria-{{ categoria.id_categoria }}" class="group text-center block">
         
-        <div class="relative mb-4 overflow-hidden rounded-full aspect-square border-4 border-[#d4b6a0] p-1 mx-auto w-48 shadow-lg transition-transform duration-300 group-hover:shadow-2xl">
-          {% if categoria.imagen %}
-            <img src="{{ url_for('categorias.categoria_imagen', id=categoria.id_categoria) }}" 
-                 class="w-full h-full object-cover rounded-full grayscale group-hover:grayscale-0 transition duration-500 transform group-hover:scale-110">
-          {% else %}
-            <img src="{{ url_for('static', filename='img/contenido/pan.png') }}" class="w-full h-full object-cover rounded-full">
-          {% endif %}
+        <div class="relative mb-6 border-2 border-[#3b2a1f] mx-auto w-full max-w-[240px] aspect-[1/1.4] rounded-[150px] p-2 shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:border-[#b55a3a] overflow-hidden">
           
-          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-full"></div>
+          <div class="w-full h-full overflow-hidden rounded-[140px]">
+            {% if categoria.imagen %}
+              <img src="{{ url_for('categorias.categoria_imagen', id=categoria.id_categoria) }}" 
+                   class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500 transform group-hover:scale-105"
+                   alt="{{ categoria.nombre }}">
+            {% else %}
+              <img src="{{ url_for('static', filename='img/contenido/pan.png') }}" 
+                   class="w-full h-full object-cover">
+            {% endif %}
+          </div>
+
+          <div class="absolute inset-0 rounded-[150px] bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none"></div>
         </div>
 
-        <h3 class="font-bold text-xl uppercase group-hover:text-[#b55a3a] transition-colors">
+        <h3 class="font-bold text-2xl uppercase group-hover:text-[#b55a3a] transition-colors">
           {{ categoria.nombre }}
         </h3>
-        <p class="text-xs italic mt-2 opacity-80 line-clamp-2">
+        <p class="text-sm italic mt-3 opacity-80 line-clamp-2 max-w-[220px] mx-auto">
           {{ categoria.descripcion }}
         </p>
       </a>
@@ -120,63 +153,176 @@ class="h-14 w-14 rounded-full bg-white p-1">
         Ver Catálogo Completo
       </a>
     </div>
+
+    <img src="{{ url_for('static', filename='img/contenido/rodillo.png') }}" 
+     class="absolute -right-10 bottom-5 w-80 -rotate-12 opacity-80 hidden lg:block z-0 pointer-events-none">
   </div>
 </section>
 
-<section class="bg-[#140b0a] py-16 px-4">
-  <div class="max-w-6xl mx-auto torn-paper p-10 text-[#3b2a1f]">
-    <h2 class="text-center text-3xl font-title uppercase mb-16 tracking-widest">• ¿Cómo comprar? •</h2>
-    
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
-      {% set pasos = [
-        ('01','escoger.png','Selecciona','tus favoritos'),
-        ('02','carritoHome.png','Añade','revisa tu pedido'),
-        ('03','efectivo.png','Paga','efectivo o tarjeta'),
-        ('04','entrega.png','Recibe','en casa o tienda')
-      ] %}
+<section class="bg-[#140b0a] py-20 px-4 relative overflow-hidden">
+  <div class="max-w-6xl mx-auto torn-paper p-10 md:p-16 text-[#3b2a1f] relative z-20 bg-[#f4e9d5] shadow-2xl">
 
-      {% for n,img,t,d in pasos %}
-      <div class="relative text-center border-l border-black/10 pl-4">
-        <span class="absolute -top-8 left-0 text-5xl font-title opacity-10">{{n}}</span>
-        <img src="{{ url_for('static', filename='img/contenido/' ~ img) }}" class="w-16 mx-auto mb-4 mix-blend-multiply grayscale">
-        <h3 class="font-bold uppercase text-sm">{{t}}</h3>
-        <p class="text-[10px] uppercase tracking-tighter">{{d}}</p>
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-serif tracking-[0.3em] uppercase">
+        • {{ sucursal.nombre if sucursal else 'Nuestra Sucursal' }} •
+      </h2>
+      <p class="text-xs italic opacity-70 mt-2">Tradición en cada detalle</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      
+      <div class="lg:col-span-5 space-y-8 relative z-30">
+        
+        <div class="relative">
+{% if foto_sucursal %}
+    <img src="{{ foto_sucursal }}" 
+         class="w-full h-64 object-cover rounded-2xl shadow-lg">
+{% else %}
+    <img src="{{ url_for('static', filename='img/contenido/pan-aros.png') }}" 
+         class="w-full h-64 object-cover rounded-2xl shadow-lg">
+{% endif %}
+</div>
+
+        <div class="space-y-6 pl-4 md:pl-10">
+          <div>
+            <h3 class="font-bold uppercase text-sm tracking-widest text-[#5a1f1f]">Dirección:</h3>
+            <p class="text-sm italic">
+              {{ sucursal.direccion if sucursal else 'Dirección no disponible' }}<br>
+              <span class="text-xs opacity-75">
+                León, Guanajuato.
+              </span>
+            </p>
+          </div>
+
+          <div>
+            <h3 class="font-bold uppercase text-sm tracking-widest text-[#5a1f1f]">Horarios:</h3>
+            <p class="text-sm italic">Lun - Dom: 7:00 AM - 10:00 PM</p>
+          </div>
+
+          <div>
+            <h3 class="font-bold uppercase text-sm tracking-widest text-[#5a1f1f]">Teléfono:</h3>
+            <p class="text-sm italic">
+              <a href="tel:{{ sucursal.telefono if sucursal else '' }}" class="hover:text-[#6b1f26] transition-colors">
+                {{ sucursal.telefono if sucursal else 'No disponible' }}
+              </a>
+            </p>
+          </div>
+
+          {% if sucursal %}
+          <div class="pt-4">
+            <a href="https://www.google.com/maps/search/?api=1&query={{ sucursal.latitud }},{{ sucursal.longitud }}" 
+               target="_blank"
+               class="inline-block border-b border-[#3b2a1f] pb-1 text-[10px] font-bold uppercase tracking-widest hover:text-[#6b1f26] hover:border-[#6b1f26] transition-all">
+              Abrir en Google Maps
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 relative">
+
+<div class="relative group">
+    <div class="absolute -inset-2 bg-gradient-to-r from-[#6b1f26] to-[#341915] rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+
+    <div class="relative bg-[#fdfaf6] p-4 shadow-2xl border-[12px] border-white transform rotate-2 hover:rotate-0 transition-all duration-700 ease-in-out">
+        
+        <div class="h-[450px] w-full rounded-sm overflow-hidden border-2 border-[#eee3d1] relative">
+            {% if mapa_home %}
+                <div class="w-full h-full grayscale-[20%] contrast-[1.1] hover:grayscale-0 transition-all duration-500">
+                    {{ mapa_home|safe }}
+                </div>
+            {% else %}
+                <div class="flex flex-col items-center justify-center h-full bg-[#f4f1ea] text-[#8b7e6a]">
+                    <i class="fas fa-map-marked-alt text-4xl mb-3 animate-pulse"></i>
+                    <p class="font-serif italic">Buscando nuestra ubicación...</p>
+                </div>
+            {% endif %}
+            
+            <div class="absolute top-0 right-0 w-16 h-16 bg-[#6b1f26] text-white flex items-center justify-center clip-path-polygon-[0%_0%,100%_100%,100%_0%] shadow-lg z-10">
+                <i class="fas fa-store text-xl rotate-45 translate-x-2 -translate-y-2"></i>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <h3 class="font-['Great_Vibes'] text-3xl text-[#341915]">Nuestra Casa</h3>
+            <p class="text-xs uppercase tracking-[0.3em] text-[#8b7e6a] mt-1">Vísitanos en León, Guanajuato</p>
+            
+            <div class="flex justify-center items-center gap-3 mt-2">
+                <div class="h-[1px] w-10 bg-[#decbb1]"></div>
+                <div class="w-2 h-2 rounded-full bg-[#6b1f26]"></div>
+                <div class="h-[1px] w-10 bg-[#decbb1]"></div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="bg-[#140b0a] py-24 px-4 relative overflow-hidden">
+
+  <div class="max-w-6xl mx-auto torn-paper p-10 md:p-16 text-[#3b2a1f] relative z-20">
+
+    <!-- TÍTULO -->
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-title uppercase tracking-[0.3em]">
+        • Nuestra Galería •
+      </h2>
+      <p class="text-xs italic opacity-70 mt-3">
+        Tradición capturada en cada instante
+      </p>
+    </div>
+
+    <!-- GRID -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-10">
+
+      {% for i in range(1,7) %}
+      <div class="relative group">
+
+        <!-- Marco tipo foto antigua -->
+        <div class="bg-[#f4e9d5] p-3 shadow-[0_10px_30px_rgba(0,0,0,0.5)] 
+                    rotate-[-1deg] group-hover:rotate-0 transition duration-500">
+
+          <div class="overflow-hidden">
+
+            <img src="{{ url_for('static', filename='img/contenido/img' ~ i ~ '.jpeg') }}"
+                 class="w-full h-56 object-cover 
+                        sepia grayscale contrast-75 brightness-90
+                        group-hover:sepia-0 group-hover:grayscale-0 group-hover:scale-105
+                        transition duration-700">
+
+          </div>
+
+        </div>
+
+        <!-- Sombra tipo foto -->
+        <div class="absolute inset-0 border border-black/10 pointer-events-none"></div>
+
       </div>
       {% endfor %}
+
     </div>
+
+    <!-- FRASE DECORATIVA -->
+    <div class="text-center mt-16">
+      <p class="italic text-sm opacity-70 max-w-md mx-auto">
+        “Cada pieza cuenta una historia horneada con amor.”
+      </p>
+    </div>
+
+    <!-- DECORACIÓN -->
+    <img src="{{ url_for('static', filename='img/contenido/cuernito2.png') }}" 
+         class="absolute -right-10 -bottom-10 w-48 opacity-30 rotate-12 hidden md:block">
+
   </div>
+
 </section>
 
-<section class="relative h-[450px] flex items-center justify-center text-center text-white overflow-hidden my-12">
-  <img src="{{ url_for('static', filename='img/contenido/panFondo.jpg') }}" class="absolute inset-0 w-full h-full object-cover">
-  <div class="absolute inset-0 bg-black/80"></div>
-  <div class="relative max-w-3xl px-6 z-10">
-    <img src="{{ url_for('static', filename='img/logos/logoLetrasBlancas.png') }}" class="mx-auto w-40 mb-8 opacity-90">
-    <p class="text-3xl font-title italic leading-relaxed">
-      “Nuestro pan tradicional no solo alimenta, <br> también despierta recuerdos...”
-    </p>
-  </div>
-</section>
 
-<section class="bg-[#140b0a] py-16 px-4">
-  <div class="max-w-6xl mx-auto torn-paper p-10 grid md:grid-cols-3 gap-8 text-[#3b2a1f] divide-x divide-black/10">
-    <div class="text-center px-4">
-      <img src="{{ url_for('static', filename='img/contenido/ubicacionHome.png') }}" class="w-8 mx-auto mb-4 grayscale">
-      <h3 class="font-bold uppercase text-sm">Ubicaciones</h3>
-      <p class="text-xs">Sucursales cerca de ti</p>
-    </div>
-    <div class="text-center px-4">
-      <img src="{{ url_for('static', filename='img/contenido/atencionCliente.png') }}" class="w-8 mx-auto mb-4 grayscale">
-      <h3 class="font-bold uppercase text-sm">Atención</h3>
-      <p class="text-xs">Estamos para ayudarte 24/7</p>
-    </div>
-    <div class="text-center px-4">
-      <img src="{{ url_for('static', filename='img/contenido/formaPago.png') }}" class="w-8 mx-auto mb-4 grayscale">
-      <h3 class="font-bold uppercase text-sm">Pagos</h3>
-      <p class="text-xs">Efectivo, Tarjeta y Transferencia</p>
-    </div>
-  </div>
-</section>
 
 <section class="bg-[#140b0a] py-20 text-center text-white">
   <h2 class="text-2xl font-title uppercase mb-2 tracking-widest text-[#C7B7A3]">Síguenos</h2>
@@ -202,7 +348,7 @@ class="h-14 w-14 rounded-full bg-white p-1">
 </section>
 
 <section class="bg-black text-[#e3b394] text-center py-8 border-t border-white/5 text-[10px] uppercase tracking-[0.3em]">
-  © 2026 Panadería Dulce Tradición | Artesanos del Sabor
+  © 2026 Panadería Dulce Tradición 
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>

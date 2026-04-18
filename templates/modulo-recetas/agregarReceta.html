@@ -2,119 +2,205 @@
 {% block container %}
 
 <div class="max-w-5xl mx-auto mt-8 mb-16 px-4">
-    <form method="POST" action="{{ url_for('recetas.agregarReceta') }}" class="bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-100">
+    <form method="POST" action="{{ url_for('recetas.agregarReceta') }}" class="bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-100" id="formReceta">
         {{ form.hidden_tag() }}
 
+        <!-- HEADER -->
         <div class="bg-[#341915] p-6 text-white">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
                     <h2 class="text-3xl font-bold">Nueva Receta</h2>
                     <p class="text-amber-200 text-sm italic">Gestión de producción y materias primas</p>
                 </div>
-                <div class="bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
+                <div class="bg-white/10 px-4 py-2 rounded-lg border border-white/20">
                     <span class="text-xs uppercase tracking-widest block font-semibold text-amber-400">Rendimiento</span>
                     <div class="flex items-center gap-2">
-                        {{ form.rendimiento_piezas(class="bg-transparent text-xl font-bold w-16 focus:outline-none border-b border-white/40 text-white", placeholder="20") }}
+                        <input type="number" 
+                               name="rendimiento_piezas" 
+                               id="rendimiento_piezas"
+                               value="20"
+                               min="1"
+                               step="1"
+                               oninput="validarEnteroPositivo(this)"
+                               class="bg-transparent text-xl font-bold w-20 border-b border-white/40 text-white focus:outline-none">
                         <span class="text-lg">piezas</span>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- CONTENIDO -->
         <div class="p-8 space-y-10">
+
+            <!-- DATOS -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="md:col-span-2 space-y-6">
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Producto Final</label>
-                        {{ form.id_producto(class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-[#341915] focus:ring-0 transition-all text-lg") }}
+                        <label class="block text-sm font-bold mb-2">Producto Final</label>
+                        {{ form.id_producto(class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3") }}
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Nombre de la Receta</label>
-                        {{ form.nombre(class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-[#341915] focus:ring-0", placeholder="Ej: Cuernito de Almendra Especial") }}
+                        <label class="block text-sm font-bold mb-2">Nombre</label>
+                        {{ form.nombre(class="w-full bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3") }}
                     </div>
                 </div>
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">Estatus Inicial</label>
-                        {{ form.estatus(class="w-full bg-amber-50 border-2 border-amber-200 rounded-xl px-4 py-3 text-[#341915] font-semibold") }}
-                    </div>
-                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                        <p class="text-xs text-blue-700 leading-tight">
-                            <strong>Nota:</strong> Especifica las cantidades según la unidad de medida de cada ingrediente.
-                        </p>
-                    </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2">Estatus</label>
+                    {{ form.estatus(class="w-full bg-amber-50 border-2 border-amber-200 rounded-xl px-4 py-3") }}
                 </div>
             </div>
 
-            <hr class="border-gray-100">
+            <hr>
 
+            <!-- INGREDIENTES -->
             <div>
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="bg-amber-100 p-2 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#341915]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 012-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800">Ingredientes Requeridos</h3>
-                </div>
+                <h3 class="text-xl font-bold mb-4">Ingredientes</h3>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-200">
-                    {% for i in range(10) %}
-                    <div class="flex items-center gap-4 py-3 border-b border-gray-200 last:border-0">
-                        
-                        <span class="flex-none w-6 h-6 rounded-full bg-[#00c853] text-white flex items-center justify-center shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
+                <div class="grid md:grid-cols-2 gap-4 bg-gray-50 p-6 rounded-xl">
+
+                    {% for m in materias %}
+                    <div class="flex items-center gap-4 p-4 bg-white rounded-xl border">
+
+                        <!-- CHECK -->
+                        <input type="checkbox" name="materia[]" value="{{ m.id_materia }}"
+                               class="w-5 h-5 check-materia" onchange="validarCheckbox(this)">
+
+                        <!-- NOMBRE -->
+                        <span class="flex-1 font-semibold">
+                            {{ m.nombre }}
                         </span>
-                        
-                        <div class="flex-grow">
-                            <select name="materia[]" class="w-full bg-transparent border-none focus:ring-0 text-sm text-gray-700 font-semibold cursor-pointer">
-                                <option value="">-- Seleccionar Ingrediente --</option>
-                                {% for m in materias %}
-                                    <option value="{{ m.id_materia }}">
-                                        {{ m.nombre }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
 
-                        <div class="flex items-center gap-2">
-                            <input type="number" step="0.001" name="cantidad[]" placeholder="0" 
-                                   class="w-24 text-center bg-white border-2 border-[#341915] rounded-lg px-3 py-1.5 text-sm font-bold focus:ring-2 focus:ring-amber-200 outline-none transition-all">
+                        <!-- CANTIDAD - SOLO NÚMEROS POSITIVOS, SIN DECIMALES -->
+                        <input type="text" 
+                               name="cantidad_{{ m.id_materia }}"
+                               placeholder="0"
+                               disabled
+                               class="w-20 text-center border-2 border-gray-300 rounded-lg cantidad-input"
+                               oninput="validarCantidadEntera(this)">
 
-                            <!-- 🔥 SELECTOR DE UNIDADES (igual que en modificarReceta) -->
-                            <select name="tipo[]" class="text-[11px] font-bold text-[#341915] bg-[#fef3c7] px-2 py-1.5 rounded-lg border border-amber-200 focus:outline-none">
-                                <option value="g">g</option>
-                                <option value="kg">kg</option>
-                                <option value="ml">ml</option>
-                                <option value="l">l</option>
-                                <option value="pza">pza</option>
-                            </select>
-                        </div>
+                        <!-- TIPO -->
+                        <span class="text-xs font-bold text-white bg-[#341915] px-3 py-1 rounded-full">
+                            {{ m.unidad_base or 'g' }}
+                        </span>
+
+                        <!-- OCULTO -->
+                        <input type="hidden"
+                               name="tipo_{{ m.id_materia }}"
+                               value="{{ m.unidad_base or 'g' }}">
 
                     </div>
                     {% endfor %}
+
                 </div>
             </div>
 
+            <!-- DESCRIPCIÓN -->
             <div>
-                <label class="block text-xl font-bold text-gray-800 mb-4">🥣 Pasos de Elaboración (Descripción)</label>
-                {{ form.descripcion(class="w-full bg-gray-50 border-2 border-gray-200 rounded-2xl px-6 py-4 focus:border-[#341915] focus:ring-0 min-h-[200px]", placeholder="Paso 1: Mezclar los secos...\nPaso 2: Añadir los líquidos lentamente...") }}
+                <label class="block font-bold mb-2">Descripción</label>
+                {{ form.descripcion(class="w-full border-2 border-gray-200 rounded-xl p-4") }}
             </div>
 
-            <div class="flex flex-col md:flex-row gap-4 justify-end pt-6">
-                <a href="{{ url_for('recetas.recetas') }}" 
-                   class="px-8 py-3 text-center font-bold text-gray-500 hover:text-gray-700 transition-colors">
-                    Descartar
-                </a>
-                <button type="submit" 
-                        class="px-12 py-3 bg-[#341915] text-white font-bold rounded-xl shadow-xl hover:bg-[#4a241d] transform hover:scale-105 transition-all">
-                    Finalizar y Guardar Receta
+            <!-- BOTONES -->
+            <div class="flex justify-end gap-4">
+                <a href="{{ url_for('recetas.recetas') }}" class="text-gray-500">Cancelar</a>
+                <button type="submit" class="bg-[#341915] text-white px-8 py-3 rounded-xl" onclick="return validarFormulario()">
+                    Guardar
                 </button>
             </div>
+
         </div>
     </form>
 </div>
+
+<script>
+// Validar que solo sean números enteros positivos
+function validarEnteroPositivo(input) {
+    let valor = input.value;
+    // Eliminar cualquier carácter que no sea número
+    valor = valor.replace(/[^0-9]/g, '');
+    // Si está vacío, poner 1
+    if (valor === '' || parseInt(valor) <= 0) {
+        valor = '1';
+    }
+    input.value = parseInt(valor);
+}
+
+// Validar cantidad (entero positivo, sin decimales)
+function validarCantidadEntera(input) {
+    let valor = input.value;
+    // Eliminar cualquier carácter que no sea número
+    valor = valor.replace(/[^0-9]/g, '');
+    // Si está vacío o es 0, dejar vacío
+    if (valor === '' || parseInt(valor) <= 0) {
+        input.value = '';
+    } else {
+        input.value = parseInt(valor);
+    }
+}
+
+// Habilitar/deshabilitar campo de cantidad según checkbox
+function validarCheckbox(checkbox) {
+    const div = checkbox.closest('.flex');
+    const cantidadInput = div.querySelector('.cantidad-input');
+    if (checkbox.checked) {
+        cantidadInput.disabled = false;
+        if (cantidadInput.value === '') {
+            cantidadInput.value = '1';
+        }
+    } else {
+        cantidadInput.disabled = true;
+        cantidadInput.value = '';
+    }
+}
+
+// Validar formulario antes de enviar
+function validarFormulario() {
+    const checkboxes = document.querySelectorAll('.check-materia');
+    let hayIngredientes = false;
+    let error = false;
+    
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            hayIngredientes = true;
+            const div = checkbox.closest('.flex');
+            const cantidadInput = div.querySelector('.cantidad-input');
+            const cantidad = parseInt(cantidadInput.value);
+            
+            if (isNaN(cantidad) || cantidad <= 0) {
+                alert('Debe ingresar una cantidad válida para todos los ingredientes seleccionados');
+                cantidadInput.focus();
+                error = true;
+                return;
+            }
+        }
+    });
+    
+    if (!hayIngredientes) {
+        alert('Debe seleccionar al menos un ingrediente');
+        return false;
+    }
+    
+    if (error) return false;
+    
+    // Validar rendimiento
+    const rendimiento = document.getElementById('rendimiento_piezas');
+    const rendimientoVal = parseInt(rendimiento.value);
+    if (isNaN(rendimientoVal) || rendimientoVal <= 0) {
+        alert('El rendimiento debe ser un número positivo');
+        rendimiento.focus();
+        return false;
+    }
+    
+    return true;
+}
+
+// Inicializar: deshabilitar todos los campos de cantidad al cargar
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.cantidad-input').forEach(input => {
+        input.disabled = true;
+    });
+});
+</script>
 
 {% endblock %}

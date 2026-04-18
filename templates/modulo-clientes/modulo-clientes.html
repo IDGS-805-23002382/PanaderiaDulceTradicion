@@ -37,7 +37,7 @@
         <tr>
           <th class="px-4 py-2">Nombre</th>
           <th class="px-4 py-2">Teléfono</th>
-          <th class="px-4 py-2">Email</th>
+          
           <th class="px-4 py-2">Dirección</th>
           <th class="px-4 py-2">Fecha Registro</th>
           <th class="px-4 py-2">Estatus</th>
@@ -49,7 +49,7 @@
         <tr class="border-b text-center fila-cliente">
           <td class="px-4 py-2 text-left">{{ cliente.nombre }}</td>
           <td class="px-4 py-2">{{ cliente.telefono }}</td>
-          <td class="px-4 py-2">{{ cliente.email }}</td>
+          
           <td class="px-4 py-2">{{ cliente.direccion }}</td>
           <td class="px-4 py-2">{{ cliente.fecha_registro.strftime('%d/%m/%Y') if cliente.fecha_registro else '—' }}</td>
           <td class="px-4 py-2">

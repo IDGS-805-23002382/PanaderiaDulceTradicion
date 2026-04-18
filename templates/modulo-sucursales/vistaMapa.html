@@ -84,6 +84,22 @@
                         </a>
                     </div>
 
+                    <div class="flex items-center gap-3 text-[#3a2a20] mb-4">
+                        <div class="bg-[#5a1f1f]/10 p-2 rounded-lg">
+                            <i class="fas fa-clock text-[#5a1f1f]"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase font-bold text-gray-500">Horario de atención</p>
+                            <p class="font-medium">
+                                {% if s.horario_abierto and s.horario_cierre %}
+                                    {{ s.horario_abierto.strftime('%H:%M') }} - {{ s.horario_cierre.strftime('%H:%M') }} hrs
+                                {% else %}
+                                    Horario no disponible
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
                     <!-- BOTONES DE ACCIÓN -->
                     <div class="flex gap-3">
                         <!-- BOTÓN LLAMAR -->
@@ -98,7 +114,7 @@
                            target="_blank"
                            class="flex-1 bg-[#5a1f1f] hover:bg-[#3a2a20] text-white font-bold py-3 rounded-xl transition-all duration-300 text-center flex items-center justify-center gap-2">
                             <i class="fas fa-directions text-sm"></i>
-                            <span>Directions</span>
+                            <span>Dirección</span>
                         </a>
                     </div>
                 </div>

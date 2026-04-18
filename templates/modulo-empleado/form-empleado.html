@@ -1,5 +1,4 @@
-<!-- template/modulo-empleado/form-empleado.html -->
- {% extends 'layoutModulos.html' %}
+{% extends 'layoutModulos.html' %}
 {% block container %}
 <div class="w-full max-w-3xl mx-auto">
 
@@ -12,85 +11,78 @@
     <form method="POST">
       {{ form.hidden_tag() }}
 
+      {% if form.errors %}
+      <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+        <p class="font-bold">Hay errores en el formulario:</p>
+        <ul>
+          {% for field, errors in form.errors.items() %}
+            <li>{{ form[field].label }}: {{ errors|join(', ') }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-        <!-- NOMBRE -->
         <div class="md:col-span-2">
           <label class="flex items-center gap-2 text-sm font-medium text-[#341915] mb-1">
             <img src="{{ url_for('static', filename='img/iconosModulos/empleados.png') }}" class="h-4 w-4">
             {{ form.nombre.label.text }}
           </label>
           {{ form.nombre(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.nombre.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
         </div>
 
-        <!-- TELÉFONO -->
         <div>
           <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.telefono.label.text }}</label>
-          {{ form.telefono(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.telefono.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          {{ form.telefono(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
         </div>
 
-        <!-- EMAIL -->
         <div>
           <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.email.label.text }}</label>
-          {{ form.email(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          {{ form.email(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
+          <p class="text-[10px] text-gray-500 mt-1">* Se usará para iniciar sesión.</p>
         </div>
 
-        <!-- DIRECCIÓN -->
         <div class="md:col-span-2">
           <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.direccion.label.text }}</label>
-          {{ form.direccion(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.direccion.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          {{ form.direccion(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
         </div>
 
-        <!-- PUESTO -->
         <div>
           <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.puesto.label.text }}</label>
-          {{ form.puesto(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.puesto.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          {{ form.puesto(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
         </div>
 
-        <!-- SALARIO -->
         <div>
           <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.salario.label.text }}</label>
-          {{ form.salario(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.salario.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          {{ form.salario(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
         </div>
 
-        <!-- FECHA NACIMIENTO -->
         <div>
           <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.fecha_nacimiento.label.text }}</label>
-          {{ form.fecha_nacimiento(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.fecha_nacimiento.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          {{ form.fecha_nacimiento(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]", type="date") }}
         </div>
 
-        <!-- FECHA CONTRATACIÓN -->
         <div>
           <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.fecha_contratacion.label.text }}</label>
-          {{ form.fecha_contratacion(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
-          {% for e in form.fecha_contratacion.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          {{ form.fecha_contratacion(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]", type="date") }}
         </div>
 
-        <!-- ROL -->
         <div>
           <label class="flex items-center gap-2 text-sm font-medium text-[#341915] mb-1">
             <img src="{{ url_for('static', filename='img/iconosModulos/roles.png') }}" class="h-4 w-4">
             {{ form.id_rol.label.text }}
           </label>
-          {{ form.id_rol(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
+          {{ form.id_rol(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
         </div>
 
-        <!-- ESTATUS -->
         <div>
           <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.estatus.label.text }}</label>
-          {{ form.estatus(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
+          {{ form.estatus(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915]") }}
         </div>
 
       </div>
 
-      <!-- BOTONES -->
       <div class="flex gap-3 mt-8">
         <button type="submit"
                 class="flex-1 bg-[#341915] hover:bg-[#561C24] text-[#E8D8C4] font-medium py-2 rounded-lg transition">
@@ -104,15 +96,5 @@
 
     </form>
   </div>
-
 </div>
-
-<script>
-  document.getElementById('buscador').addEventListener('keyup', function () {
-    const f = this.value.toLowerCase();
-    document.querySelectorAll('tbody tr').forEach(r => {
-      r.style.display = r.innerText.toLowerCase().includes(f) ? '' : 'none';
-    });
-  });
-</script>
 {% endblock %}

@@ -35,37 +35,64 @@
 <br/>
 
   <!-- TARJETA PRINCIPAL -->
-  <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
+  <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-[#C7B7A3]">
 
     <!-- ENCABEZADO -->
     <div class="bg-[#341915] px-6 py-4">
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center flex-wrap gap-4">
         <h2 class="text-2xl font-bold text-white tracking-tight">
           Inventario de Materia Prima
         </h2>
         
-        <!-- BOTÓN COMPRA A PROVEEDORES -->
-        <a href="{{ url_for('proveedores.compraProveedores') }}"
-           class="flex items-center gap-2 bg-[#E8D8C4] px-4 py-2 rounded-xl hover:bg-[#C7B7A3] transition-all duration-200 shadow-md hover:shadow-lg">
-          <svg class="w-5 h-5 text-[#341915]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-          <span class="text-[#341915] font-semibold">
-            Compra a Proveedores
-          </span>
-        </a>
+        <div class="flex gap-3">
+          <a href="{{ url_for('proveedores.listar_mermas') }}"
+             class="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            <span class="font-semibold">Ver Mermas</span>
+          </a>
+          
+          <a href="{{ url_for('proveedores.compraProveedores') }}"
+             class="flex items-center gap-2 bg-[#E8D8C4] hover:bg-[#C7B7A3] text-[#341915] px-4 py-2 rounded-xl">
+            <svg class="w-5 h-5 text-[#341915]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span class="font-semibold">Compra a Proveedores</span>
+          </a>
+        </div>
       </div>
     </div>
 
-    <!-- CONTENIDO -->
     <div class="p-6">
 
-      <!-- FILTRO POR SUCURSAL MEJORADO -->
+      <!-- ALERTA DE MATERIAS SIN PRECIO -->
+      {% set materias_sin_precio = inventario|selectattr('tiene_precio', 'equalto', false)|list %}
+      {% if materias_sin_precio %}
+      <div class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
+        <div class="flex items-center gap-3">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+          <div>
+            <strong class="font-bold">¡Atención!</strong>
+            <span class="block sm:inline"> Las siguientes materias NO tienen precio registrado:</span>
+            <ul class="list-disc list-inside mt-1">
+              {% for m in materias_sin_precio %}
+              <li>{{ m.materia }} - <a href="{{ url_for('proveedores.compraProveedores') }}?proveedor={{ m.id_proveedor }}" class="underline font-bold">Registrar compra urgente</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- FILTRO POR SUCURSAL -->
       <div class="bg-[#E8D8C4] rounded-xl p-4 mb-6">
         <form method="GET" class="flex items-center gap-4 flex-wrap">
           <label class="font-semibold text-[#341915]">Filtrar por sucursal:</label>
           <select name="sucursal" onchange="this.form.submit()"
-            class="border-2 border-[#C7B7A3] rounded-xl px-4 py-2 bg-white focus:outline-none focus:border-[#561C24] focus:ring-2 focus:ring-[#561C24]/30 transition">
+            class="border-2 border-[#C7B7A3] rounded-xl px-4 py-2 bg-white">
             <option value="">Todas las sucursales</option>
             {% for s in sucursales %}
               <option value="{{ s.id_sucursal }}"
@@ -83,106 +110,96 @@
         </form>
       </div>
 
-      <!-- TABLA MEJORADA -->
+      <!-- TABLA COMPLETA CON PRECIOS -->
       <div class="overflow-x-auto rounded-xl border border-[#C7B7A3]">
         <table class="w-full text-sm">
           <thead>
             <tr class="bg-[#561C24] text-white">
-              <th class="px-4 py-3 text-left font-semibold">Materia Prima</th>
-              <th class="px-4 py-3 text-left font-semibold">Sucursal</th>
-              <th class="px-4 py-3 text-center font-semibold">Stock Actual</th>
-              <th class="px-4 py-3 text-center font-semibold">Equivalente</th>
-              <th class="px-4 py-3 text-center font-semibold">Acciones</th>
+              <th class="px-4 py-3 text-left">Materia Prima</th>
+              <th class="px-4 py-3 text-left">Sucursal</th>
+              <th class="px-4 py-3 text-center">Stock Actual</th>
+              <th class="px-4 py-3 text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {% for i in inventario %}
-            <tr class="border-b border-[#C7B7A3] hover:bg-[#E8D8C4] transition duration-150">
-              
-              <!-- MATERIA -->
-              <td class="px-4 py-3 font-semibold text-[#341915]">
+            <tr class="border-b border-[#C7B7A3] hover:bg-[#E8D8C4]">
+              <td class="px-4 py-3 font-semibold">
                 {{ i.materia }}
-              </td>
-
-              <!-- SUCURSAL -->
-              <td class="px-4 py-3 text-gray-700">
-                {{ i.sucursal }}
-              </td>
-
-              <!-- STOCK -->
+                {% if not i.tiene_precio %}
+                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                  Sin precio
+                </span>
+                {% endif %}
+               </td>
+              <td class="px-4 py-3 text-gray-700">{{ i.sucursal }}</td>
               <td class="px-4 py-3 text-center">
-                <div class="inline-flex flex-col items-center">
-                  <span class="font-bold text-xl
-                    {% if i.stock_real < 0 %}
-                      text-red-600
-                    {% else %}
-                      text-green-700
-                    {% endif %}">
+                {% if i.tipo == 'pza' or i.unidad_legible == 'pza' or i.unidad_legible == 'pz' %}
+                  <!-- Para piezas, mostrar sin decimales -->
+                  <span class="font-bold {% if i.stock_real < i.stock_minimo %}text-red-600{% else %}text-green-700{% endif %} text-xl">
+                    {{ i.stock|round(0)|int }} {{ i.unidad_legible }}
+                  </span>
+                  <div class="text-xs text-gray-500">({{ i.stock_real|round(0)|int }} {{ i.tipo }})</div>
+                {% else %}
+                  <span class="font-bold {% if i.stock_real < i.stock_minimo %}text-red-600{% else %}text-green-700{% endif %} text-xl">
                     {{ i.stock }} {{ i.unidad_legible }}
                   </span>
-                  <span class="text-xs text-gray-500 mt-1">
-                    ({{ i.stock_real }} ml reales)
-                  </span>
-                </div>
+                  <div class="text-xs text-gray-500">({{ i.stock_real }} {{ i.tipo }})</div>
+                {% endif %}
+                {% if i.stock_minimo > 0 and i.stock_real < i.stock_minimo %}
+                <div class="text-xs text-red-500 mt-1">⚠️ Stock mínimo: {{ i.stock_minimo }} {{ i.unidad_legible }}</div>
+                {% endif %}
               </td>
-
-              <!-- EQUIVALENTE -->
               <td class="px-4 py-3 text-center">
-                <div class="flex flex-wrap gap-1 justify-center">
-                  {% if i.cajas > 0 %}
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    📦 {{ i.cajas }} caja(s)
-                  </span>
-                  {% endif %}
-                  {% if i.sobrantes > 0 %}
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                    🔸 + {{ i.sobrantes }} pieza(s)
-                  </span>
-                  {% endif %}
-                  {% if i.cajas == 0 and i.sobrantes == 0 %}
-                  <span class="text-xs text-gray-400">—</span>
+                <div class="flex gap-2 justify-center flex-wrap">
+                  <a href="{{ url_for('proveedores.movimientosMateria', id_materia=i.id_materia, id_sucursal=i.id_sucursal) }}"
+                     class="bg-[#341915] hover:bg-[#561C24] text-white px-3 py-1.5 rounded-lg text-sm">
+                    Ver Movimientos
+                  </a>
+                  <a href="{{ url_for('proveedores.registrar_merma', id_materia=i.id_materia, id_sucursal=i.id_sucursal) }}"
+                     class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-sm">
+                    Registrar Merma
+                  </a>
+                  {% if not i.tiene_precio or i.precio_unitario == 0 %}
+                 <a href="{{ url_for('proveedores.compraProveedores') }}?proveedor={{ i.id_proveedor }}"
+                     class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1.5 rounded-lg text-sm">
+                    ⚡ Comprar
+                  </a>
                   {% endif %}
                 </div>
-              </td>
-
-              <!-- ACCIONES -->
-              <td class="px-4 py-3 text-center">
-                <a href="{{ url_for('proveedores.movimientosMateria', id_materia=i.id_materia, id_sucursal=i.id_sucursal) }}"
-                   class="inline-flex items-center gap-1 bg-[#341915] hover:bg-[#561C24] text-white px-3 py-1.5 rounded-lg text-sm transition-all duration-200 shadow-md hover:shadow-lg">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                  </svg>
-                  Ver Movimientos
-                </a>
-              </td>
-              
-            </tr>
+                </td>
+              </tr>
             {% else %}
-            <tr>
-              <td colspan="5" class="text-center py-12 text-[#561C24] bg-[#E8D8C4]">
-                <svg class="w-12 h-12 mx-auto mb-3 text-[#C7B7A3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                </svg>
-                <p class="text-lg font-medium">No hay inventario registrado</p>
-                <p class="text-sm mt-1">Comienza realizando una compra a proveedores</p>
-              </td>
-            </tr>
+              <tr>
+                <td colspan="4" class="text-center py-12">
+                  <p>No hay inventario registrado</p>
+                </td>
+              </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
-
-      <!-- RESUMEN (opcional) -->
-      {% if inventario %}
-      <div class="mt-4 text-right text-xs text-gray-500">
-        Total de registros: {{ inventario|length }}
-      </div>
-      {% endif %}
-
     </div>
   </div>
 </div>
 
-
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropdownButton = document.getElementById('dropdownWebsite');
+    const dropdownMenu = document.getElementById('dropdown-2');
+    
+    if (dropdownButton && dropdownMenu) {
+      dropdownButton.addEventListener('click', function() {
+        dropdownMenu.classList.toggle('hidden');
+      });
+      
+      document.addEventListener('click', function(event) {
+        if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+          dropdownMenu.classList.add('hidden');
+        }
+      });
+    }
+  });
+</script>
 
 {% endblock %}
