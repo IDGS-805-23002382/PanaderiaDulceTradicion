@@ -112,6 +112,20 @@ class="h-14 w-14 mr-3">
 </a>
 </li>
 
+<li>
+<a href="/finanzas" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+<img src="{{ url_for('static', filename='img/iconosModulos/expediente.png') }}" class="h-6 w-6">
+<span>Finanzas</span>
+</a>
+</li>
+
+<li>
+<a href="/nomina" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+<img src="{{ url_for('static', filename='img/iconosModulos/informacion.png') }}" class="h-6 w-6">
+<span>Nomina</span>
+</a>
+</li>
+
     {% if has_role('Administrador') %}
     <li>
         <a href="/usuarios" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/usuarios') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
