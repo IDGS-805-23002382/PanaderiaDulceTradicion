@@ -105,14 +105,12 @@ class="h-14 w-14 mr-3">
     </li>
     {% endif %}
 
-    {% if has_role(['Administrador', 'Gerente']) %}
-    <li>
-        <a href="/empleados" class="group flex items-center gap-3 p-2 rounded-lg {% if request.path.startswith('/empleados') %}bg-[#6b1f26]/10 text-[#6b1f26] font-bold{% else %}hover:bg-[#cbb8a3]{% endif %}">
-            <img src="{{ url_for('static', filename='img/iconosModulos/empleados.png') }}" class="h-6 w-6">
-            <span>Empleados</span>
-        </a>
-    </li>
-    {% endif %}
+<li>
+<a href="/empleados" class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#cbb8a3]">
+<img src="{{ url_for('static', filename='img/iconosModulos/empleados.png') }}" class="h-6 w-6">
+<span>Empleados</span>
+</a>
+</li>
 
     {% if has_role('Administrador') %}
     <li>

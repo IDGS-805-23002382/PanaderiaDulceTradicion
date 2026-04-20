@@ -41,3 +41,4 @@ setuptools==75.8.0
 plotly==5.18.0
 pandas==2.0.3
 folium==0.15.1
+Flask-Mail==0.9.1

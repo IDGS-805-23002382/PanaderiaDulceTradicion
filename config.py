@@ -12,4 +12,5 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:root@localhost/panaderia_db4'
     SQLALCHEMY_TRACK_MODIFICATIONS=False
     
+    
     MONGO_URI = 'mongodb://localhost:27017/panaderia_nosql_db'

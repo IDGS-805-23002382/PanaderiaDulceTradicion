@@ -6,11 +6,6 @@ from flask_login import login_user, logout_user, login_required, current_user
 from models import db, Usuario, Rol, Cliente   # ← Importante
 from forms import LoginForm, RegisterForm
 from . import auth_bp
-from blueprints.auth.forms import ResetPasswordForm, NuevaPasswordForm
-from flask_mail import Message
-import random
-
-from extensions import mail
 
 
 # ---------------- LOGIN ----------------
@@ -129,64 +124,4 @@ def verificar_2fa():
 def logout():
     nombre = current_user.nombre_mostrable
     logout_user()
-    session.clear()
-    flash(f"Sesión cerrada correctamente: {nombre}", "success")
-    return redirect(url_for('home'))
-
-
-# ---------------- RESET PASSWORD (sin cambios importantes) ----------------
-@auth_bp.route('/reset', methods=['GET', 'POST'])
-def reset():
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        user = Usuario.query.filter_by(email=form.email.data).first()
-        if user:
-            codigo = str(random.randint(100000, 999999))
-            user.codigo_recuperacion = codigo
-            db.session.commit()
-            session['reset_user_id'] = user.id_usuario
-
-            msg = Message('Recuperación de contraseña', recipients=[user.email])
-            msg.body = f'Tu código es: {codigo}'
-            mail.send(msg)
-
-            flash('Te enviamos un código a tu correo.', 'info')
-            return redirect(url_for('auth.verificar_codigo_reset'))
-
-        flash('Correo no registrado.', 'warning')
-    return render_template('auth/reset.html', form=form)
-
-
-@auth_bp.route('/verificar-reset', methods=['GET', 'POST'])
-def verificar_codigo_reset():
-    if 'reset_user_id' not in session:
-        return redirect(url_for('auth.reset'))
-
-    user = Usuario.query.get(session['reset_user_id'])
-
-    if request.method == 'POST':
-        if request.form.get('codigo') == user.codigo_recuperacion:
-            return redirect(url_for('auth.nueva_password'))
-        else:
-            flash('Código incorrecto', 'danger')
-
-    return render_template('auth/verificar_reset.html')
-
-
-@auth_bp.route('/nueva-password', methods=['GET', 'POST'])
-def nueva_password():
-    if 'reset_user_id' not in session:
-        return redirect(url_for('auth.reset'))
-
-    user = Usuario.query.get(session['reset_user_id'])
-    form = NuevaPasswordForm()
-
-    if form.validate_on_submit():
-        user.password = generate_password_hash(form.password.data)
-        user.codigo_recuperacion = None
-        db.session.commit()
-        session.pop('reset_user_id', None)
-        flash('Contraseña actualizada correctamente', 'success')
-        return redirect(url_for('auth.login'))
-
-    return render_template('auth/nuevo_password.html', form=form)
+    return redirect(url_for('auth.login'))
