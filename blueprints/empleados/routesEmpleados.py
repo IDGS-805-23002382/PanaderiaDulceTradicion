@@ -1,5 +1,3 @@
-
-
 # blueprints/empleados/routesEmpleados.py
 from flask import render_template, redirect, url_for, flash, request
 from models import db, Empleado, Rol, Usuario
@@ -118,12 +116,14 @@ def editar(id):
             usuario.id_rol = form.id_rol.data
             
             # Actualizar Empleado
-            empleado.nombre = form.nombre.data
-            empleado.telefono = form.telefono.data
-            empleado.direccion = form.direccion.data
-            empleado.puesto = form.puesto.data
-            empleado.salario = form.salario.data
-            empleado.estatus = form.estatus.data
+            empleado.nombre             = form.nombre.data
+            empleado.telefono           = form.telefono.data
+            empleado.direccion          = form.direccion.data
+            empleado.puesto             = form.puesto.data
+            empleado.salario            = form.salario.data
+            empleado.fecha_nacimiento   = form.fecha_nacimiento.data or None
+            empleado.fecha_contratacion = form.fecha_contratacion.data or None
+            empleado.estatus            = form.estatus.data
 
             db.session.commit()
             flash('Empleado actualizado correctamente.', 'success')

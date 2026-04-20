@@ -2,8 +2,18 @@
 from functools import wraps
 from flask import flash, redirect, url_for
 from flask_login import current_user
+from flask import make_response
 
 
+def no_cache(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        response = make_response(f(*args, **kwargs))
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
+    return decorated_function
 
 def gerente_or_admin_required(f):
     """Gerentes y administradores"""

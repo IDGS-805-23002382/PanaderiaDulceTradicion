@@ -290,7 +290,7 @@ class Rol(db.Model):
 
     id_rol = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(50), unique=True, nullable=False)
-
+    descripcion = db.Column(db.String(200))
     usuarios = db.relationship('Usuario', back_populates='rol')
 
     def __repr__(self):
@@ -354,7 +354,7 @@ class Cliente(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     telefono = db.Column(db.String(20))
     direccion = db.Column(db.String(200))
-    fecha_registro = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    fecha_registro = db.Column(db.DateTime, default=datetime.datetime.utcnow)  
     estatus = db.Column(db.Enum('activo', 'inactivo'), default='activo')
 
     usuario = db.relationship('Usuario', back_populates='cliente')

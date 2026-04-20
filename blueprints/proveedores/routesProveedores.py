@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from models import Proveedor, db, MateriaPrima, Compra, DetalleCompra, Sucursal, MovimientoInventario, InventarioMateriaPrima, Merma
+from utils.costos_materia_prima import guardar_historial_precio
 from werkzeug.utils import secure_filename
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
@@ -519,6 +520,9 @@ def recibir_compra(id):
 
                 d.subtotal = precio_unitario * cantidad
                 total += d.subtotal
+                
+                from utils.costos_materia_prima import guardar_historial_precio
+                guardar_historial_precio(d)
 
                 # ===== INVENTARIO =====
                 inventario = InventarioMateriaPrima.query.filter_by(

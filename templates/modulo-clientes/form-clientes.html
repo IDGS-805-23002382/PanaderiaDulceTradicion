@@ -39,6 +39,13 @@
           {% for e in form.direccion.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
         </div>
 
+        <!-- EMAIL - Agregar después del campo nombre -->
+          <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.email.label.text }}</label>
+              {{ form.email(class="w-full border border-[#c9a99f] rounded-lg px-4 py-2 bg-[#F3E9DB] text-[#341915] focus:outline-none focus:ring-2 focus:ring-[#561C24]") }}
+              {% for e in form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          </div>
+
         <!-- ESTATUS -->
         <div class="md:col-span-2">
           <label class="block text-sm font-medium text-[#341915] mb-1">{{ form.estatus.label.text }}</label>

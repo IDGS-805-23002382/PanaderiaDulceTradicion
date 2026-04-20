@@ -73,18 +73,17 @@
           </td>
 
           <td class="px-4 py-2 bg-[#561C24]">
-            <div class="flex justify-center gap-2">
+    <div class="flex justify-center gap-2">
+        <a href="{{ url_for('usuarios.editar', id=usuario.id_usuario) }}"
+           title="Editar usuario">
+            <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}" class="h-5 w-5"/>
+        </a>
 
-              <a href="{{ url_for('usuarios.editar', id=usuario.id_usuario) }}">
-                <img src="{{ url_for('static', filename='img/iconosModulos/editar.png') }}" class="h-5 w-5"/>
-              </a>
-
-              <a href="{{ url_for('usuarios.eliminar', id=usuario.id_usuario) }}">
-                <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}" class="h-5 w-5"/>
-              </a>
-
-            </div>
-          </td>
+        <a href="{{ url_for('usuarios.eliminar', id=usuario.id_usuario) }}">
+            <img src="{{ url_for('static', filename='img/iconosModulos/borrar.png') }}" class="h-5 w-5"/>
+        </a>
+    </div>
+</td>
 
         </tr>
         {% endfor %}
@@ -93,4 +92,13 @@
     </table>
   </div>
 </div>
+
+<script>
+  document.getElementById('buscador').addEventListener('keyup', function () {
+    const f = this.value.toLowerCase();
+    document.querySelectorAll('.fila-usuario').forEach(r => {
+      r.style.display = r.innerText.toLowerCase().includes(f) ? '' : 'none';
+    });
+  });
+</script>
 {% endblock %}

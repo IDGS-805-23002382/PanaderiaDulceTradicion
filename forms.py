@@ -105,8 +105,14 @@ class ProductoForm(FlaskForm):
 
     nombre = StringField("Nombre del producto", [
         validators.InputRequired(message="El nombre es requerido"),
-        validators.Length(min=3, max=100)
+        validators.Length(min=3, max=100),
+        
     ])
+    precio_venta = DecimalField("Precio de venta", [validators.InputRequired(message="El precio es requerido")])
+    costo_unitario_estimado = DecimalField("Costo estimado", [validators.Optional()])
+    imagen_url = StringField("URL de imagen")
+    dias_caducidad = IntegerField("Días de caducidad", [validators.InputRequired(message="Indique los días de caducidad")])
+    estatus = SelectField(...)
 
     descripcion = TextAreaField("Descripción")
 
@@ -256,7 +262,7 @@ class ClienteForm(FlaskForm):
     id_cliente = IntegerField("ID")
     nombre     = StringField("Nombre", [DataRequired(), Length(min=3, max=100)])
     telefono   = StringField("Teléfono", [Optional(), Length(max=20)])
-    email      = EmailField("Correo", [Optional(), Email()])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
     direccion  = StringField("Dirección", [Optional(), Length(max=200)])
     estatus    = SelectField("Estatus", choices=[("activo","Activo"),("inactivo","Inactivo")])
 
@@ -270,6 +276,7 @@ class RolForm(FlaskForm):
 class UsuarioForm(FlaskForm):
     id_usuario = IntegerField("ID")
     email      = EmailField("Correo", [DataRequired(), Email()])
+    nombre = StringField('Nombre del Usuario', validators=[DataRequired()])
     password   = PasswordField("Contraseña", [Optional(), Length(min=6)])
     id_rol     = SelectField("Rol", coerce=int)
     activo     = SelectField("Estatus", choices=[("1","Activo"),("0","Inactivo")], coerce=str)

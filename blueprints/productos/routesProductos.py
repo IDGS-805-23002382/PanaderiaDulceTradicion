@@ -118,7 +118,7 @@ def productos():
                         .first()
                     
                     if ultima_compra:
-                        costo_unitario = float(ultima_compra[0])
+                        costo_unitario = float(ultima_compra[0]) if ultima_compra and ultima_compra[0] is not None else 0.0
                 
                 # Convertir según el tipo de unidad
                 if tipo in ['g', 'gramo', 'gramos']:

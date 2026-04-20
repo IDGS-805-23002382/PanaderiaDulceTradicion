@@ -1,4 +1,6 @@
-from flask import render_template, request, redirect, url_for, flash
+import datetime
+
+from flask import app, current_app, render_template, request, redirect, url_for, flash
 from models import Receta, Producto, DetalleReceta, MateriaPrima, db, DetalleReceta
 from utils.calculos import obtener_costo_unitario_base
 from utils.precios import calcular_y_guardar_precio_materia
@@ -266,6 +268,20 @@ def agregarReceta():
         form=form,
         materias=materias
     )
+    
+def calcular_costo_receta(nueva_receta):
+    """
+    Calcula el costo total de la receta sumando el costo de cada ingrediente.
+    """
+    total_costo = 0.0
+    # Asumiendo que nueva_receta tiene una relación o lista de detalles
+    if hasattr(nueva_receta, 'detalles'):
+        for detalle in nueva_receta.detalles:
+            # Aquí multiplicas cantidad por el costo unitario de la materia prima
+            # Esto es un ejemplo, ajústalo a tus nombres de campos
+            costo_materia = obtener_ultimo_costo_materia(detalle.id_materia)
+            total_costo += (detalle.cantidad * costo_materia)
+    return total_costo
     
 @recetas_bp.route('/detalleReceta/<int:id>')
 @login_required
